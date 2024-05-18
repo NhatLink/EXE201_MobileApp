@@ -19,7 +19,8 @@ const SearchSeviceModal = ({
 }) => {
   const [searchKey, setSearchKey] = useState("");
   const [searchResults, setSearchResults] = useState([]);
-  const handleSearch = async () => {
+  const result = ["cắt tóc trẻ em", "cắt tóc nam", "cắt tóc nữ"];
+  const handleSearch = async (item) => {
     Keyboard.dismiss();
     try {
       // const encodedSearchKey = encodeURIComponent(searchKey);
@@ -31,9 +32,9 @@ const SearchSeviceModal = ({
 
       // Call the onSearchKeyChange prop to update the parent component
       if (onSearchKeyChange) {
-        onSearchKeyChange(searchKey);
+        onSearchKeyChange(item ? item : searchKey);
+        // onSearchKeyChange(item);
       }
-
       // Close the modal
       onClose();
     } catch (error) {
@@ -67,7 +68,10 @@ const SearchSeviceModal = ({
             />
           </View>
 
-          <TouchableOpacity style={styles.searchBtn} onPress={handleSearch}>
+          <TouchableOpacity
+            style={styles.searchBtn}
+            onPress={() => handleSearch(null)}
+          >
             <Ionicons
               name="search"
               size={SIZES.xLarge}
@@ -75,6 +79,23 @@ const SearchSeviceModal = ({
             />
           </TouchableOpacity>
         </View>
+        {result.map((item) => (
+          <TouchableOpacity
+            key={item}
+            style={styles.serviceItem}
+            onPress={() => handleSearch(item)}
+          >
+            <Ionicons
+              style={styles.iconSearch}
+              name="send-outline"
+              size={14}
+              color="black"
+            />
+            <Text style={styles.serviceName} numberOfLines={1}>
+              {item}
+            </Text>
+          </TouchableOpacity>
+        ))}
       </View>
       <TouchableOpacity style={styles.buttonClose} onPress={onClose}>
         {/* <Text style={styles.textStyle}>Close</Text> */}
@@ -114,7 +135,6 @@ const styles = StyleSheet.create({
     height: SIZES.height - 300,
     opacity: 0.9,
   },
-
   searchWrapper: {
     flex: 1,
     backgroundColor: COLORS.secondary,
@@ -165,6 +185,28 @@ const styles = StyleSheet.create({
     color: COLORS.black,
     fontWeight: "bold",
     textAlign: "center",
+  },
+  serviceItem: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: "#ccc",
+    marginHorizontal: SIZES.xSmall,
+  },
+  serviceName: {
+    flex: 8,
+    padding: 5,
+    fontSize: SIZES.small,
+    fontWeight: "bold",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  iconSearch: {
+    flex: 1,
+    color: COLORS.black,
+    fontWeight: "bold",
   },
 });
 

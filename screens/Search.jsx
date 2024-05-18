@@ -12,6 +12,8 @@ import {
   Image,
   Keyboard,
   Modal,
+  ScrollView,
+  Animated,
 } from "react-native";
 import axios from "axios";
 import { baseUrl } from "../utils/IP";
@@ -20,6 +22,179 @@ import SearchWhereModal from "../components/Search/SearchWhereModal";
 import SearchStoreModal from "../components/Search/SearchStoreModal";
 import SearchSeviceModal from "../components/Search/SearchSeviceModal";
 const Search = () => {
+  const products = [
+    {
+      _id: "1",
+      image: [
+        "https://images.squarespace-cdn.com/content/v1/5fd787d32a8a4a2604b22b5d/a1a982a2-8886-4017-a735-3fde5aeab145/msbs-barbershop-perspective-22000.jpg",
+      ],
+      productName: "Haircut Classic",
+      description:
+        "QL51/KM47 Đ. Hùng Vương, Tân Phước, Tân Thành, Bà Rịa - Vũng Tàu 790000, Việt Nam",
+      price: 15,
+      avgRating: 4.2,
+      reviewCount: 25,
+      services: [
+        {
+          serviceName: "Basic Haircut",
+          description: "Quick and suitable haircut for all ages.",
+          price: 150000,
+          reducePrice: 120000,
+          serviceTime: "30 minutes",
+          images: [
+            {
+              id: 1,
+              src: "https://cdn.myspa.vn/file/myspa-cdn/myspa_blog/uploads/2021/08/Goi-tao-kieu-toc-1024x642.jpg",
+              uploadDate: "2024-05-01",
+            },
+            {
+              id: 2,
+              src: "https://cdn.myspa.vn/file/myspa-cdn/myspa_blog/uploads/2021/08/Goi-cat-toc-1024x642.jpg",
+              uploadDate: "2024-05-01",
+            },
+            {
+              id: 3,
+              src: "https://cdn.myspa.vn/file/myspa-cdn/myspa_blog/uploads/2021/08/Goi-duoi-toc-1024x642.jpg",
+              uploadDate: "2024-05-01",
+            },
+          ],
+        },
+        {
+          serviceName: "Shaving",
+          description: "Facial shave with a special razor, includes skin care.",
+          price: 100000,
+          serviceTime: "15 minutes",
+          images: [
+            {
+              id: 1,
+              src: "https://cdn.myspa.vn/file/myspa-cdn/myspa_blog/uploads/2021/08/Goi-tao-kieu-toc-1024x642.jpg",
+              uploadDate: "2024-05-01",
+            },
+            {
+              id: 2,
+              src: "https://cdn.myspa.vn/file/myspa-cdn/myspa_blog/uploads/2021/08/Goi-cat-toc-1024x642.jpg",
+              uploadDate: "2024-05-01",
+            },
+            {
+              id: 3,
+              src: "https://cdn.myspa.vn/file/myspa-cdn/myspa_blog/uploads/2021/08/Goi-duoi-toc-1024x642.jpg",
+              uploadDate: "2024-05-01",
+            },
+          ],
+        },
+      ],
+    },
+    {
+      _id: "2",
+      image: [
+        "https://images.squarespace-cdn.com/content/v1/5fd787d32a8a4a2604b22b5d/a1a982a2-8886-4017-a735-3fde5aeab145/msbs-barbershop-perspective-22000.jpg",
+      ],
+      productName: "Beard Trim",
+      description:
+        "QL51/KM47 Đ. Hùng Vương, Tân Phước, Tân Thành, Bà Rịa - Vũng Tàu 790000, Việt Nam",
+      price: 10,
+      avgRating: 4.5,
+      reviewCount: 18,
+    },
+    {
+      _id: "3",
+      image: [
+        "https://images.squarespace-cdn.com/content/v1/5fd787d32a8a4a2604b22b5d/a1a982a2-8886-4017-a735-3fde5aeab145/msbs-barbershop-perspective-22000.jpg",
+      ],
+      productName: "Hair Coloring",
+      description:
+        "QL51/KM47 Đ. Hùng Vương, Tân Phước, Tân Thành, Bà Rịa - Vũng Tàu 790000, Việt Nam",
+      price: 50,
+      avgRating: 4.8,
+      reviewCount: 10,
+    },
+    {
+      _id: "4",
+      image: [
+        "https://images.squarespace-cdn.com/content/v1/5fd787d32a8a4a2604b22b5d/a1a982a2-8886-4017-a735-3fde5aeab145/msbs-barbershop-perspective-22000.jpg",
+      ],
+      productName: "Hair Wash",
+      description:
+        "QL51/KM47 Đ. Hùng Vương, Tân Phước, Tân Thành, Bà Rịa - Vũng Tàu 790000, Việt Nam",
+      price: 8,
+      avgRating: 4.0,
+      reviewCount: 30,
+    },
+    {
+      _id: "5",
+      image: [
+        "https://images.squarespace-cdn.com/content/v1/5fd787d32a8a4a2604b22b5d/a1a982a2-8886-4017-a735-3fde5aeab145/msbs-barbershop-perspective-22000.jpg",
+      ],
+      productName: "Complete Grooming",
+      description:
+        "QL51/KM47 Đ. Hùng Vương, Tân Phước, Tân Thành, Bà Rịa - Vũng Tàu 790000, Việt Nam",
+      price: 70,
+      avgRating: 4.9,
+      reviewCount: 20,
+    },
+    {
+      _id: "6",
+      image: [
+        "https://images.squarespace-cdn.com/content/v1/5fd787d32a8a4a2604b22b5d/a1a982a2-8886-4017-a735-3fde5aeab145/msbs-barbershop-perspective-22000.jpg",
+      ],
+      productName: "Complete Grooming",
+      description:
+        "QL51/KM47 Đ. Hùng Vương, Tân Phước, Tân Thành, Bà Rịa - Vũng Tàu 790000, Việt Nam",
+      price: 70,
+      avgRating: 4.9,
+      reviewCount: 20,
+      services: [
+        {
+          serviceName: "Basic Haircut",
+          description: "Quick and suitable haircut for all ages.",
+          price: 150000,
+          reducePrice: 120000,
+          serviceTime: "30 minutes",
+          images: [
+            {
+              id: 1,
+              src: "https://cdn.myspa.vn/file/myspa-cdn/myspa_blog/uploads/2021/08/Goi-tao-kieu-toc-1024x642.jpg",
+              uploadDate: "2024-05-01",
+            },
+            {
+              id: 2,
+              src: "https://cdn.myspa.vn/file/myspa-cdn/myspa_blog/uploads/2021/08/Goi-cat-toc-1024x642.jpg",
+              uploadDate: "2024-05-01",
+            },
+            {
+              id: 3,
+              src: "https://cdn.myspa.vn/file/myspa-cdn/myspa_blog/uploads/2021/08/Goi-duoi-toc-1024x642.jpg",
+              uploadDate: "2024-05-01",
+            },
+          ],
+        },
+      ],
+    },
+    {
+      _id: "7",
+      image: [
+        "https://images.squarespace-cdn.com/content/v1/5fd787d32a8a4a2604b22b5d/a1a982a2-8886-4017-a735-3fde5aeab145/msbs-barbershop-perspective-22000.jpg",
+      ],
+      productName: "Computer hair ",
+      description:
+        "QL51/KM47 Đ. Hùng Vương, Tân Phước, Tân Thành, Bà Rịa - Vũng Tàu 790000, Việt Nam",
+      price: 70,
+      avgRating: 4.9,
+      reviewCount: 20,
+    },
+    {
+      _id: "8",
+      image: [
+        "https://images.squarespace-cdn.com/content/v1/5fd787d32a8a4a2604b22b5d/a1a982a2-8886-4017-a735-3fde5aeab145/msbs-barbershop-perspective-22000.jpg",
+      ],
+      productName: "LAst ",
+      description:
+        "QL51/KM47 Đ. Hùng Vương, Tân Phước, Tân Thành, Bà Rịa - Vũng Tàu 790000, Việt Nam",
+      price: 70,
+      avgRating: 4.9,
+      reviewCount: 20,
+    },
+  ];
   const [searchKeyService, setSearchKeyService] = useState("");
   const [searchKeyStore, setSearchKeyStore] = useState("");
   const [searchKeyWhere, setSearchKeyWhere] = useState("");
@@ -71,66 +246,39 @@ const Search = () => {
   const handleSearchKeyWhereChange = (newSearchKey) => {
     setSearchKeyWhere(newSearchKey);
   };
-  return (
-    <SafeAreaView style={{ color: COLORS.lightWhite, paddingHorizontal: 20 }}>
-      <View style={styles.searchContainer}>
-        <TouchableOpacity>
-          <Feather
-            style={styles.searchIcon}
-            name="scissors"
-            size={24}
-            color="black"
-          />
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.searchWrapper}
-          onPress={() => openModalService()}
-        >
-          <TextInput
-            style={styles.searchInput}
-            value={searchKeyService}
-            placeholder="Dịch vụ bạn đang tìm là gì?"
-            editable={false}
-          />
-        </TouchableOpacity>
-        {searchKeyService && (
-          <TouchableOpacity onPress={() => setSearchKeyService("")}>
-            <Ionicons
-              style={styles.deleteIcon}
-              name="close-circle-outline"
-              size={24}
-              color="black"
-            />
-          </TouchableOpacity>
-        )}
 
-        {/* <TouchableOpacity style={styles.searchBtn} onPress={handleSearch}>
-          <Ionicons name="search" size={SIZES.xLarge} color={COLORS.offwhite} />
-        </TouchableOpacity> */}
-      </View>
-      <View style={styles.search2}>
-        <View style={styles.searchContainer2}>
+  return (
+    <SafeAreaView
+      style={{
+        flex: 1,
+        color: COLORS.lightWhite,
+        paddingHorizontal: 20,
+        marginBottom: 70,
+      }}
+    >
+      <Animated.View style={styles.wrapper}>
+        <View style={styles.searchContainer}>
           <TouchableOpacity>
-            <Ionicons
+            <Feather
               style={styles.searchIcon}
-              name="location"
+              name="scissors"
               size={24}
               color="black"
             />
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.searchWrapper}
-            onPress={() => openModalWhere()}
+            onPress={() => openModalService()}
           >
             <TextInput
               style={styles.searchInput}
-              value={searchKeyWhere}
-              placeholder="Vị trí?"
+              value={searchKeyService}
+              placeholder="Dịch vụ bạn đang tìm là gì?"
               editable={false}
             />
           </TouchableOpacity>
-          {searchKeyWhere && (
-            <TouchableOpacity onPress={() => setSearchKeyWhere("")}>
+          {searchKeyService && (
+            <TouchableOpacity onPress={() => setSearchKeyService("")}>
               <Ionicons
                 style={styles.deleteIcon}
                 name="close-circle-outline"
@@ -140,40 +288,73 @@ const Search = () => {
             </TouchableOpacity>
           )}
         </View>
-        <View style={styles.searchContainer3}>
-          <TouchableOpacity>
-            <Ionicons
-              style={styles.searchIcon}
-              name="storefront"
-              size={24}
-              color="black"
-            />
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.searchWrapper}
-            onPress={() => openModalStore()}
-          >
-            <TextInput
-              style={styles.searchInput}
-              value={searchKeyStore}
-              placeholder="Tên tiệm?"
-              numberOfLines={1}
-              editable={false}
-            />
-          </TouchableOpacity>
-          {searchKeyStore && (
-            <TouchableOpacity onPress={() => setSearchKeyStore("")}>
+        <View style={styles.search2}>
+          <View style={styles.searchContainer2}>
+            <TouchableOpacity>
               <Ionicons
-                style={styles.deleteIcon}
-                name="close-circle-outline"
+                style={styles.searchIcon}
+                name="location"
                 size={24}
                 color="black"
               />
             </TouchableOpacity>
-          )}
+            <TouchableOpacity
+              style={styles.searchWrapper}
+              onPress={() => openModalWhere()}
+            >
+              <TextInput
+                style={styles.searchInput}
+                value={searchKeyWhere}
+                placeholder="Vị trí?"
+                editable={false}
+              />
+            </TouchableOpacity>
+            {searchKeyWhere && (
+              <TouchableOpacity onPress={() => setSearchKeyWhere("")}>
+                <Ionicons
+                  style={styles.deleteIcon}
+                  name="close-circle-outline"
+                  size={24}
+                  color="black"
+                />
+              </TouchableOpacity>
+            )}
+          </View>
+          <View style={styles.searchContainer3}>
+            <TouchableOpacity>
+              <Ionicons
+                style={styles.searchIcon}
+                name="storefront"
+                size={24}
+                color="black"
+              />
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.searchWrapper}
+              onPress={() => openModalStore()}
+            >
+              <TextInput
+                style={styles.searchInput}
+                value={searchKeyStore}
+                placeholder="Tên tiệm?"
+                numberOfLines={1}
+                editable={false}
+              />
+            </TouchableOpacity>
+            {searchKeyStore && (
+              <TouchableOpacity onPress={() => setSearchKeyStore("")}>
+                <Ionicons
+                  style={styles.deleteIcon}
+                  name="close-circle-outline"
+                  size={24}
+                  color="black"
+                />
+              </TouchableOpacity>
+            )}
+          </View>
         </View>
-      </View>
-      {searchResults.length === 0 ? (
+      </Animated.View>
+      {products.length === 0 ? (
         <View style={{ flex: 1 }}>
           <Image
             source={require("../assets/images/Pose23.png")}
@@ -182,9 +363,11 @@ const Search = () => {
         </View>
       ) : (
         <>
-          <Text style={styles.searchResultText}>Kết quả tìm kiếm</Text>
+          <Text style={styles.searchResultText}>
+            {`Kết quả tìm kiếm (${products.length})`}
+          </Text>
           <FlatList
-            data={searchResults}
+            data={products}
             keyExtractor={(item) => item?._id}
             renderItem={({ item }) => <SearchTile item={item} />}
           />
@@ -215,6 +398,7 @@ const Search = () => {
 export default Search;
 
 const styles = StyleSheet.create({
+  wrapper: {},
   searchContainer: {
     justifyContent: "center",
     alignItems: "center",
@@ -332,8 +516,7 @@ const styles = StyleSheet.create({
   },
   searchResultText: {
     fontWeight: "bold",
-    textAlign: "center",
-    marginLeft: 10,
+    textAlign: "left",
     fontSize: SIZES.medium,
   },
 });

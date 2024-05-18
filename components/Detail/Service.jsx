@@ -8,15 +8,17 @@ import {
   Modal,
   ScrollView,
   Button,
+  TextInput,
+  Keyboard,
 } from "react-native";
 import React, { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { COLORS, SIZES, images } from "../../constants";
-import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import formatDate from "../../utils/helper";
 import OrderTile from "../../components/orders/OrderTile";
 import { SliderBox } from "react-native-image-slider-box";
+import { Ionicons, Feather } from "@expo/vector-icons";
 const Service = (storeId) => {
   const navigation = useNavigation();
   const services = [
@@ -199,6 +201,8 @@ const Service = (storeId) => {
   ];
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedService, setSelectedService] = useState(null);
+  const [searchKey, setSearchKey] = useState("");
+  const [filteredServices, setFilteredServices] = useState(services);
 
   const getImageUrls = (images) => {
     return images.map((image) => image.src);
@@ -216,33 +220,43 @@ const Service = (storeId) => {
     setModalVisible(false);
     setSelectedService(null);
   };
-  //   return (
-  //     <SafeAreaView style={styles.container}>
-  //       <View>
-  //         {services.map((item) => (
-  //           <TouchableOpacity
-  //             key={item.serviceName}
-  //             style={styles.serviceItem}
-  //             onPress={() => {
-  //               // Handle navigation or other actions
-  //             }}
-  //           >
-  //             <Text style={styles.serviceName}>{item.serviceName}</Text>
-  //             <Text style={styles.serviceDescription}>{item.description}</Text>
-  //             <Text
-  //               style={styles.servicePrice}
-  //             >{`Price: ${item.price.toLocaleString()} VND`}</Text>
-  //             <Text>{`Duration: ${item.serviceTime}`}</Text>
-  //           </TouchableOpacity>
-  //         ))}
-  //       </View>
-  //     </SafeAreaView>
-  //   );
-  // };
+  const handleSearch = () => {
+    Keyboard.dismiss();
+    const filtered = services.filter((service) =>
+      service.serviceName.toLowerCase().includes(searchKey.toLowerCase())
+    );
+    setFilteredServices(filtered);
+  };
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView>
-        {services.map((item) => (
+        <View style={styles.searchContainer}>
+          <TouchableOpacity>
+            <Feather
+              style={styles.searchIcon}
+              name="scissors"
+              size={SIZES.medium}
+              color="black"
+            />
+          </TouchableOpacity>
+          <View style={styles.searchWrapper}>
+            <TextInput
+              style={styles.searchInput}
+              value={searchKey}
+              onChangeText={setSearchKey}
+              placeholder="Bạn đang tìm gì?"
+            />
+          </View>
+
+          <TouchableOpacity style={styles.searchBtn} onPress={handleSearch}>
+            <Ionicons
+              name="search"
+              size={SIZES.medium}
+              color={COLORS.offwhite}
+            />
+          </TouchableOpacity>
+        </View>
+        {filteredServices.map((item) => (
           <View
             key={item.serviceName}
             style={styles.serviceItem}
@@ -433,6 +447,44 @@ const styles = StyleSheet.create({
   carouselContainer: {
     marginBottom: 10,
     height: "28%",
+    alignItems: "center",
+  },
+  searchContainer: {
+    justifyContent: "center",
+    alignItems: "center",
+    flexDirection: "row",
+    backgroundColor: COLORS.secondary,
+    borderRadius: SIZES.medium,
+    marginHorizontal: SIZES.small,
+    height: 30,
+  },
+  searchWrapper: {
+    flex: 1,
+    backgroundColor: COLORS.secondary,
+    marginRight: SIZES.xSmall,
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: SIZES.small,
+    height: "100%",
+  },
+  searchInput: {
+    fontFamily: "regular",
+    fontSize: SIZES.small,
+    width: "100%",
+    height: "100%",
+    paddingHorizontal: SIZES.xSmall,
+  },
+  searchIcon: {
+    marginLeft: 10,
+    color: "gray",
+  },
+  searchBtn: {
+    width: "auto",
+    height: "100%",
+    paddingHorizontal: 10,
+    backgroundColor: COLORS.primary,
+    borderRadius: SIZES.medium,
+    justifyContent: "center",
     alignItems: "center",
   },
 });

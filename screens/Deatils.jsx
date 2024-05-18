@@ -10,29 +10,29 @@ import {
   TextInput,
   ActivityIndicator,
 } from "react-native";
-import { baseUrl } from "../../utils/IP";
+import { baseUrl } from "../utils/IP";
 import React, { useState, useEffect } from "react";
-import { COLORS, SIZES, images } from "../../constants";
+import { COLORS, SIZES, images } from "../constants";
 import {
   SimpleLineIcons,
   Ionicons,
   MaterialCommunityIcons,
   Fontisto,
 } from "@expo/vector-icons";
-import { ColorList, StarRating } from "../../components";
+import { ColorList, StarRating } from "../components";
 import { useRoute } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import addToCart from "../../hook/addToCart";
+import addToCart from "../hook/addToCart";
 import { WebView } from "react-native-webview";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { FontAwesome, FontAwesome5 } from "@expo/vector-icons";
-import useUser from "../../hook/useUser";
+import useUser from "../hook/useUser";
 import axios from "axios";
-import { usePayment } from "../../hook/PaymentContext";
+import { usePayment } from "../hook/PaymentContext";
 import Toast from "react-native-toast-message";
-import formatDate from "../../utils/helper";
+import formatDate from "../utils/helper";
 import { SliderBox } from "react-native-image-slider-box";
-import TabViewComponent from "./TabViewComponent";
+import TabViewComponent from "../components/Detail/TabViewComponent";
 const Details = ({ navigation }) => {
   const StoreDetail = {
     storeId: 123,

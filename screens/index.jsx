@@ -3,13 +3,14 @@ import Cart from "./Cart";
 import Notifications from "./Notifications";
 import Profile from "./Profile";
 import Search from "./Search";
-import Details from "./DetailStore/Deatils";
+import Details from "./Deatils";
 import Favorites from "./Favorites";
 import Products from "./Products";
 import LoginPage from "./LoginPage";
 import Signup from "./Signup";
 import PaymentPage from "./PaymentPage";
 import DetailOrder from "./DetailOrder";
+import Schedule from "./Schedule";
 export {
   Home,
   Cart,
@@ -23,4 +24,5 @@ export {
   Signup,
   PaymentPage,
   DetailOrder,
+  Schedule,
 };
