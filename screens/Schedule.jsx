@@ -153,7 +153,7 @@ const Schedule = () => {
       totalTime: "75 minutes",
     },
   ];
-  console.log("appoint", appointments);
+  // console.log("appoint", appointments);
   return (
     <SafeAreaView
       style={{

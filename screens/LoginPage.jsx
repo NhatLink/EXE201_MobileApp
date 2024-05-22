@@ -16,76 +16,39 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { baseUrl } from "../utils/IP";
+import { useNavigation, useRoute } from "@react-navigation/native";
 const LoginPage = ({ navigation }) => {
-  const [loader, setLoader] = React.useState(false);
+  const route = useRoute();
+  const { email } = route.params;
+
+  const [loader, setLoader] = useState(false);
   const [responseData, setResponseData] = useState(null);
-  const [inputs, setInput] = React.useState({
-    username: "",
+
+  const [inputs, setInputs] = useState({
+    username: email || "", // Set initial value to email
     password: "",
   });
 
-  const [errors, setErrors] = React.useState({});
+  const [errors, setErrors] = useState({});
+
+  useEffect(() => {
+    if (email) {
+      setInputs((prevState) => ({ ...prevState, username: email }));
+    }
+  }, [email]);
 
   const handleError = (errorMessage, input) => {
     setErrors((prevState) => ({ ...prevState, [input]: errorMessage }));
   };
 
-  // INPUT VALIDATION
   const validate = () => {
     Keyboard.dismiss();
     let valid = true;
-
-    // if (!inputs.email) {
-    //   handleError("Provide a valid email", "email");
-    //   valid = false;
-    // }
-
-    // if (!inputs.password) {
-    //   handleError("Please input password", "password");
-    //   valid = false;
-    // } else if (inputs.password.length < 8) {
-    //   handleError("At least 8 characters are required", "password");
-    //   valid = false;
-    // }
 
     if (valid) {
       login();
     }
   };
-
-  // const login = async () => {
-  //   setLoader(true);
-  //   try {
-  //     const endpoint = `${baseUrl}/user/login`;
-  //     const data = inputs;
-  //     console.log(data);
-
-  //     const response = await axios.post(endpoint, data);
-  //     setResponseData(response.data);
-  //     console.log("login", responseData);
-
-  //     try {
-  //       setLoader(false);
-  //       await AsyncStorage.setItem(
-  //         "accessToken",
-  //         JSON.stringify(responseData?.token)
-  //       );
-  //       await AsyncStorage.setItem(
-  //         `user${responseData?.user?._id}`,
-  //         JSON.stringify(responseData?.user)
-  //       );
-  //       await AsyncStorage.setItem(
-  //         "id",
-  //         JSON.stringify(responseData?.user?._id)
-  //       );
-  //       navigation.replace("Bottom Navigation");
-  //     } catch (error) {
-  //       Alert.alert("Error", "Oops, something went wrong. Try again");
-  //     }
-  //   } catch (error) {
-  //     Alert.alert("Error", error);
-  //   }
-  // };
 
   const login = async () => {
     setLoader(true);
@@ -96,11 +59,9 @@ const LoginPage = ({ navigation }) => {
 
       const response = await axios.post(endpoint, data);
 
-      // Sử dụng trực tiếp response.data thay vì chờ responseData cập nhật
       const responseData = response.data;
       console.log("login response", responseData);
 
-      // Tắt loader và lưu trữ các thông tin cần thiết
       setLoader(false);
       try {
         await AsyncStorage.setItem(
@@ -128,7 +89,7 @@ const LoginPage = ({ navigation }) => {
   };
 
   const handleChanges = (text, input) => {
-    setInput((prevState) => ({ ...prevState, [input]: text }));
+    setInputs((prevState) => ({ ...prevState, [input]: text }));
   };
 
   return (
@@ -141,14 +102,13 @@ const LoginPage = ({ navigation }) => {
             source={require("../assets/images/bk.png")}
             style={styles.img}
           />
-          {/* WELCOME TEXT */}
-
           <Text style={styles.motto}>Unlimited Luxurious Gift </Text>
 
           <Input
             placeholder="Enter username"
             icon="email-outline"
             label={"User Name"}
+            value={inputs.username} // Display the username value
             error={errors.email}
             onFocus={() => {
               handleError(null, "email");

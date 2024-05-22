@@ -10,6 +10,7 @@ import AnimatedTitle from "./product/AnimatedText";
 import CartList from "./cart/cartList";
 import CartTile from "./cart/cartTile";
 import StarRating from "./StarRating";
+import CheckEmail from "./profile/CheckEmail";
 
 export {
   ProductCardView,
@@ -24,4 +25,5 @@ export {
   CartTile,
   StarRating,
   ProductSpecialViewCard,
+  CheckEmail,
 };

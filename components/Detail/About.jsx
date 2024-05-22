@@ -16,6 +16,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import formatDate from "../../utils/helper";
 import OrderTile from "../../components/orders/OrderTile";
+import MapView, { Marker } from "react-native-maps";
 
 const About = (storeId) => {
   const navigation = useNavigation();
@@ -64,6 +65,31 @@ const About = (storeId) => {
             Cảm thấy nhàm chán với kiểu tóc hiện tại? Hãy để chúng tôi giúp bạn
             tạo nên một phong cách tóc mới, thật cá tính và độc đáo.
           </Text>
+        </View>
+      </View>
+      <View>
+        <Text style={styles.title}>Map</Text>
+        <View style={styles.AboutUsContanner}>
+          <View style={styles.mapContainer}>
+            <MapView
+              style={styles.map}
+              initialRegion={{
+                latitude: 10.875123789279687,
+                longitude: 106.79814847509016,
+                latitudeDelta: 0.0922,
+                longitudeDelta: 0.0421,
+              }}
+            >
+              <Marker
+                coordinate={{
+                  latitude: 10.875123789279687,
+                  longitude: 106.79814847509016,
+                }}
+                title={"Nhà Văn hóa Sinh viên TP.HCM"}
+                description={"A nice place in Ho Chi Minh City"}
+              />
+            </MapView>
+          </View>
         </View>
       </View>
       <View>
@@ -243,5 +269,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     marginVertical: 5,
     marginHorizontal: SIZES.medium,
+  },
+  mapContainer: {
+    borderRadius: 10,
+    borderColor: COLORS.primary,
+    borderWidth: 2,
+    width: "100%",
+  },
+  map: {
+    width: "100%",
+    height: 300,
+    borderRadius: 10,
   },
 });

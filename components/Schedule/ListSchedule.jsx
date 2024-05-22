@@ -25,7 +25,7 @@ const ListSchedule = ({ item }) => {
   const [selectedService, setSelectedService] = useState(null);
   const [searchKey, setSearchKey] = useState("");
   const [favorites, setFavorites] = useState(false);
-  console.log("item schedule: ", item);
+  // console.log("item schedule: ", item);
   return (
     <View style={styles.container}>
       <View style={styles.containerDate}>
