@@ -141,6 +141,7 @@ import {
   Profile,
   PaymentPage,
   DetailOrder,
+  History,
 } from "./screens";
 import Orders from "./screens/Orders";
 import { PaymentProvider } from "./hook/PaymentContext";
@@ -224,6 +225,11 @@ export default function App() {
             <Stack.Screen
               name="Favorites"
               component={Favorites}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="History"
+              component={History}
               options={{ headerShown: false }}
             />
 

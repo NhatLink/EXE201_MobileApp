@@ -19,7 +19,7 @@ import formatDate from "../../utils/helper";
 import OrderTile from "../../components/orders/OrderTile";
 import { SliderBox } from "react-native-image-slider-box";
 import { Ionicons, Feather } from "@expo/vector-icons";
-const ListSchedule = ({ item }) => {
+const ListHistory = ({ item }) => {
   const navigation = useNavigation();
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedService, setSelectedService] = useState(null);
@@ -51,9 +51,6 @@ const ListSchedule = ({ item }) => {
             <Text style={styles.description}>{item?.store?.name}</Text>
             <Text style={styles.descriptionText}>{item?.store?.address}</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.bookButton} onPress={() => {}}>
-            <Text style={styles.button}>Hủy</Text>
-          </TouchableOpacity>
         </View>
         {item?.services?.map((item) => (
           <View
@@ -68,8 +65,8 @@ const ListSchedule = ({ item }) => {
                 {item.serviceName}
               </Text>
               {/* <Text style={styles.serviceDescription} numberOfLines={1}>
-                {item.description}
-              </Text> */}
+                  {item.description}
+                </Text> */}
               <Text
                 style={styles.serviceDescription}
                 numberOfLines={1}
@@ -110,12 +107,17 @@ const ListSchedule = ({ item }) => {
             <Text style={styles.descriptionTextTime}>{item?.timeSchedule}</Text>
           </TouchableOpacity>
         </View>
+        <View style={styles.descriptionWrapper2}>
+          <TouchableOpacity style={styles.bookButton} onPress={() => {}}>
+            <Text style={styles.button}>Đặt lại</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     </View>
   );
 };
 
-export default ListSchedule;
+export default ListHistory;
 
 const styles = StyleSheet.create({
   container: {
@@ -153,6 +155,7 @@ const styles = StyleSheet.create({
   },
   bookButton: {
     flex: 2,
+    marginVertical: 10,
     justifyContent: "center",
     alignItems: "flex-end",
   },

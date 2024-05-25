@@ -252,11 +252,11 @@ const Search = () => {
       style={{
         flex: 1,
         color: COLORS.lightWhite,
-        paddingHorizontal: 20,
+        // paddingHorizontal: 20,
         marginBottom: 70,
       }}
     >
-      <Animated.View style={styles.wrapper}>
+      <View style={styles.wrapper}>
         <View style={styles.searchContainer}>
           <TouchableOpacity>
             <Feather
@@ -353,7 +353,7 @@ const Search = () => {
             )}
           </View>
         </View>
-      </Animated.View>
+      </View>
       {products.length === 0 ? (
         <View style={{ flex: 1 }}>
           <Image
@@ -398,7 +398,7 @@ const Search = () => {
 export default Search;
 
 const styles = StyleSheet.create({
-  wrapper: {},
+  wrapper: { paddingHorizontal: 20 },
   searchContainer: {
     justifyContent: "center",
     alignItems: "center",
@@ -518,5 +518,6 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     textAlign: "left",
     fontSize: SIZES.medium,
+    paddingHorizontal: 20,
   },
 });

@@ -22,7 +22,7 @@ import { Ionicons, Feather } from "@expo/vector-icons";
 const CheckEmail = () => {
   const navigation = useNavigation();
   const [email, setEmail] = useState("");
-  const [userHaveAccount, setUserHaveAccount] = useState(true);
+  const [userHaveAccount, setUserHaveAccount] = useState(false);
 
   const [emailError, setEmailError] = useState("");
 
@@ -45,7 +45,7 @@ const CheckEmail = () => {
     if (userHaveAccount) {
       navigation.navigate("Login", { email: email });
     } else {
-      navigation.navigate("SignIn", { email: email });
+      navigation.navigate("Signup", { email: email });
     }
   };
   return (

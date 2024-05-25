@@ -142,7 +142,9 @@ const Details = ({ navigation }) => {
   const userLogin = useUser(navigation);
   const { setPaymentUrl } = usePayment();
   console.log("productId", StoreDetail.images);
-  useEffect(() => {}, []);
+  useEffect(() => {
+    // checkFavorites();
+  }, []);
   // if (loading) {
   //   return (
   //     <View style={styles.loadingContainer}>
@@ -150,6 +152,62 @@ const Details = ({ navigation }) => {
   //     </View>
   //   );
   // }
+  const checkFavorites = async () => {
+    const userId = await AsyncStorage.getItem("id");
+    const favoritesId = `favorites${JSON.parse(userId)}`;
+    try {
+      const favoritesObj = await AsyncStorage.getItem(favoritesId);
+      if (favoritesObj !== null) {
+        const favorites = JSON.parse(favoritesObj);
+        if (favorites[product]) {
+          setFavorites(true);
+        }
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const addFavorites = async () => {
+    const userId = await AsyncStorage.getItem("id");
+    const favoritesId = `favorites${JSON.parse(userId)}`;
+    let productId = data?._id;
+    let productObj = {
+      productName: data?.productName,
+      _id: data?._id,
+      description: data?.description,
+      image: data?.image[0],
+      price: data?.price,
+    };
+
+    try {
+      const existingItem = await AsyncStorage.getItem(favoritesId);
+      let favoritesObj = existingItem ? JSON.parse(existingItem) : {};
+
+      if (favoritesObj[productId]) {
+        // Key already exists, so delete it
+        delete favoritesObj[productId];
+
+        console.log(`Deleted key: ${productId}`);
+        setFavorites(false);
+        Toast.show({
+          type: "info",
+          text2: "Removed from favorite",
+        });
+      } else {
+        favoritesObj[productId] = productObj;
+        console.log(`Added key: ${productId}`);
+        setFavorites(true);
+        Toast.show({
+          type: "success",
+          text2: "Added to favorite",
+        });
+      }
+
+      await AsyncStorage.setItem(favoritesId, JSON.stringify(favoritesObj));
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
     <View style={styles.container}>
       <ScrollView style={styles.wrapper}>

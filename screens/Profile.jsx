@@ -23,7 +23,7 @@ import { CheckEmail } from "../components";
 
 const Profile = ({ navigation }) => {
   const [userData, setUserData] = useState(null);
-  const [userLogin, setUserLogin] = useState(false);
+  const [userLogin, setUserLogin] = useState(true);
 
   // useEffect(() => {
   //   checkUserExistence();
@@ -138,7 +138,16 @@ const Profile = ({ navigation }) => {
                 <Text style={styles.menuItemText}>Favorites</Text>
               </View>
             </TouchableOpacity>
-
+            <TouchableOpacity onPress={() => navigation.navigate("History")}>
+              <View style={styles.menuItem}>
+                <MaterialCommunityIcons
+                  name="history"
+                  color={COLORS.primary}
+                  size={25}
+                />
+                <Text style={styles.menuItemText}>History</Text>
+              </View>
+            </TouchableOpacity>
             <TouchableOpacity onPress={() => navigation.navigate("Orders")}>
               <View style={styles.menuItem}>
                 <MaterialCommunityIcons
@@ -164,7 +173,7 @@ const Profile = ({ navigation }) => {
               </View>
             </TouchableOpacity>
 
-            <TouchableOpacity onPress={clearCache}>
+            {/* <TouchableOpacity onPress={clearCache}>
               <View style={styles.menuItem}>
                 <MaterialCommunityIcons
                   name="cached"
@@ -173,14 +182,14 @@ const Profile = ({ navigation }) => {
                 />
                 <Text style={styles.menuItemText}>Clear Cache</Text>
               </View>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
 
-            <TouchableOpacity onPress={deleteUser}>
+            {/* <TouchableOpacity onPress={deleteUser}>
               <View style={styles.menuItem}>
                 <AntDesign name="deleteuser" size={24} color={COLORS.primary} />
                 <Text style={styles.menuItemText}>Delete Account</Text>
               </View>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
           </View>
         </>
       ) : (

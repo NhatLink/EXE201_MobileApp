@@ -68,6 +68,14 @@ const Input = ({
             color="black"
           />
         )}
+        {label === "Confirm Password" && (
+          <Ionicons
+            onPress={() => setObsecurePassWord(!obsecurePassWord)}
+            name={obsecurePassWord ? "eye-outline" : "eye-off-outline"}
+            size={24}
+            color="black"
+          />
+        )}
       </View>
       {error && <Text style={styles.erroMsg}>{error}</Text>}
     </View>

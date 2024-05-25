@@ -1,11 +1,12 @@
+import React, { useEffect, useState } from "react";
 import {
   StyleSheet,
   Text,
   View,
   TouchableOpacity,
   ScrollView,
+  Alert,
 } from "react-native";
-import React, { useEffect, useState } from "react";
 import { COLORS, SIZES } from "../constants";
 import { Ionicons, Fontisto } from "@expo/vector-icons";
 import * as Location from "expo-location";
@@ -14,7 +15,6 @@ import ProductsRow from "../components/product/ProductsRow";
 import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { PermissionsAndroid, Platform } from "react-native";
 
 const Home = () => {
   const navigation = useNavigation();
@@ -34,12 +34,9 @@ const Home = () => {
     try {
       const userData = await AsyncStorage.getItem(userID);
       if (userData !== null) {
-        // User data exists
         const parsedData = JSON.parse(userData);
-        // Use the retrieved data as needed
         setUserLoggedIn(true);
         setUserData(parsedData);
-        // setUserLocation(userData.location)
 
         const count = await AsyncStorage.getItem("cartCount");
         if (count !== null) {
@@ -61,11 +58,10 @@ const Home = () => {
     if (userLoggedIn) {
       navigation.navigate("Cart");
     } else {
-      // Navigate to the Login page when hasId is false
       navigation.navigate("Login");
     }
   };
-  console.log("user", userData);
+
   const requestLocationPermission = async () => {
     let { status } = await Location.requestForegroundPermissionsAsync();
     if (status !== "granted") {
@@ -74,20 +70,22 @@ const Home = () => {
     }
     return true;
   };
+
   const getLocation = async () => {
     if (await requestLocationPermission()) {
-      let { coords } = await Location.getCurrentPositionAsync({});
-      const address = await Location.reverseGeocodeAsync({
-        latitude: coords.latitude,
-        longitude: coords.longitude,
-      });
-      console.log(address);
-      if (address.length > 0) {
-        setLocation(
-          address[0].subregion + ", " + address[0].region
-          // + ", " +
-          // address[0].country
-        );
+      try {
+        let { coords } = await Location.getCurrentPositionAsync({});
+        const address = await Location.reverseGeocodeAsync({
+          latitude: coords.latitude,
+          longitude: coords.longitude,
+        });
+        console.log(address);
+        if (address.length > 0) {
+          setLocation(address[0].subregion + ", " + address[0].region);
+        }
+      } catch (error) {
+        console.error("Error getting location:", error);
+        Alert.alert("Error", "Unable to retrieve location. Please try again.");
       }
     }
   };

@@ -11,6 +11,7 @@ import Signup from "./Signup";
 import PaymentPage from "./PaymentPage";
 import DetailOrder from "./DetailOrder";
 import Schedule from "./Schedule";
+import History from "./History";
 export {
   Home,
   Cart,
@@ -25,4 +26,5 @@ export {
   PaymentPage,
   DetailOrder,
   Schedule,
+  History,
 };

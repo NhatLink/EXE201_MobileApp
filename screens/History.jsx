@@ -2,7 +2,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons, Feather } from "@expo/vector-icons";
 import { SIZES, COLORS } from "../constants";
 import React, { useState } from "react";
-import ListSchedule from "../components/Schedule/ListSchedule";
+import { ListHistory } from "../components";
 import {
   View,
   TextInput,
@@ -23,7 +23,7 @@ import SearchWhereModal from "../components/Search/SearchWhereModal";
 import SearchStoreModal from "../components/Search/SearchStoreModal";
 import SearchSeviceModal from "../components/Search/SearchSeviceModal";
 import { useNavigation } from "@react-navigation/native";
-const Schedule = () => {
+const History = () => {
   const navigation = useNavigation();
   const appointments = [
     {
@@ -169,11 +169,19 @@ const Schedule = () => {
       style={{
         flex: 1,
         color: COLORS.lightWhite,
-        marginBottom: 70,
         marginTop: 10,
       }}
     >
-      <Text style={styles.title}>Lịch hẹn của bạn</Text>
+      <View style={styles.upperRow}>
+        <TouchableOpacity
+          style={{ paddingLeft: 0 }}
+          onPress={() => navigation.goBack()}
+        >
+          <Ionicons name="chevron-back-circle" size={30} color={COLORS.black} />
+        </TouchableOpacity>
+        <Text style={styles.title}> Lịch sử </Text>
+      </View>
+
       {appointments.length === 0 ? (
         <View
           style={{
@@ -207,23 +215,28 @@ const Schedule = () => {
         <FlatList
           data={appointments}
           keyExtractor={(item) => item?.id}
-          renderItem={({ item }) => <ListSchedule item={item} />}
+          renderItem={({ item }) => <ListHistory item={item} />}
         />
       )}
     </SafeAreaView>
   );
 };
 
-export default Schedule;
+export default History;
 
 const styles = StyleSheet.create({
   title: {
     fontWeight: "bold",
     fontSize: SIZES.large,
+    textAlign: "center",
+  },
+  upperRow: {
+    flexDirection: "row",
+    justifyContent: "flex-start",
+    alignItems: "center",
+    width: SIZES.width - 50,
+    marginBottom: SIZES.xSmall,
     marginHorizontal: 20,
-    paddingVertical: 10,
-    // borderBottomWidth: 1,
-    // borderBottomColor: COLORS.black,
   },
   searchImage: {
     resizeMode: "cover",

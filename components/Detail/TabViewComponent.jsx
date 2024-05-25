@@ -20,11 +20,11 @@ const initialLayout = { width: Dimensions.get("window").width };
 //   </View>
 // );
 
-const HìnhẢnh = () => (
-  <View style={[styles.scene, { backgroundColor: "#2196f3" }]}>
-    <Text>Hình ảnh</Text>
-  </View>
-);
+// const HìnhẢnh = () => (
+//   <View style={[styles.scene, { backgroundColor: "#2196f3" }]}>
+//     <Text>Hình ảnh</Text>
+//   </View>
+// );
 
 // const ChiTiết = ({ storeId }) => (
 //   <View style={[styles.scene, { backgroundColor: "#32cd32" }]}>

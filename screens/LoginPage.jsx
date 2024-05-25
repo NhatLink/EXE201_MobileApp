@@ -6,6 +6,7 @@ import {
   Alert,
   Keyboard,
   ScrollView,
+  TouchableOpacity,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { COLORS, SIZES } from "../constants";
@@ -17,6 +18,7 @@ import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { baseUrl } from "../utils/IP";
 import { useNavigation, useRoute } from "@react-navigation/native";
+import { Ionicons, Feather } from "@expo/vector-icons";
 const LoginPage = ({ navigation }) => {
   const route = useRoute();
   const { email } = route.params;
@@ -93,17 +95,32 @@ const LoginPage = ({ navigation }) => {
   };
 
   return (
-    <ScrollView>
-      <SafeAreaView style={{ marginHorizontal: 20 }}>
+    <SafeAreaView style={{ flex: 1 }}>
+      <View style={styles.container}>
         <View>
-          <BackButton onPress={() => navigation.goBack()} />
+          {/* <BackButton onPress={() => navigation.goBack()} /> */}
+          <TouchableOpacity
+            style={styles.buttonClose}
+            onPress={() => navigation.goBack()}
+          >
+            {/* <Text style={styles.textStyle}>Close</Text> */}
+            <Ionicons
+              style={styles.textStyle}
+              name="return-up-back"
+              size={24}
+              color="black"
+            />
+          </TouchableOpacity>
 
-          <Image
+          {/* <Image
             source={require("../assets/images/bk.png")}
             style={styles.img}
-          />
-          <Text style={styles.motto}>Unlimited Luxurious Gift </Text>
-
+          /> */}
+          <Text style={styles.motto}>Chào mừng quay trở lại </Text>
+          <Text style={styles.submotto}>
+            Nhập mật khẩu để đăng nhập với tư cách
+          </Text>
+          <Text style={styles.submotto2}>{email}</Text>
           <Input
             placeholder="Enter username"
             icon="email-outline"
@@ -127,23 +144,32 @@ const LoginPage = ({ navigation }) => {
             onChangeText={(text) => handleChanges(text, "password")}
             password={true}
           />
-
+        </View>
+        <View>
           <Button title={"LOGIN"} onPress={validate} />
-          <Text
+          {/* <Text
             style={styles.registered}
             onPress={() => navigation.navigate("Signup")}
           >
             Don't have an account? Register
-          </Text>
+          </Text> */}
         </View>
-      </SafeAreaView>
-    </ScrollView>
+      </View>
+    </SafeAreaView>
   );
 };
 
 export default LoginPage;
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: COLORS.lightWhite,
+    marginHorizontal: 20,
+    flexDirection: "column",
+    justifyContent: "space-between",
+    marginBottom: 20,
+  },
   img: {
     height: SIZES.height / 2.4,
     width: SIZES.width - 60,
@@ -152,16 +178,32 @@ const styles = StyleSheet.create({
   },
 
   motto: {
-    fontFamily: "bold",
+    marginTop: SIZES.xSmall,
+    fontWeight: "bold",
     fontSize: SIZES.xLarge,
     color: COLORS.primary,
-    textAlign: "center",
-    marginBottom: SIZES.large,
+    textAlign: "left",
+  },
+  submotto: {
+    marginTop: SIZES.xSmall,
+    fontWeight: "bold",
+    fontSize: SIZES.medium,
+    color: COLORS.gray,
+    textAlign: "left",
+  },
+  submotto2: {
+    fontWeight: "bold",
+    fontSize: SIZES.medium,
+    color: COLORS.black,
+    textAlign: "left",
+    marginBottom: 15,
   },
 
   registered: {
-    marginTop: 10,
     color: COLORS.black,
     textAlign: "center",
+  },
+  buttonClose: {
+    marginTop: SIZES.small,
   },
 });
