@@ -14,7 +14,8 @@ import CheckEmail from "./profile/CheckEmail";
 import OtpModal from "./profile/OtpModal";
 import ListSchedule from "./Schedule/ListSchedule";
 import ListHistory from "./History/ListHistory";
-
+import ListService from "./booking/ListService";
+import ListServiceModal from "./booking/ListServiceModal";
 export {
   ProductCardView,
   Welcome,
@@ -32,4 +33,6 @@ export {
   OtpModal,
   ListSchedule,
   ListHistory,
+  ListService,
+  ListServiceModal,
 };

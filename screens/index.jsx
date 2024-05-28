@@ -12,6 +12,7 @@ import PaymentPage from "./PaymentPage";
 import DetailOrder from "./DetailOrder";
 import Schedule from "./Schedule";
 import History from "./History";
+import Booking from "./Booking";
 export {
   Home,
   Cart,
@@ -27,4 +28,5 @@ export {
   DetailOrder,
   Schedule,
   History,
+  Booking,
 };

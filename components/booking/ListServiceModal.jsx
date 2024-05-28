@@ -1,32 +1,20 @@
-import {
-  StyleSheet,
-  Text,
-  View,
-  TouchableOpacity,
-  FlatList,
-  Image,
-  Modal,
-  ScrollView,
-  Button,
-  TextInput,
-  Keyboard,
-} from "react-native";
 import React, { useState } from "react";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { COLORS, SIZES, images } from "../../constants";
-import { useNavigation } from "@react-navigation/native";
-import formatDate from "../../utils/helper";
-import OrderTile from "../../components/orders/OrderTile";
-import { SliderBox } from "react-native-image-slider-box";
-import { Ionicons, Feather } from "@expo/vector-icons";
-import { useDispatch } from "react-redux";
 import {
-  addService,
-  setStoreId,
-  resetBooking,
-} from "../../store/bookingStore/action";
-const Service = (storeId) => {
-  const navigation = useNavigation();
+  Modal,
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  Keyboard,
+  TextInput,
+  ScrollView,
+} from "react-native";
+import { COLORS, SIZES } from "../../constants";
+import { Ionicons, Feather } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native";
+import { useDispatch } from "react-redux";
+import { addService, setStoreId } from "../../store/bookingStore/action";
+const ListServiceModal = ({ isVisible, onClose }) => {
   const services = [
     {
       service_id: 1,
@@ -213,53 +201,28 @@ const Service = (storeId) => {
       serviceTime: 45,
     },
   ];
-  const [modalVisible, setModalVisible] = useState(false);
-  const [selectedService, setSelectedService] = useState(null);
-  const [searchKey, setSearchKey] = useState("");
-  const [filteredServices, setFilteredServices] = useState(services);
   const dispatch = useDispatch();
-
-  const handleBook = (storeId, item) => {
-    dispatch(resetBooking());
-    dispatch(setStoreId(storeId));
+  const handleBook = (item) => {
     dispatch(addService(item));
-    console.log("store", storeId);
     console.log("item", item);
-    // Navigation or additional logic
-    navigation.navigate("Booking");
-  };
-  const getImageUrls = (images) => {
-    return images.map((image) => image.src);
-  };
-
-  const openModal = (service) => {
-    setSelectedService({
-      ...service,
-      images: getImageUrls(service.images),
-    });
-    setModalVisible(true);
-  };
-
-  const closeModal = () => {
-    setModalVisible(false);
-    setSelectedService(null);
-  };
-  const handleSearch = () => {
-    Keyboard.dismiss();
-    const filtered = services.filter((service) =>
-      service.serviceName.toLowerCase().includes(searchKey.toLowerCase())
-    );
-    setFilteredServices(filtered);
+    onClose();
   };
   return (
-    <SafeAreaView style={styles.container}>
+    <Modal
+      animationType="slide"
+      transparent={false}
+      visible={isVisible}
+      onRequestClose={onClose}
+    >
       <ScrollView>
-        <View style={styles.searchContainer}>
+        <View style={styles.fullScreenModal}>
+          <Text style={styles.modalTextTitle}>Thêm dịch vụ</Text>
+          {/* <View style={styles.searchContainer}>
           <TouchableOpacity>
-            <Feather
+            <Ionicons
               style={styles.searchIcon}
-              name="scissors"
-              size={SIZES.medium}
+              name="storefront"
+              size={24}
               color="black"
             />
           </TouchableOpacity>
@@ -275,125 +238,103 @@ const Service = (storeId) => {
           <TouchableOpacity style={styles.searchBtn} onPress={handleSearch}>
             <Ionicons
               name="search"
-              size={SIZES.medium}
+              size={SIZES.xLarge}
               color={COLORS.offwhite}
             />
           </TouchableOpacity>
-        </View>
-        {filteredServices.map((item) => (
-          <View
-            key={item.service_id}
-            style={styles.serviceItem}
-            onPress={() => {
-              // Handle navigation or other actions
-            }}
-          >
-            <TouchableOpacity
-              style={styles.serviceInfo}
-              onPress={() => openModal(item)}
+        </View> */}
+          <TouchableOpacity style={styles.buttonClose} onPress={onClose}>
+            {/* <Text style={styles.textStyle}>Close</Text> */}
+            <Ionicons
+              style={styles.textStyle}
+              name="return-up-back"
+              size={24}
+              color="black"
+            />
+          </TouchableOpacity>
+          {services.map((item) => (
+            <View
+              key={item.service_id}
+              style={styles.serviceItem}
+              onPress={() => {
+                // Handle navigation or other actions
+              }}
             >
-              <Text style={styles.serviceName} numberOfLines={1}>
-                {item.serviceName}
-              </Text>
-              <Text style={styles.serviceDescription} numberOfLines={1}>
-                {item.description}
-              </Text>
-            </TouchableOpacity>
-            <View style={styles.pricingInfo}>
-              {item?.reducePrice ? (
-                <>
-                  <Text
-                    style={styles.servicePrice}
-                    numberOfLines={1}
-                  >{`${item?.reducePrice?.toLocaleString()} VND`}</Text>
-                  <Text
-                    style={styles.servicePrice2}
-                    numberOfLines={1}
-                  >{`${item.price.toLocaleString()} VND`}</Text>
-                </>
-              ) : (
-                <>
-                  <Text
-                    style={styles.servicePrice}
-                    numberOfLines={1}
-                  >{`${item.price.toLocaleString()} VND`}</Text>
-                </>
-              )}
+              <View style={styles.serviceInfo}>
+                <Text style={styles.serviceName} numberOfLines={1}>
+                  {item.serviceName}
+                </Text>
+                <Text style={styles.serviceDescription} numberOfLines={1}>
+                  {item.description}
+                </Text>
+              </View>
+              <View style={styles.pricingInfo}>
+                {item?.reducePrice ? (
+                  <>
+                    <Text
+                      style={styles.servicePrice}
+                      numberOfLines={1}
+                    >{`${item?.reducePrice?.toLocaleString()} VND`}</Text>
+                    <Text
+                      style={styles.servicePrice2}
+                      numberOfLines={1}
+                    >{`${item.price.toLocaleString()} VND`}</Text>
+                  </>
+                ) : (
+                  <>
+                    <Text
+                      style={styles.servicePrice}
+                      numberOfLines={1}
+                    >{`${item.price.toLocaleString()} VND`}</Text>
+                  </>
+                )}
 
-              <Text
-                style={styles.serviceDescription}
-                numberOfLines={1}
-              >{`${item.serviceTime}`}</Text>
+                <Text
+                  style={styles.serviceDescription}
+                  numberOfLines={1}
+                >{`${item.serviceTime} phút`}</Text>
+              </View>
+              <TouchableOpacity
+                style={styles.bookButton}
+                onPress={() => handleBook(item)}
+              >
+                <Text style={styles.button}>Book</Text>
+              </TouchableOpacity>
             </View>
-            <TouchableOpacity
-              style={styles.bookButton}
-              onPress={() => handleBook(storeId, item)}
-            >
-              <Text style={styles.button}>Book</Text>
-            </TouchableOpacity>
-          </View>
-        ))}
-      </ScrollView>
-      <Modal
-        animationType="slide"
-        transparent={false} // Set transparent to false to use the full screen
-        visible={modalVisible}
-        onRequestClose={closeModal}
-      >
-        <View style={styles.fullScreenModal}>
-          <Text style={styles.modalTextTitle}>
-            {selectedService?.serviceName}
-          </Text>
-          {selectedService?.images && (
-            <View style={styles.carouselContainer}>
-              <SliderBox
-                images={selectedService?.images}
-                dotColor={COLORS.primary}
-                inactiveDotColor={COLORS.secondary}
-                ImageComponentStyle={{
-                  borderRadius: 15,
-                  width: "93%",
-                  marginBottom: 10,
-                }}
-                autoplay
-                circleLoop
-              />
-            </View>
-          )}
-          <Text style={styles.modalText}>{selectedService?.description}</Text>
+          ))}
         </View>
-        <TouchableOpacity style={styles.buttonClose} onPress={closeModal}>
-          <Text style={styles.textStyle}>Close</Text>
-        </TouchableOpacity>
-      </Modal>
-    </SafeAreaView>
+      </ScrollView>
+    </Modal>
   );
 };
 
-export default Service;
-
 const styles = StyleSheet.create({
-  container: {
-    width: "100%",
-    height: "100%",
-    backgroundColor: COLORS.lightWhite,
-    position: "relative",
-  },
-  upperRow: {
-    marginHorizontal: 20,
-    flexDirection: "row",
+  fullScreenModal: {
+    flex: 1,
     justifyContent: "flex-start",
     alignItems: "center",
-    width: SIZES.width - 50,
+    marginTop: 10,
+    marginBottom: 20,
+    backgroundColor: COLORS.lightWhite,
+    color: COLORS.lightWhite,
+    paddingHorizontal: 20,
   },
-  title: {
-    fontSize: SIZES.xLarge,
-    fontFamily: "bold",
-    fontWeight: "500",
-    letterSpacing: 2,
-    paddingTop: SIZES.small,
-    // paddingLeft: SIZES.xLarge,
-    marginBottom: SIZES.xSmall,
+  modalTextTitle: {
+    fontWeight: "bold",
+    textAlign: "center",
+    marginLeft: 10,
+    fontSize: SIZES.medium,
+  },
+  buttonClose: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    paddingLeft: 10,
+  },
+  textStyle: {
+    color: COLORS.black,
+    fontWeight: "bold",
+    textAlign: "center",
   },
   serviceItem: {
     flexDirection: "row",
@@ -440,78 +381,6 @@ const styles = StyleSheet.create({
     fontSize: SIZES.xSmall,
     textDecorationLine: "line-through",
   },
-  fullScreenModal: {
-    flex: 1,
-    justifyContent: "flex-start",
-    alignItems: "flex-start",
-    marginTop: 35,
-    backgroundColor: COLORS.lightWhite,
-  },
-  modalText: {
-    marginBottom: 15,
-    textAlign: "left",
-    marginLeft: 10,
-    fontSize: SIZES.small,
-  },
-  modalTextTitle: {
-    fontWeight: "bold",
-    marginBottom: 15,
-    textAlign: "left",
-    marginLeft: 10,
-    fontSize: SIZES.medium,
-  },
-  buttonClose: {
-    position: "absolute",
-    top: 0,
-    right: 0,
-    padding: 10,
-  },
-  textStyle: {
-    color: COLORS.black,
-    fontWeight: "bold",
-    textAlign: "center",
-  },
-  carouselContainer: {
-    marginBottom: 10,
-    height: "28%",
-    alignItems: "center",
-  },
-  searchContainer: {
-    justifyContent: "center",
-    alignItems: "center",
-    flexDirection: "row",
-    backgroundColor: COLORS.secondary,
-    borderRadius: SIZES.medium,
-    marginHorizontal: SIZES.small,
-    height: 30,
-  },
-  searchWrapper: {
-    flex: 1,
-    backgroundColor: COLORS.secondary,
-    marginRight: SIZES.xSmall,
-    justifyContent: "center",
-    alignItems: "center",
-    borderRadius: SIZES.small,
-    height: "100%",
-  },
-  searchInput: {
-    fontFamily: "regular",
-    fontSize: SIZES.small,
-    width: "100%",
-    height: "100%",
-    paddingHorizontal: SIZES.xSmall,
-  },
-  searchIcon: {
-    marginLeft: 10,
-    color: "gray",
-  },
-  searchBtn: {
-    width: "auto",
-    height: "100%",
-    paddingHorizontal: 10,
-    backgroundColor: COLORS.primary,
-    borderRadius: SIZES.medium,
-    justifyContent: "center",
-    alignItems: "center",
-  },
 });
+
+export default ListServiceModal;
