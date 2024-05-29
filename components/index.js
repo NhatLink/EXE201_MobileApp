@@ -16,6 +16,7 @@ import ListSchedule from "./Schedule/ListSchedule";
 import ListHistory from "./History/ListHistory";
 import ListService from "./booking/ListService";
 import ListServiceModal from "./booking/ListServiceModal";
+import StaffService from "./booking/StaffService";
 export {
   ProductCardView,
   Welcome,
@@ -35,4 +36,5 @@ export {
   ListHistory,
   ListService,
   ListServiceModal,
+  StaffService,
 };

@@ -18,10 +18,20 @@ import { useNavigation } from "@react-navigation/native";
 import { Ionicons, Feather } from "@expo/vector-icons";
 import { removeService } from "../../store/bookingStore/action";
 import { useDispatch, useSelector } from "react-redux";
+import StaffService from "./StaffService";
 const ListService = ({ services }) => {
   const dispatch = useDispatch();
   const handleDelete = (id) => {
     dispatch(removeService(id));
+  };
+  const [modalVisible, setModalVisible] = useState(false);
+
+  const closeModal = () => {
+    setModalVisible(false);
+  };
+
+  const openModal = () => {
+    setModalVisible(true);
   };
   return (
     <>
@@ -88,8 +98,11 @@ const ListService = ({ services }) => {
                   <Text style={styles.title}>{item?.staff?.name}</Text>
                 </View>
               </View>
-              <TouchableOpacity style={styles.bookButton} onPress={() => {}}>
-                <Text style={styles.button}>Change Staff</Text>
+              <TouchableOpacity
+                style={styles.bookButton}
+                onPress={() => openModal()}
+              >
+                <Text style={styles.button}>Đổi nhân viên</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -101,6 +114,11 @@ const ListService = ({ services }) => {
               <Ionicons name="close-circle" size={30} color={COLORS.black} />
             </TouchableOpacity>
           )}
+          <StaffService
+            isVisible={modalVisible}
+            onClose={closeModal}
+            Service={item.service_id}
+          />
         </View>
       ))}
     </>
@@ -178,9 +196,9 @@ const styles = StyleSheet.create({
     alignItems: "flex-end",
   },
   button: {
-    backgroundColor: COLORS.tertiary,
+    backgroundColor: COLORS.secondary,
     textAlign: "center",
-    padding: 10,
+    padding: 5,
     borderRadius: 10,
     marginLeft: 5,
     fontWeight: "bold",

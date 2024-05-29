@@ -8,19 +8,53 @@ import {
   Keyboard,
   TextInput,
   ScrollView,
+  Image,
 } from "react-native";
 import { COLORS, SIZES } from "../../constants";
 import { Ionicons, Feather } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { useDispatch } from "react-redux";
 import { updateServiceStaff } from "../../store/bookingStore/action";
-const ListServiceModal = ({ isVisible, onClose, Service }) => {
-  const staff = [];
+const StaffService = ({ isVisible, onClose, Service }) => {
+  const staff = [
+    {
+      staffId: 1,
+      name: "Tommy",
+      avatar:
+        "https://heygoldie.com/blog/wp-content/uploads/2021/12/barbershop-terminology-1.jpg",
+      status: "sẵn sàng phục vụ",
+      waitingTime: null,
+    },
+    {
+      staffId: 2,
+      name: "Trevo",
+      avatar:
+        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR0grCc2UdcunnsGJEjy-9KwnKJ81e8Ebjrsw&s",
+      status: "chưa thể phục vụ",
+      waitingTime: "11h45",
+    },
+    {
+      staffId: 3,
+      name: "David",
+      avatar:
+        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRg9-Fxb2MB8EyeMRvMyJzzr1c_V3F8Rkc8KbPmIXZaZMN83VVJsxIws1iLXmfq91f-Hg4&usqp=CAU",
+      status: "không làm việc hôm nay",
+      waitingTime: null,
+    },
+    {
+      staffId: 4,
+      name: "Harry",
+      avatar:
+        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSlGIDkTqNc3EE1f7jQp6AYONkVzNRYQbn_fHT5jd8eVFZoRa5Xaz5_ZcRjgbbEbqmLwr8&usqp=CAU",
+      status: "chưa thể phục vụ",
+      waitingTime: "15h",
+    },
+  ];
 
   const dispatch = useDispatch();
   const handleBook = (item) => {
-    // dispatch(updateServiceStaff(item));
-    // console.log("item", item);
+    dispatch(updateServiceStaff(Service, item));
+    console.log("item", item);
     onClose();
   };
   return (
@@ -32,7 +66,7 @@ const ListServiceModal = ({ isVisible, onClose, Service }) => {
     >
       <ScrollView>
         <View style={styles.fullScreenModal}>
-          <Text style={styles.modalTextTitle}>Thêm dịch vụ</Text>
+          <Text style={styles.modalTextTitle}>Thay đổi nhân viên</Text>
           <TouchableOpacity style={styles.buttonClose} onPress={onClose}>
             {/* <Text style={styles.textStyle}>Close</Text> */}
             <Ionicons
@@ -42,23 +76,40 @@ const ListServiceModal = ({ isVisible, onClose, Service }) => {
               color="black"
             />
           </TouchableOpacity>
-          {staff.map((item) => (
+          {staff?.map((item) => (
             <View
-              key={item.service_id}
+              key={item.staffId}
               style={styles.serviceItem}
               onPress={() => {
                 // Handle navigation or other actions
               }}
             >
               <View style={styles.serviceInfo}>
-                <Text style={styles.serviceName} numberOfLines={1}>
-                  {item.serviceName}
-                </Text>
-                <Text style={styles.serviceDescription} numberOfLines={1}>
-                  {item.description}
-                </Text>
+                <View style={styles.containerInfo}>
+                  <Image
+                    source={{
+                      uri: item?.avatar,
+                    }}
+                    resizeMode="cover"
+                    style={styles.avatar}
+                  />
+                  <View>
+                    <Text style={styles.title}>{item?.name}</Text>
+                    {item.status === "sẵn sàng phục vụ" ? (
+                      <Text style={styles.title2} numberOfLines={1}>
+                        {item.status}
+                      </Text>
+                    ) : (
+                      <Text style={styles.title3} numberOfLines={1}>
+                        {item.status}
+                        {item.status === "chưa thể phục vụ" &&
+                          ` cho tới ${item.waitingTime}`}
+                      </Text>
+                    )}
+                  </View>
+                </View>
               </View>
-              <View style={styles.pricingInfo}>
+              {/* <View style={styles.pricingInfo}>
                 {item?.reducePrice ? (
                   <>
                     <Text
@@ -83,13 +134,18 @@ const ListServiceModal = ({ isVisible, onClose, Service }) => {
                   style={styles.serviceDescription}
                   numberOfLines={1}
                 >{`${item.serviceTime} phút`}</Text>
-              </View>
-              <TouchableOpacity
-                style={styles.bookButton}
-                onPress={() => handleBook(item)}
-              >
-                <Text style={styles.button}>Book</Text>
-              </TouchableOpacity>
+              </View> */}
+              {(item.status === "sẵn sàng phục vụ" ||
+                item.status === "chưa thể phục vụ") && (
+                <TouchableOpacity
+                  style={styles.bookButton}
+                  onPress={() => handleBook(item)}
+                >
+                  <Text style={styles.button} numberOfLines={1}>
+                    Change Staff
+                  </Text>
+                </TouchableOpacity>
+              )}
             </View>
           ))}
         </View>
@@ -151,7 +207,8 @@ const styles = StyleSheet.create({
   button: {
     backgroundColor: COLORS.secondary,
     textAlign: "center",
-    padding: 10,
+    padding: 5,
+    fontSize: 10,
     borderRadius: 10,
     marginLeft: 5,
     fontWeight: "bold",
@@ -163,14 +220,36 @@ const styles = StyleSheet.create({
   serviceDescription: {
     fontSize: SIZES.xSmall,
   },
-  servicePrice: {
-    fontSize: SIZES.xSmall,
-    fontWeight: "bold",
+  containerInfo: {
+    justifyContent: "flex-start",
+    alignItems: "center",
+    flexDirection: "row",
   },
-  servicePrice2: {
-    fontSize: SIZES.xSmall,
-    textDecorationLine: "line-through",
+  avatar: {
+    height: 35,
+    width: 35,
+    borderRadius: 999,
+    borderColor: COLORS.primary,
+    borderWidth: 2,
+  },
+  title: {
+    textAlign: "left",
+    fontWeight: "bold",
+    fontSize: SIZES.small,
+    marginHorizontal: 5,
+  },
+  title2: {
+    textAlign: "left",
+    fontSize: SIZES.small,
+    marginHorizontal: 5,
+    color: "#00C135",
+  },
+  title3: {
+    textAlign: "left",
+    fontSize: SIZES.small,
+    marginHorizontal: 5,
+    color: COLORS.red,
   },
 });
 
-export default ListServiceModal;
+export default StaffService;
