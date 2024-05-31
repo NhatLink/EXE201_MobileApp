@@ -21,14 +21,16 @@ import Picker from "../components/auth/Picker";
 import Loader from "../components/auth/Loader";
 import { baseUrl } from "../utils/IP";
 import { launchImageLibrary, launchCamera } from "react-native-image-picker";
-import { useRoute } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import { Ionicons, Feather } from "@expo/vector-icons";
 import { OtpModal } from "../components";
-// import * as ImagePicker from "react-native-image-picker";
-const Signup = ({ navigation }) => {
+import * as ImagePicker from "expo-image-picker";
+import DateTimePicker from "@react-native-community/datetimepicker";
+import { Calendar } from "react-native-calendars";
+const Signup = () => {
   const [loader, setLoader] = useState(false);
   const [responseData, setResponseData] = useState(null);
-  const [inputs, setInput] = useState({
+  const [inputs, setInputs] = useState({
     username: "",
     email: "",
     password: "",
@@ -39,24 +41,27 @@ const Signup = ({ navigation }) => {
     phone: "",
     status: true,
     role: "user",
+    birthdate: new Date(),
+    avatar: null,
   });
-  // const [otp, setOtp] = useState(["", "", "", ""]);
-  // const [isOtpModalVisible, setIsOtpModalVisible] = useState(false);
+  console.log(inputs);
+  const [errors, setErrors] = useState({});
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const navigation = useNavigation();
   const route = useRoute();
   const { email } = route.params;
-  const [errors, setErrors] = useState({});
 
   useEffect(() => {
     if (email) {
-      setInput((prevState) => ({ ...prevState, email: email }));
+      setInputs((prevState) => ({ ...prevState, email }));
     }
   }, [email]);
+
   const handleError = (errorMessage, input) => {
     setErrors((prevState) => ({ ...prevState, [input]: errorMessage }));
   };
 
   const validate = () => {
-    Keyboard.dismiss();
     let valid = true;
     const {
       email,
@@ -67,6 +72,8 @@ const Signup = ({ navigation }) => {
       fullName,
       phone,
       gender,
+      birthdate,
+      avatar,
     } = inputs;
 
     if (!email) {
@@ -123,6 +130,17 @@ const Signup = ({ navigation }) => {
 
     if (!gender) {
       handleError("Gender is required", "gender");
+      valid = false;
+    }
+
+    if (!birthdate) {
+      handleError("Birthdate is required", "birthdate");
+      valid = false;
+    }
+
+    if (!avatar) {
+      handleError("Avatar is required", "avatar");
+      valid = false;
     }
 
     if (valid) {
@@ -160,59 +178,74 @@ const Signup = ({ navigation }) => {
     }
   };
 
-  // const handleOtpSubmit = async () => {
-  //   const otpCode = otp.join("");
-  //   if (otpCode.length !== 4) {
-  //     Alert.alert("Error", "Please enter a valid 4-digit OTP.");
-  //     return;
-  //   }
-
-  //   try {
-  //     const endpoint = `${baseUrl}/user/verify-otp`;
-  //     const response = await axios.post(endpoint, {
-  //       email: inputs.email,
-  //       otp: otpCode,
-  //     });
-  //     if (response.status === 200) {
-  //       Alert.alert("Success", "OTP verified successfully!");
-  //       setIsOtpModalVisible(false);
-  //       navigation.replace("Login");
-  //     } else {
-  //       Alert.alert("Error", response.data.message);
-  //     }
-  //   } catch (error) {
-  //     Alert.alert("Error", "Invalid OTP. Please try again.");
-  //   }
-  // };
-
   const handleChanges = (text, input) => {
-    setInput((prevState) => ({ ...prevState, [input]: text }));
+    setInputs((prevState) => ({ ...prevState, [input]: text }));
   };
+
+  const pickImageFromGallery = async () => {
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status !== "granted") {
+      alert("Sorry, we need camera roll permissions to make this work!");
+      return;
+    }
+
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      setInputs((prevState) => ({
+        ...prevState,
+        avatar: result.assets[0].uri,
+      }));
+    }
+  };
+
+  const pickImageFromCamera = async () => {
+    const { status } = await ImagePicker.requestCameraPermissionsAsync();
+    if (status !== "granted") {
+      alert("Sorry, we need camera permissions to make this work!");
+      return;
+    }
+
+    let result = await ImagePicker.launchCameraAsync({
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      setInputs((prevState) => ({
+        ...prevState,
+        avatar: result.assets[0].uri,
+      }));
+    }
+  };
+
+  const onChangeDate = (event, selectedDate) => {
+    const currentDate = selectedDate || inputs.birthdate;
+    // setShowDatePicker(Platform.OS === "ios");
+    setShowDatePicker(false);
+    setInputs((prevState) => ({ ...prevState, birthdate: currentDate }));
+  };
+
+  const showDatePickerMode = () => {
+    setShowDatePicker(true);
+  };
+  console.log(errors);
   return (
     <ScrollView>
       <SafeAreaView style={{ marginHorizontal: 20 }}>
         <Loader visible={loader} />
         <KeyboardAvoidingView>
           <View>
-            {/* <BackButton onPress={() => navigation.goBack()} />
-            <Image
-              source={require("../assets/images/bk.png")}
-              style={styles.img}
-            />
-            <Text style={styles.motto}>Sign up and start shopping</Text> */}
-
-            {/* <Input
-              placeholder="Enter email"
-              label="Email"
-              error={errors.email}
-              onFocus={() => handleError(null, "email")}
-              onChangeText={(text) => handleChanges(text, "email")}
-            /> */}
             <TouchableOpacity
               style={styles.buttonClose}
               onPress={() => navigation.goBack()}
             >
-              {/* <Text style={styles.textStyle}>Close</Text> */}
               <Ionicons
                 style={styles.textStyle}
                 name="return-up-back"
@@ -227,33 +260,31 @@ const Signup = ({ navigation }) => {
             <Input
               placeholder="Enter email"
               icon="email-outline"
-              label={"Email"}
-              value={inputs.email} // Display the username value
+              label="Email"
+              value={inputs.email}
               error={errors.email}
-              onFocus={() => {
-                handleError(null, "email");
-              }}
+              onFocus={() => handleError(null, "email")}
               editable={false}
-              // onChangeText={(text) => handleChanges(text, "email")}
             />
             <Input
               placeholder="Username"
               label="Username"
-              icon="pen"
+              icon="account-lock-outline"
               error={errors.username}
               onFocus={() => handleError(null, "username")}
               onChangeText={(text) => handleChanges(text, "username")}
             />
 
-            {/* <Input
+            <Input
               placeholder="Full Name"
               label="Full Name"
+              icon="pen"
               error={errors.fullName}
               onFocus={() => handleError(null, "fullName")}
               onChangeText={(text) => handleChanges(text, "fullName")}
-            /> */}
+            />
 
-            {/* <Picker
+            <Picker
               selectedValue={inputs.gender}
               onValueChange={(itemValue, itemIndex) =>
                 handleChanges(itemValue, "gender")
@@ -261,15 +292,7 @@ const Signup = ({ navigation }) => {
               items={["Male", "Female", "Other"]}
               label="Gender"
               error={errors.gender}
-            /> */}
-
-            {/* <Input
-              placeholder="Address"
-              label="Address"
-              error={errors.address}
-              onFocus={() => handleError(null, "address")}
-              onChangeText={(text) => handleChanges(text, "address")}
-            /> */}
+            />
 
             <Input
               placeholder="Phone"
@@ -280,6 +303,36 @@ const Signup = ({ navigation }) => {
               onChangeText={(text) => handleChanges(text, "phone")}
             />
 
+            <View>
+              <Input
+                placeholder="Date of birth"
+                icon="calendar"
+                label="Date of birth"
+                value={inputs.birthdate.toLocaleDateString()}
+                error={errors.birthdate}
+                onFocus={() => handleError(null, "birthdate")}
+                editable={false}
+              />
+              <TouchableOpacity
+                style={styles.cancelButton}
+                onPress={() => {
+                  setShowDatePicker(true);
+                }}
+              >
+                <Text style={styles.subtext2}>Chọn ngày sinh</Text>
+              </TouchableOpacity>
+            </View>
+
+            {showDatePicker && (
+              <DateTimePicker
+                value={inputs.birthdate}
+                mode="date"
+                display="default"
+                onChange={onChangeDate}
+                maximumDate={new Date()}
+              />
+            )}
+
             <Input
               placeholder="Password"
               icon="lock-outline"
@@ -289,6 +342,7 @@ const Signup = ({ navigation }) => {
               onChangeText={(text) => handleChanges(text, "password")}
               password={true}
             />
+
             <Input
               placeholder="Confirm Password"
               icon="lock-outline"
@@ -299,20 +353,53 @@ const Signup = ({ navigation }) => {
               password={true}
             />
 
+            <View style={styles.avatarContainer}>
+              <Text style={styles.subtext}>Avatar</Text>
+              {!inputs.avatar && (
+                <View style={styles.avatarButtonContainer}>
+                  <TouchableOpacity
+                    style={styles.buttonleft}
+                    onPress={pickImageFromGallery}
+                  >
+                    <Text>Pick an image from camera roll</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={styles.buttonright}
+                    onPress={pickImageFromCamera}
+                  >
+                    <Text>Take a photo</Text>
+                  </TouchableOpacity>
+                </View>
+              )}
+              {errors.avatar && (
+                <Text style={styles.erroMsg}>{errors.avatar}</Text>
+              )}
+              {inputs.avatar && (
+                <View style={styles.containerInfo}>
+                  <Image
+                    source={{ uri: inputs.avatar }}
+                    style={styles.avatar}
+                  />
+                  <TouchableOpacity
+                    style={styles.cancelButton}
+                    onPress={() =>
+                      setInputs((prevState) => ({ ...prevState, avatar: null }))
+                    }
+                  >
+                    <Ionicons
+                      name="close-circle"
+                      size={30}
+                      color={COLORS.black}
+                    />
+                  </TouchableOpacity>
+                </View>
+              )}
+            </View>
+
             <Button title="SIGN UP" onPress={validate} />
-            {/* <Text style={styles.registered} onPress={() => navigation.goBack()}>
-              Already have an account? Login
-            </Text> */}
           </View>
         </KeyboardAvoidingView>
       </SafeAreaView>
-      {/* <OtpModal
-        visible={isOtpModalVisible}
-        onClose={() => setIsOtpModalVisible(false)}
-        onOtpSubmit={handleOtpSubmit}
-        otp={otp}
-        setOtp={setOtp}
-      /> */}
     </ScrollView>
   );
 };
@@ -355,5 +442,64 @@ const styles = StyleSheet.create({
   },
   buttonClose: {
     marginTop: SIZES.small,
+  },
+  containerInfo: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    width: "100%",
+  },
+  avatar: {
+    height: 120,
+    width: 120,
+    borderRadius: 999,
+    borderColor: COLORS.primary,
+    borderWidth: 5,
+  },
+  cancelButton: {
+    position: "absolute",
+    top: 0,
+    right: 0,
+  },
+  buttonleft: {
+    padding: 15,
+    borderBottomLeftRadius: 20,
+    borderTopLeftRadius: 20,
+    backgroundColor: COLORS.secondary,
+    borderRightWidth: 1,
+    borderRightColor: COLORS.gray,
+  },
+  buttonright: {
+    padding: 15,
+    borderBottomRightRadius: 20,
+    borderTopRightRadius: 20,
+    backgroundColor: COLORS.secondary,
+    borderLeftWidth: 1,
+    borderLeftColor: COLORS.gray,
+  },
+  subtext: {
+    marginBottom: 5,
+    fontFamily: "regular",
+    fontSize: SIZES.small,
+  },
+  subtext2: {
+    marginBottom: 5,
+    fontFamily: "regular",
+    fontSize: SIZES.small,
+    textDecorationLine: "underline",
+  },
+  avatarButtonContainer: {
+    flex: 1,
+    flexDirection: "row",
+    alignContent: "center",
+    justifyContent: "center",
+  },
+  erroMsg: {
+    color: COLORS.red,
+    marginTop: 6,
+    marginLeft: 5,
+    fontFamily: "regular",
+    fontSize: SIZES.xSmall,
   },
 });
