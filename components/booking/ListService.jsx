@@ -25,13 +25,14 @@ const ListService = ({ services }) => {
     dispatch(removeService(id));
   };
   const [modalVisible, setModalVisible] = useState(false);
-
+  const [serviceId, setserviceId] = useState(false);
   const closeModal = () => {
     setModalVisible(false);
   };
 
-  const openModal = () => {
+  const openModal = (item) => {
     setModalVisible(true);
+    setserviceId(item);
   };
   return (
     <>
@@ -100,7 +101,7 @@ const ListService = ({ services }) => {
               </View>
               <TouchableOpacity
                 style={styles.bookButton}
-                onPress={() => openModal()}
+                onPress={() => openModal(item.service_id)}
               >
                 <Text style={styles.button}>Đổi nhân viên</Text>
               </TouchableOpacity>
@@ -114,13 +115,13 @@ const ListService = ({ services }) => {
               <Ionicons name="close-circle" size={30} color={COLORS.black} />
             </TouchableOpacity>
           )}
-          <StaffService
-            isVisible={modalVisible}
-            onClose={closeModal}
-            Service={item.service_id}
-          />
         </View>
       ))}
+      <StaffService
+        isVisible={modalVisible}
+        onClose={closeModal}
+        Service={serviceId}
+      />
     </>
   );
 };

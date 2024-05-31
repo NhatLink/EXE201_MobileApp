@@ -27,91 +27,107 @@ const ListSchedule = ({ item }) => {
   const [favorites, setFavorites] = useState(false);
   // console.log("item schedule: ", item);
   return (
-    <View style={styles.container}>
-      <View style={styles.containerDate}>
-        <View style={styles.line1} />
-        <Text style={styles.text}>
-          {item?.dateSchedule} / {item?.timeSchedule}
-        </Text>
-        <View style={styles.line} />
-      </View>
-      <View>
-        <View style={styles.descriptionWrapper}>
-          <TouchableOpacity style={styles.imageContainer}>
-            <Image
-              source={{ uri: item?.store?.image }}
-              resizeMode="cover"
-              style={styles.productImg}
-            />
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.Storedescription}
-            onPress={() => navigation.navigate("Details", { product: item.id })}
-          >
-            <Text style={styles.description}>{item?.store?.name}</Text>
-            <Text style={styles.descriptionText}>{item?.store?.address}</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.bookButton} onPress={() => {}}>
-            <Text style={styles.button}>Hủy</Text>
-          </TouchableOpacity>
-        </View>
-        {item?.services?.map((item) => (
-          <View
-            key={item.id}
-            style={styles.serviceItem}
-            onPress={() => {
-              // Handle navigation or other actions
-            }}
-          >
-            <View style={styles.serviceInfo}>
-              <Text style={styles.serviceName} numberOfLines={1}>
-                {item.serviceName}
-              </Text>
-              {/* <Text style={styles.serviceDescription} numberOfLines={1}>
+    <>
+      {item.dateSchedule ? (
+        <View style={styles.container}>
+          <View style={styles.containerDate}>
+            <View style={styles.line1} />
+            <Text style={styles.text}>
+              {item?.dateSchedule} / {item?.timeSchedule}
+            </Text>
+            <View style={styles.line} />
+          </View>
+          <View>
+            <View style={styles.descriptionWrapper}>
+              <TouchableOpacity style={styles.imageContainer}>
+                <Image
+                  source={{ uri: item?.store?.image }}
+                  resizeMode="cover"
+                  style={styles.productImg}
+                />
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.Storedescription}
+                onPress={() =>
+                  navigation.navigate("Details", { product: item.id })
+                }
+              >
+                <Text style={styles.description}>{item?.store?.name}</Text>
+                <Text style={styles.descriptionText}>
+                  {item?.store?.address}
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.bookButton} onPress={() => {}}>
+                <Text style={styles.button}>Hủy</Text>
+              </TouchableOpacity>
+            </View>
+            {item?.services?.map((item) => (
+              <View
+                key={item.id}
+                style={styles.serviceItem}
+                onPress={() => {
+                  // Handle navigation or other actions
+                }}
+              >
+                <View style={styles.serviceInfo}>
+                  <Text style={styles.serviceName} numberOfLines={1}>
+                    {item.serviceName}
+                  </Text>
+                  {/* <Text style={styles.serviceDescription} numberOfLines={1}>
                 {item.description}
               </Text> */}
-              <Text
-                style={styles.serviceDescription}
-                numberOfLines={1}
-              >{`${item.time}`}</Text>
-            </View>
-            <View style={styles.pricingInfo}>
-              {item?.discountPrice ? (
-                <>
                   <Text
-                    style={styles.servicePrice}
+                    style={styles.serviceDescription}
                     numberOfLines={1}
-                  >{`${item?.discountPrice?.toLocaleString()} VND`}</Text>
-                  <Text
-                    style={styles.servicePrice2}
-                    numberOfLines={1}
-                  >{`${item.price.toLocaleString()} VND`}</Text>
-                </>
-              ) : (
-                <>
-                  <Text
-                    style={styles.servicePrice}
-                    numberOfLines={1}
-                  >{`${item.price.toLocaleString()} VND`}</Text>
-                </>
-              )}
+                  >{`${item.time}`}</Text>
+                </View>
+                <View style={styles.pricingInfo}>
+                  {item?.discountPrice ? (
+                    <>
+                      <Text
+                        style={styles.servicePrice}
+                        numberOfLines={1}
+                      >{`${item?.discountPrice?.toLocaleString()} VND`}</Text>
+                      <Text
+                        style={styles.servicePrice2}
+                        numberOfLines={1}
+                      >{`${item.price.toLocaleString()} VND`}</Text>
+                    </>
+                  ) : (
+                    <>
+                      <Text
+                        style={styles.servicePrice}
+                        numberOfLines={1}
+                      >{`${item.price.toLocaleString()} VND`}</Text>
+                    </>
+                  )}
+                </View>
+              </View>
+            ))}
+            <View style={styles.descriptionWrapper2}>
+              <View style={styles.Storedescription}>
+                <Text style={styles.description2}>Tổng tiền:</Text>
+                <Text style={styles.descriptionText2}>Tổng thời gian:</Text>
+              </View>
+              <TouchableOpacity style={styles.priceTime} onPress={() => {}}>
+                <Text
+                  style={styles.descriptionPrice}
+                >{`${item?.totalPrice?.toLocaleString()} VND`}</Text>
+                <Text style={styles.descriptionTextTime}>
+                  {item?.timeSchedule}
+                </Text>
+              </TouchableOpacity>
             </View>
           </View>
-        ))}
-        <View style={styles.descriptionWrapper2}>
-          <View style={styles.Storedescription}>
-            <Text style={styles.description2}>Tổng tiền:</Text>
-            <Text style={styles.descriptionText2}>Tổng thời gian:</Text>
-          </View>
-          <TouchableOpacity style={styles.priceTime} onPress={() => {}}>
-            <Text
-              style={styles.descriptionPrice}
-            >{`${item?.totalPrice?.toLocaleString()} VND`}</Text>
-            <Text style={styles.descriptionTextTime}>{item?.timeSchedule}</Text>
-          </TouchableOpacity>
         </View>
-      </View>
-    </View>
+      ) : (
+        <View style={styles.container2}>
+          <Text>
+            {item.name} {item.day}
+          </Text>
+        </View>
+      )}
+    </>
   );
 };
 
@@ -120,14 +136,26 @@ export default ListSchedule;
 const styles = StyleSheet.create({
   container: {
     backgroundColor: "#FFF",
-    ...SHADOWS.medium,
+    // ...SHADOWS.medium,
     position: "relative",
     borderRadius: 10,
     marginVertical: 5,
     paddingHorizontal: 10,
     marginHorizontal: 15,
-    borderWidth: 0.5,
-    borderColor: COLORS.black,
+    // borderWidth: 0.5,
+    // borderColor: COLORS.black,
+  },
+  container2: {
+    backgroundColor: "#FFF",
+    // ...SHADOWS.medium,
+    position: "relative",
+    borderRadius: 10,
+    marginVertical: 5,
+    paddingHorizontal: 10,
+    marginHorizontal: 15,
+    paddingVertical: 30,
+    // borderWidth: 0.5,
+    // borderColor: COLORS.black,
   },
   serviceItem: {
     flexDirection: "row",

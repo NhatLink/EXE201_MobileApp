@@ -16,6 +16,7 @@ import { useNavigation } from "@react-navigation/native";
 import { useDispatch } from "react-redux";
 import { updateServiceStaff } from "../../store/bookingStore/action";
 const StaffService = ({ isVisible, onClose, Service }) => {
+  console.log("serviceID", Service);
   const staff = [
     {
       staffId: 1,
@@ -142,7 +143,7 @@ const StaffService = ({ isVisible, onClose, Service }) => {
                   onPress={() => handleBook(item)}
                 >
                   <Text style={styles.button} numberOfLines={1}>
-                    Change Staff
+                    Đổi nhân viên
                   </Text>
                 </TouchableOpacity>
               )}
@@ -202,13 +203,13 @@ const styles = StyleSheet.create({
     alignItems: "flex-end", // Align text to right if needed
   },
   bookButton: {
-    flex: 2, // 1 part
+    flex: 3, // 1 part
   },
   button: {
     backgroundColor: COLORS.secondary,
     textAlign: "center",
     padding: 5,
-    fontSize: 10,
+    fontSize: 13,
     borderRadius: 10,
     marginLeft: 5,
     fontWeight: "bold",

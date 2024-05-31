@@ -75,7 +75,7 @@ const Booking = ({ navigation }) => {
   const dispatch = useDispatch();
   const { storeId, dateBooking, hourBooking, services, totalPrice, totalTime } =
     useSelector((state) => state.booking);
-  console.log("service: ", services);
+  // console.log("service: ", services);
   const handleGoBack = () => {
     dispatch(resetBooking());
     navigation.goBack();
@@ -95,6 +95,7 @@ const Booking = ({ navigation }) => {
 
   useEffect(() => {
     const today = new Date().toISOString().split("T")[0];
+    // console.log(today);
     dispatch(setDateBooking(today));
     dispatch(setHourBooking(time[0].time));
     setSelected(today);
@@ -124,8 +125,19 @@ const Booking = ({ navigation }) => {
             [selected]: {
               selected: true,
               disableTouchEvent: true,
-              selectedDotColor: COLORS.red,
+              selectedColor: COLORS.secondary,
+              selectedTextColor: COLORS.red,
             },
+          }}
+          theme={{
+            backgroundColor: COLORS.gray,
+            calendarBackground: "#ffffff",
+            textSectionTitleColor: "#b6c1cd",
+            selectedDayBackgroundColor: "#00adf5",
+            selectedDayTextColor: "#ffffff",
+            todayTextColor: "#00adf5",
+            dayTextColor: "#2d4150",
+            textDisabledColor: "#d9e",
           }}
         />
         <ScrollView

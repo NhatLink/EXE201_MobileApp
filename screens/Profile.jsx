@@ -23,7 +23,7 @@ import { CheckEmail } from "../components";
 
 const Profile = ({ navigation }) => {
   const [userData, setUserData] = useState(null);
-  const [userLogin, setUserLogin] = useState(true);
+  const [userLogin, setUserLogin] = useState(false);
 
   // useEffect(() => {
   //   checkUserExistence();

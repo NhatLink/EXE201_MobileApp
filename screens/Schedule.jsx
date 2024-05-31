@@ -1,7 +1,7 @@
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons, Feather } from "@expo/vector-icons";
 import { SIZES, COLORS } from "../constants";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ListSchedule from "../components/Schedule/ListSchedule";
 import {
   View,
@@ -18,11 +18,12 @@ import {
 } from "react-native";
 import axios from "axios";
 import { baseUrl } from "../utils/IP";
-import SearchTile from "../components/product/SearchTile";
-import SearchWhereModal from "../components/Search/SearchWhereModal";
-import SearchStoreModal from "../components/Search/SearchStoreModal";
-import SearchSeviceModal from "../components/Search/SearchSeviceModal";
 import { useNavigation } from "@react-navigation/native";
+import { Agenda } from "react-native-calendars";
+const timeToString = (time) => {
+  const date = new Date(time);
+  return date.toISOString().split("T")[0];
+};
 const Schedule = () => {
   const navigation = useNavigation();
   const appointments = [
@@ -57,7 +58,7 @@ const Schedule = () => {
     },
     {
       id: 2,
-      dateSchedule: "2024-05-21",
+      dateSchedule: "2024-05-20",
       timeSchedule: "01:00 PM",
       store: {
         id: 102,
@@ -136,7 +137,7 @@ const Schedule = () => {
     },
     {
       id: 5,
-      dateSchedule: "2024-05-24",
+      dateSchedule: "2024-05-29",
       timeSchedule: "09:00 AM",
       store: {
         id: 105,
@@ -163,7 +164,66 @@ const Schedule = () => {
       totalTime: "75 minutes",
     },
   ];
-  // console.log("appoint", appointments);
+  const [items, setItems] = useState({});
+  const [selectedDate, setSelectedDate] = useState(null);
+  const hasEvents = (date) => {
+    return appointments.some(
+      (appointment) => appointment.dateSchedule === date
+    );
+  };
+  // const loadItems = (day) => {
+  //   setTimeout(() => {
+  //     const newItems = {};
+  //     for (let i = -15; i < 85; i++) {
+  //       const time = day.timestamp + i * 24 * 60 * 60 * 1000;
+  //       const strTime = timeToString(time);
+
+  //       if (!items[strTime]) {
+  //         newItems[strTime] = [];
+  //         if (hasEvents(strTime)) {
+  //           const filteredAppointments = appointments.filter(
+  //             (appointment) => appointment.dateSchedule === strTime
+  //           );
+  //           newItems[strTime] = filteredAppointments;
+  //         } else {
+  //           newItems[strTime].push({
+  //             name: "Không có lịch hẹn nào vào ngày",
+  //             height: 50,
+  //             day: strTime,
+  //           });
+  //         }
+  //       }
+  //     }
+  //     setItems((prevItems) => ({ ...prevItems, ...newItems }));
+  //   }, 1000);
+  // };
+  useEffect(() => {
+    const newItems = {};
+    appointments.forEach((appointment) => {
+      const { dateSchedule } = appointment;
+      if (!newItems[dateSchedule]) {
+        newItems[dateSchedule] = [];
+      }
+      newItems[dateSchedule].push(appointment);
+    });
+    setItems(newItems);
+  }, []);
+
+  const renderItem = (item) => {
+    return <ListSchedule item={item} />;
+  };
+  const renderEmptyDate = () => {
+    return (
+      <View style={styles.Imgcontainer}>
+        <Image
+          source={require("../assets/images/error-in-calendar.png")}
+          resizeMode="cover"
+          style={styles.img}
+        />
+        <Text>Không có lịch hẹn nào vào ngày cả</Text>
+      </View>
+    );
+  };
   return (
     <SafeAreaView
       style={{
@@ -204,10 +264,21 @@ const Schedule = () => {
           </View>
         </View>
       ) : (
-        <FlatList
-          data={appointments}
-          keyExtractor={(item) => item?.id}
-          renderItem={({ item }) => <ListSchedule item={item} />}
+        // <FlatList
+        //   data={appointments}
+        //   keyExtractor={(item) => item?.id}
+        //   renderItem={({ item }) => <ListSchedule item={item} />}
+        // />
+        <Agenda
+          items={items}
+          renderItem={renderItem}
+          renderEmptyData={renderEmptyDate}
+          // loadItemsForMonth={loadItems}
+          // renderEmptyDate={renderEmptyDate}
+          // onDayPress={(day) => setSelectedDate(day)}
+          theme={{
+            agendaTodayColor: COLORS.red,
+          }}
         />
       )}
     </SafeAreaView>
@@ -251,5 +322,14 @@ const styles = StyleSheet.create({
     marginHorizontal: 5,
     width: SIZES.width - 20,
     fontWeight: "bold",
+  },
+  Imgcontainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  img: {
+    width: 200,
+    height: 200,
   },
 });
