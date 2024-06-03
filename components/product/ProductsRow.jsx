@@ -10,13 +10,13 @@ import {
   ScrollView,
 } from "react-native";
 import { COLORS, SIZES } from "../../constants";
-import useFetch from "../../hook/useFetch";
+// import useFetch from "../../hook/useFetch";
 import ProductViewCard from "../ProductViewCard";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 
 const ProductRow = () => {
-  const { data, isLoading, error } = useFetch();
+  // const { data, isLoading, error } = useFetch();
   const [numItemsToShow, setNumItemsToShow] = useState(4); // Trạng thái để theo dõi số lượng sản phẩm hiện đang được hiển thị
   const navigation = useNavigation();
   const loadMore = () => {

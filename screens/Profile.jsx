@@ -20,10 +20,11 @@ import { COLORS, SIZES } from "../constants";
 import { StatusBar } from "expo-status-bar";
 import { Ionicons, Feather } from "@expo/vector-icons";
 import { CheckEmail } from "../components";
+import LoginPage from "./LoginPage";
 
 const Profile = ({ navigation }) => {
   const [userData, setUserData] = useState(null);
-  const [userLogin, setUserLogin] = useState(false);
+  const [userLogin, setUserLogin] = useState(true);
 
   // useEffect(() => {
   //   checkUserExistence();
@@ -110,7 +111,10 @@ const Profile = ({ navigation }) => {
         <>
           <View style={styles.maiImag2}>
             <View style={styles.containerUser}>
-              <View style={styles.containerInfo}>
+              <TouchableOpacity
+                style={styles.containerInfo}
+                onPress={() => navigation.navigate("DetailProfile")}
+              >
                 <Image
                   source={{
                     uri: "https://cafefcdn.com/2020/6/5/photo-1-1591315359692156876277.jpg",
@@ -124,7 +128,7 @@ const Profile = ({ navigation }) => {
                     nguyenbanhatlinh666@gmail.com
                   </Text>
                 </View>
-              </View>
+              </TouchableOpacity>
             </View>
           </View>
           <View style={styles.menuWrapper}>
@@ -193,7 +197,7 @@ const Profile = ({ navigation }) => {
           </View>
         </>
       ) : (
-        <CheckEmail />
+        <LoginPage />
       )}
     </SafeAreaView>
   );

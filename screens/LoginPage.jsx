@@ -19,25 +19,24 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { baseUrl } from "../utils/IP";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { Ionicons, Feather } from "@expo/vector-icons";
-const LoginPage = ({ navigation }) => {
+const LoginPage = () => {
   const route = useRoute();
-  const { email } = route.params;
-
+  const navigation = useNavigation();
   const [loader, setLoader] = useState(false);
   const [responseData, setResponseData] = useState(null);
 
   const [inputs, setInputs] = useState({
-    username: email || "", // Set initial value to email
+    username: "",
     password: "",
   });
 
   const [errors, setErrors] = useState({});
 
-  useEffect(() => {
-    if (email) {
-      setInputs((prevState) => ({ ...prevState, username: email }));
-    }
-  }, [email]);
+  // useEffect(() => {
+  //   if (email) {
+  //     setInputs((prevState) => ({ ...prevState, username: email }));
+  //   }
+  // }, [email]);
 
   const handleError = (errorMessage, input) => {
     setErrors((prevState) => ({ ...prevState, [input]: errorMessage }));
@@ -46,7 +45,21 @@ const LoginPage = ({ navigation }) => {
   const validate = () => {
     Keyboard.dismiss();
     let valid = true;
-
+    const { password, username } = inputs;
+    if (!username) {
+      handleError("Username is required", "username");
+      valid = false;
+    } else if (username.length < 3) {
+      handleError("At least 3 characters are required", "username");
+      valid = false;
+    }
+    if (!password) {
+      handleError("Password is required", "password");
+      valid = false;
+    } else if (password.length < 8) {
+      handleError("At least 8 characters are required", "password");
+      valid = false;
+    }
     if (valid) {
       login();
     }
@@ -98,12 +111,11 @@ const LoginPage = ({ navigation }) => {
     <SafeAreaView style={{ flex: 1 }}>
       <View style={styles.container}>
         <View>
-          {/* <BackButton onPress={() => navigation.goBack()} /> */}
+          {/* <BackButton onPress={() => navigation.goBack()} />
           <TouchableOpacity
             style={styles.buttonClose}
             onPress={() => navigation.goBack()}
           >
-            {/* <Text style={styles.textStyle}>Close</Text> */}
             <Ionicons
               style={styles.textStyle}
               name="return-up-back"
@@ -112,23 +124,21 @@ const LoginPage = ({ navigation }) => {
             />
           </TouchableOpacity>
 
-          {/* <Image
+          <Image
             source={require("../assets/images/bk.png")}
             style={styles.img}
           /> */}
-          <Text style={styles.motto}>Chào mừng quay trở lại </Text>
+          <Text style={styles.motto}>Chào mừng</Text>
           <Text style={styles.submotto}>
-            Nhập mật khẩu để đăng nhập với tư cách
+            Điền thông tin để đăng nhập vào HairHub
           </Text>
-          <Text style={styles.submotto2}>{email}</Text>
           <Input
             placeholder="Enter username"
-            icon="email-outline"
-            label={"User Name"}
-            value={inputs.username} // Display the username value
-            error={errors.email}
+            icon="account-lock-outline"
+            label={"UserName"}
+            error={errors.username}
             onFocus={() => {
-              handleError(null, "email");
+              handleError(null, "username");
             }}
             onChangeText={(text) => handleChanges(text, "username")}
           />
@@ -147,12 +157,12 @@ const LoginPage = ({ navigation }) => {
         </View>
         <View>
           <Button title={"LOGIN"} onPress={validate} />
-          {/* <Text
+          <Text
             style={styles.registered}
             onPress={() => navigation.navigate("Signup")}
           >
             Don't have an account? Register
-          </Text> */}
+          </Text>
         </View>
       </View>
     </SafeAreaView>
@@ -165,7 +175,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: COLORS.lightWhite,
-    marginHorizontal: 20,
+    // marginHorizontal: 20,
+    paddingHorizontal: 20,
     flexDirection: "column",
     justifyContent: "space-between",
     marginBottom: 20,
@@ -190,6 +201,7 @@ const styles = StyleSheet.create({
     fontSize: SIZES.medium,
     color: COLORS.gray,
     textAlign: "left",
+    marginBottom: 15,
   },
   submotto2: {
     fontWeight: "bold",

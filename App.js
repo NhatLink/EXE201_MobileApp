@@ -143,6 +143,7 @@ import {
   DetailOrder,
   History,
   Booking,
+  DetailProfile,
 } from "./screens";
 import Orders from "./screens/Orders";
 import { PaymentProvider } from "./hook/PaymentContext";
@@ -247,6 +248,11 @@ export default function App() {
             <Stack.Screen
               name="Booking"
               component={Booking}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="DetailProfile"
+              component={DetailProfile}
               options={{ headerShown: false }}
             />
           </Stack.Navigator>

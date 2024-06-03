@@ -5,7 +5,6 @@ import {
   TouchableOpacity,
   Image,
   FlatList,
-  Button,
   ScrollView,
 } from "react-native";
 import React, { useEffect, useState, useCallback } from "react";
@@ -25,6 +24,7 @@ import {
   resetBooking,
 } from "../store/bookingStore/action";
 import { useDispatch, useSelector } from "react-redux";
+import Button from "../components/auth/Button";
 
 const Booking = ({ navigation }) => {
   const barber = [
@@ -102,88 +102,98 @@ const Booking = ({ navigation }) => {
   }, []);
 
   return (
-    <ScrollView>
-      <SafeAreaView style={styles.container}>
-        <View style={styles.upperRow}>
-          <TouchableOpacity style={{ paddingLeft: 0 }} onPress={handleGoBack}>
-            <Ionicons
-              name="chevron-back-circle"
-              size={30}
-              color={COLORS.black}
-            />
-          </TouchableOpacity>
-          <Text style={styles.title}>Booking</Text>
-        </View>
-
-        {/* <ScrollView style={styles.content}> */}
-        <Calendar
-          onDayPress={(day) => {
-            setSelected(day.dateString);
-            dispatch(setDateBooking(day.dateString));
-          }}
-          markedDates={{
-            [selected]: {
-              selected: true,
-              disableTouchEvent: true,
-              selectedColor: COLORS.secondary,
-              selectedTextColor: COLORS.red,
-            },
-          }}
-          theme={{
-            backgroundColor: COLORS.gray,
-            calendarBackground: "#ffffff",
-            textSectionTitleColor: "#b6c1cd",
-            selectedDayBackgroundColor: "#00adf5",
-            selectedDayTextColor: "#ffffff",
-            todayTextColor: "#00adf5",
-            dayTextColor: "#2d4150",
-            textDisabledColor: "#d9e",
-          }}
-        />
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          style={{
-            borderTopWidth: 0.5,
-            borderTopColor: COLORS.gray2,
-            paddingVertical: 10,
-            marginVertical: 15,
-            borderBottomWidth: 0.5,
-            borderBottomColor: COLORS.gray2,
-          }}
-        >
-          {time.map((item) => (
-            <TouchableOpacity
-              key={item.id}
-              style={[
-                styles.item,
-                item.time === hourBooking ? styles.selectedItem : null,
-              ]}
-              onPress={() => {
-                dispatch(setHourBooking(item.time));
-              }}
-            >
-              <Text style={styles.text}>{item.time}</Text>
+    <>
+      <ScrollView>
+        <SafeAreaView style={styles.container}>
+          <View style={styles.upperRow}>
+            <TouchableOpacity style={{ paddingLeft: 0 }} onPress={handleGoBack}>
+              <Ionicons
+                name="chevron-back-circle"
+                size={30}
+                color={COLORS.black}
+              />
             </TouchableOpacity>
-          ))}
-        </ScrollView>
-        {/* <FlatList
+            <Text style={styles.title}>Booking</Text>
+          </View>
+
+          {/* <ScrollView style={styles.content}> */}
+          <Calendar
+            onDayPress={(day) => {
+              setSelected(day.dateString);
+              dispatch(setDateBooking(day.dateString));
+            }}
+            markedDates={{
+              [selected]: {
+                selected: true,
+                disableTouchEvent: true,
+                selectedColor: COLORS.secondary,
+                selectedTextColor: COLORS.red,
+              },
+            }}
+            theme={{
+              backgroundColor: COLORS.gray,
+              calendarBackground: "#ffffff",
+              textSectionTitleColor: "#b6c1cd",
+              selectedDayBackgroundColor: "#00adf5",
+              selectedDayTextColor: "#ffffff",
+              todayTextColor: "#00adf5",
+              dayTextColor: "#2d4150",
+              textDisabledColor: "#d9e",
+            }}
+          />
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            style={{
+              borderTopWidth: 0.5,
+              borderTopColor: COLORS.gray2,
+              paddingVertical: 10,
+              marginVertical: 15,
+              borderBottomWidth: 0.5,
+              borderBottomColor: COLORS.gray2,
+            }}
+          >
+            {time.map((item) => (
+              <TouchableOpacity
+                key={item.id}
+                style={[
+                  styles.item,
+                  item.time === hourBooking ? styles.selectedItem : null,
+                ]}
+                onPress={() => {
+                  dispatch(setHourBooking(item.time));
+                }}
+              >
+                <Text style={styles.text}>{item.time}</Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+          {/* <FlatList
           data={services}
           keyExtractor={(item) => item?.service_id.toString()}
           renderItem={({ item }) => <ListService item={item} />}
         /> */}
-        <ListService services={services} />
-        <TouchableOpacity
-          style={styles.addServiceContainer}
-          onPress={() => openModal()}
-        >
           <Text style={styles.addServiceText}>+ Thêm dịch vụ</Text>
-        </TouchableOpacity>
-        {/* </ScrollView> */}
+          <ListService services={services} />
+          <TouchableOpacity
+            style={styles.addServiceContainer}
+            onPress={() => openModal()}
+          ></TouchableOpacity>
+          {/* </ScrollView> */}
 
-        <ListServiceModal isVisible={modalVisible} onClose={closeModal} />
-      </SafeAreaView>
-    </ScrollView>
+          <ListServiceModal isVisible={modalVisible} onClose={closeModal} />
+        </SafeAreaView>
+      </ScrollView>
+      <View style={styles.bookContainer}>
+        <View style={styles.bookPriceContainer}>
+          <Text style={styles.priceText}>Total Price:</Text>
+          <Text
+            style={styles.priceText}
+          >{`${totalPrice.toLocaleString()} VND`}</Text>
+        </View>
+        <Button title="Đặt Lịch" />
+      </View>
+    </>
   );
 };
 
@@ -236,6 +246,21 @@ const styles = StyleSheet.create({
   addServiceText: {
     fontSize: SIZES.medium,
     textAlign: "left",
+    fontWeight: "bold",
+  },
+  bookContainer: {
+    padding: 5,
+    backgroundColor: COLORS.banner,
+  },
+  bookPriceContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginHorizontal: 15,
+    marginTop: 5,
+  },
+  priceText: {
+    fontSize: SIZES.medium,
     fontWeight: "bold",
   },
 });

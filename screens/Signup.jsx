@@ -44,18 +44,17 @@ const Signup = () => {
     birthdate: new Date(),
     avatar: null,
   });
-  console.log(inputs);
   const [errors, setErrors] = useState({});
   const [showDatePicker, setShowDatePicker] = useState(false);
   const navigation = useNavigation();
   const route = useRoute();
-  const { email } = route.params;
+  // const { email } = route.params;
 
-  useEffect(() => {
-    if (email) {
-      setInputs((prevState) => ({ ...prevState, email }));
-    }
-  }, [email]);
+  // useEffect(() => {
+  //   if (email) {
+  //     setInputs((prevState) => ({ ...prevState, email }));
+  //   }
+  // }, [email]);
 
   const handleError = (errorMessage, input) => {
     setErrors((prevState) => ({ ...prevState, [input]: errorMessage }));
@@ -232,10 +231,6 @@ const Signup = () => {
     setInputs((prevState) => ({ ...prevState, birthdate: currentDate }));
   };
 
-  const showDatePickerMode = () => {
-    setShowDatePicker(true);
-  };
-  console.log(errors);
   return (
     <ScrollView>
       <SafeAreaView style={{ marginHorizontal: 20 }}>
@@ -261,10 +256,9 @@ const Signup = () => {
               placeholder="Enter email"
               icon="email-outline"
               label="Email"
-              value={inputs.email}
               error={errors.email}
               onFocus={() => handleError(null, "email")}
-              editable={false}
+              onChangeText={(text) => handleChanges(text, "email")}
             />
             <Input
               placeholder="Username"
@@ -304,22 +298,23 @@ const Signup = () => {
             />
 
             <View>
-              <Input
-                placeholder="Date of birth"
-                icon="calendar"
-                label="Date of birth"
-                value={inputs.birthdate.toLocaleDateString()}
-                error={errors.birthdate}
-                onFocus={() => handleError(null, "birthdate")}
-                editable={false}
-              />
               <TouchableOpacity
-                style={styles.cancelButton}
                 onPress={() => {
                   setShowDatePicker(true);
                 }}
               >
-                <Text style={styles.subtext2}>Chọn ngày sinh</Text>
+                <Input
+                  placeholder="Date of birth"
+                  icon="calendar"
+                  label="Date of birth"
+                  value={inputs.birthdate.toLocaleDateString()}
+                  error={errors.birthdate}
+                  onFocus={() => handleError(null, "birthdate")}
+                  editable={false}
+                  onPress={() => {
+                    setShowDatePicker(true);
+                  }}
+                />
               </TouchableOpacity>
             </View>
 
