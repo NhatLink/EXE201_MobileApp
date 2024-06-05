@@ -33,6 +33,8 @@ import Toast from "react-native-toast-message";
 import formatDate from "../utils/helper";
 import { SliderBox } from "react-native-image-slider-box";
 import TabViewComponent from "../components/Detail/TabViewComponent";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchSalonInformationById } from "../store/salon/action";
 const Details = ({ navigation }) => {
   const StoreDetail = {
     storeId: 123,
@@ -141,17 +143,14 @@ const Details = ({ navigation }) => {
   const [loading, setLoading] = useState(false);
   const userLogin = useUser(navigation);
   const { setPaymentUrl } = usePayment();
-  console.log("productId", StoreDetail.images);
+  console.log("productId", product);
+  const dispatch = useDispatch();
+  const salonDetail = useSelector((state) => state.SALON.salonDetail);
+
   useEffect(() => {
-    // checkFavorites();
-  }, []);
-  // if (loading) {
-  //   return (
-  //     <View style={styles.loadingContainer}>
-  //       <ActivityIndicator size="large" color={COLORS.primary} />
-  //     </View>
-  //   );
-  // }
+    dispatch(fetchSalonInformationById(product));
+  }, [dispatch, product]);
+  console.log("salonDetail:", salonDetail);
   const checkFavorites = async () => {
     const userId = await AsyncStorage.getItem("id");
     const favoritesId = `favorites${JSON.parse(userId)}`;

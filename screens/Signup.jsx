@@ -27,6 +27,8 @@ import { OtpModal } from "../components";
 import * as ImagePicker from "expo-image-picker";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { Calendar } from "react-native-calendars";
+import { registerUser } from "../store/user/action";
+import { useDispatch, useSelector } from "react-redux";
 const Signup = () => {
   const [loader, setLoader] = useState(false);
   const [responseData, setResponseData] = useState(null);
@@ -34,45 +36,43 @@ const Signup = () => {
     username: "",
     email: "",
     password: "",
-    confirmPassword: "",
+    // confirmPassword: "",
     gender: "Male",
-    address: "",
     fullName: "",
     phone: "",
-    status: true,
-    role: "user",
-    birthdate: new Date(),
-    avatar: null,
+    roleName: "Customer",
+    dayOfBirth: new Date(),
   });
   const [errors, setErrors] = useState({});
   const [showDatePicker, setShowDatePicker] = useState(false);
+  const [confirmPassword, setConfirmpassword] = useState(null);
   const navigation = useNavigation();
   const route = useRoute();
-  // const { email } = route.params;
+  const { email } = route.params;
 
-  // useEffect(() => {
-  //   if (email) {
-  //     setInputs((prevState) => ({ ...prevState, email }));
-  //   }
-  // }, [email]);
+  useEffect(() => {
+    if (email) {
+      setInputs((prevState) => ({ ...prevState, email }));
+    }
+  }, [email]);
 
   const handleError = (errorMessage, input) => {
     setErrors((prevState) => ({ ...prevState, [input]: errorMessage }));
   };
-
+  const dispatch = useDispatch();
   const validate = () => {
     let valid = true;
     const {
       email,
       password,
-      confirmPassword,
+      // confirmPassword,
       username,
       address,
       fullName,
       phone,
       gender,
-      birthdate,
-      avatar,
+      dayOfBirth,
+      // avatar,
     } = inputs;
 
     if (!email) {
@@ -114,10 +114,10 @@ const Signup = () => {
       valid = false;
     }
 
-    if (!address) {
-      handleError("Address is required", "address");
-      valid = false;
-    }
+    // if (!address) {
+    //   handleError("Address is required", "address");
+    //   valid = false;
+    // }
 
     if (!phone) {
       handleError("Phone is required", "phone");
@@ -132,15 +132,15 @@ const Signup = () => {
       valid = false;
     }
 
-    if (!birthdate) {
-      handleError("Birthdate is required", "birthdate");
+    if (!dayOfBirth) {
+      handleError("Birthdate is required", "dayOfBirth");
       valid = false;
     }
 
-    if (!avatar) {
-      handleError("Avatar is required", "avatar");
-      valid = false;
-    }
+    // if (!avatar) {
+    //   handleError("Avatar is required", "avatar");
+    //   valid = false;
+    // }
 
     if (valid) {
       register();
@@ -150,30 +150,10 @@ const Signup = () => {
   const register = async () => {
     setLoader(true);
     try {
-      const endpoint = `${baseUrl}/user/register`;
-      const data = { ...inputs };
-      console.log(data);
-
-      const response = await axios.post(endpoint, data);
-      console.log("response sign up: ", response);
-
-      if (response.status === 200) {
-        setResponseData(response.data.message);
-        Alert.alert("Success Register", response.data.message);
-        navigation.replace("Login");
-      } else {
-        setResponseData(response.data.message);
-        console.log(response);
-        Alert.alert("Success Register", response.data.message);
-      }
+      await dispatch(registerUser(inputs));
+      navigation.navigate("Login");
     } catch (error) {
-      if (error.response.status === 400) {
-        Alert.alert("Error", error.response.data.message);
-        setLoader(false);
-      } else {
-        Alert.alert("Error", error.data.message);
-        setLoader(false);
-      }
+      console.log(error);
     }
   };
 
@@ -181,54 +161,54 @@ const Signup = () => {
     setInputs((prevState) => ({ ...prevState, [input]: text }));
   };
 
-  const pickImageFromGallery = async () => {
-    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (status !== "granted") {
-      alert("Sorry, we need camera roll permissions to make this work!");
-      return;
-    }
+  // const pickImageFromGallery = async () => {
+  //   const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+  //   if (status !== "granted") {
+  //     alert("Sorry, we need camera roll permissions to make this work!");
+  //     return;
+  //   }
 
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
-    });
+  //   let result = await ImagePicker.launchImageLibraryAsync({
+  //     mediaTypes: ImagePicker.MediaTypeOptions.Images,
+  //     allowsEditing: true,
+  //     aspect: [4, 3],
+  //     quality: 1,
+  //   });
 
-    if (!result.canceled) {
-      setInputs((prevState) => ({
-        ...prevState,
-        avatar: result.assets[0].uri,
-      }));
-    }
-  };
+  //   if (!result.canceled) {
+  //     setInputs((prevState) => ({
+  //       ...prevState,
+  //       avatar: result.assets[0].uri,
+  //     }));
+  //   }
+  // };
 
-  const pickImageFromCamera = async () => {
-    const { status } = await ImagePicker.requestCameraPermissionsAsync();
-    if (status !== "granted") {
-      alert("Sorry, we need camera permissions to make this work!");
-      return;
-    }
+  // const pickImageFromCamera = async () => {
+  //   const { status } = await ImagePicker.requestCameraPermissionsAsync();
+  //   if (status !== "granted") {
+  //     alert("Sorry, we need camera permissions to make this work!");
+  //     return;
+  //   }
 
-    let result = await ImagePicker.launchCameraAsync({
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
-    });
+  //   let result = await ImagePicker.launchCameraAsync({
+  //     allowsEditing: true,
+  //     aspect: [4, 3],
+  //     quality: 1,
+  //   });
 
-    if (!result.canceled) {
-      setInputs((prevState) => ({
-        ...prevState,
-        avatar: result.assets[0].uri,
-      }));
-    }
-  };
+  //   if (!result.canceled) {
+  //     setInputs((prevState) => ({
+  //       ...prevState,
+  //       avatar: result.assets[0].uri,
+  //     }));
+  //   }
+  // };
 
   const onChangeDate = (event, selectedDate) => {
-    const currentDate = selectedDate || inputs.birthdate;
+    const currentDate = selectedDate || inputs.dayOfBirth;
     // setShowDatePicker(Platform.OS === "ios");
     setShowDatePicker(false);
-    setInputs((prevState) => ({ ...prevState, birthdate: currentDate }));
+    setInputs((prevState) => ({ ...prevState, dayOfBirth: currentDate }));
   };
 
   return (
@@ -250,15 +230,17 @@ const Signup = () => {
             </TouchableOpacity>
             <Text style={styles.motto}>Tạo mới một tài khoản </Text>
             <Text style={styles.submotto}>
-              Điền thông tin đầy đủ để tham gia vào HairHub
+              {`Điền thông tin đầy đủ để tham gia vào HairHub với tư cách là ${email}`}
             </Text>
             <Input
               placeholder="Enter email"
               icon="email-outline"
               label="Email"
+              value={inputs.email}
               error={errors.email}
               onFocus={() => handleError(null, "email")}
               onChangeText={(text) => handleChanges(text, "email")}
+              editable={false}
             />
             <Input
               placeholder="Username"
@@ -307,9 +289,9 @@ const Signup = () => {
                   placeholder="Date of birth"
                   icon="calendar"
                   label="Date of birth"
-                  value={inputs.birthdate.toLocaleDateString()}
-                  error={errors.birthdate}
-                  onFocus={() => handleError(null, "birthdate")}
+                  value={inputs.dayOfBirth.toLocaleDateString()}
+                  error={errors.dayOfBirth}
+                  onFocus={() => handleError(null, "dayOfBirth")}
                   editable={false}
                   onPress={() => {
                     setShowDatePicker(true);
@@ -320,7 +302,7 @@ const Signup = () => {
 
             {showDatePicker && (
               <DateTimePicker
-                value={inputs.birthdate}
+                value={inputs.dayOfBirth}
                 mode="date"
                 display="default"
                 onChange={onChangeDate}
@@ -344,11 +326,11 @@ const Signup = () => {
               label="Confirm Password"
               error={errors.confirmPassword}
               onFocus={() => handleError(null, "confirmPassword")}
-              onChangeText={(text) => handleChanges(text, "confirmPassword")}
+              onChangeText={(text) => setConfirmpassword(text)}
               password={true}
             />
 
-            <View style={styles.avatarContainer}>
+            {/* <View style={styles.avatarContainer}>
               <Text style={styles.subtext}>Avatar</Text>
               {!inputs.avatar && (
                 <View style={styles.avatarButtonContainer}>
@@ -389,7 +371,7 @@ const Signup = () => {
                   </TouchableOpacity>
                 </View>
               )}
-            </View>
+            </View> */}
 
             <Button title="SIGN UP" onPress={validate} />
           </View>
@@ -429,11 +411,13 @@ const styles = StyleSheet.create({
     textAlign: "left",
   },
   submotto: {
+    width: "100%",
     marginTop: SIZES.xSmall,
     fontWeight: "bold",
     fontSize: SIZES.medium,
     color: COLORS.gray,
     textAlign: "left",
+    marginBottom: 10,
   },
   buttonClose: {
     marginTop: SIZES.small,

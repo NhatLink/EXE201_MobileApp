@@ -1,143 +1,68 @@
+import { ToastAndroid } from "react-native";
 import { UserServices } from "../../services/userServices";
-import Toast from "react-native-toast-message";
-export const ACT_USER_LOGIN = "ACT_USER_LOGIN";
-export const ACT_USER_NOT_FETCH_ME = "ACT_USER_NOT_FETCH_ME";
-export const ALL_USER = "ALL_USER";
-export const ALL_MEMBER_COUNT = "ALL_MEMBER_COUNT";
-export const ALL_HOST_COUNT = "ALL_HOST_COUNT";
-export const AVG_MEMBER_AUCTION = "AVG_MEMBER_AUCTION";
+// import { useNavigation } from "@react-navigation/native";
+export const LOGIN_SUCCESS = "LOGIN_SUCCESS";
+export const LOGIN_FAIL = "LOGIN_FAIL";
+export const FETCH_USER_SUCCESS = "FETCH_USER_SUCCESS";
+export const FETCH_USER_FAIL = "FETCH_USER_FAIL";
+export const LOGOUT_SUCCESS = "LOGOUT_SUCCESS";
+export const REGISTER_SUCCESS = "REGISTER_SUCCESS";
+export const REGISTER_FAIL = "REGISTER_FAIL";
+export const GET_USER_BY_ID = "GET_USER_BY_ID";
 
-export function actUserLogin(currentUser, token, role) {
-  return {
-    type: ACT_USER_LOGIN,
-    payload: {
-      currentUser,
-      token,
-      role,
-    },
-  };
-}
-export function actUserNotFetchMe(token) {
-  return {
-    type: ACT_USER_NOT_FETCH_ME,
-    payload: token,
-  };
-}
-export const allUser = (list) => {
-  return {
-    type: ALL_USER,
-    payload: list,
-  };
-};
-export const allMember = (list) => {
-  return {
-    type: ALL_MEMBER_COUNT,
-    payload: list,
-  };
-};
-export const allHost = (list) => {
-  return {
-    type: ALL_HOST_COUNT,
-    payload: list,
-  };
-};
-export const AgvMemberAuctiont = (list) => {
-  return {
-    type: AVG_MEMBER_AUCTION,
-    payload: list,
-  };
+// Login action
+export const loginUser = (credentials) => async (dispatch) => {
+  try {
+    const response = await UserServices.loginUser(credentials);
+    dispatch({ type: LOGIN_SUCCESS, payload: response.data });
+    dispatch(getUserById(response.data.accountId));
+    // console.log("data respon: ", response.data.accountId);
+    ToastAndroid.show("đăng nhập thành công", ToastAndroid.SHORT);
+  } catch (error) {
+    console.log("eroor login:", error);
+    dispatch({ type: LOGIN_FAIL, payload: error.response.data });
+    ToastAndroid.show(error.response.data.message, ToastAndroid.SHORT);
+  }
 };
 
-export function actAllUserGetAsync(token) {
-  return async (dispatch) => {
-    try {
-      const response = await UserServices.getAllUser(token);
-      if (response.status === 200 || response.status === 201) {
-        // toast.success("New Product has been added successfully ~");
-        dispatch(allUser(response.data));
-      } else {
-        // toast.error("Post Product to fail");
-        console.log("fail");
-      }
-    } catch (error) {
-      console.error("Error occurred while posting auction:", error);
-      // Xử lý lỗi ở đây, ví dụ hiển thị thông báo cho người dùng
-    }
-  };
-}
+// Fetch user action
+export const fetchUser = (data) => async (dispatch) => {
+  try {
+    const response = await UserServices.fetchMe(data);
+    dispatch({ type: FETCH_USER_SUCCESS, payload: response.data });
+  } catch (error) {
+    dispatch({ type: FETCH_USER_FAIL, payload: error.response.data });
+  }
+};
 
-// export function actUserByIdGetAsync(id, token) {
-//   return async (dispatch) => {
-//     try {
-//       const response = await UserServices.getAllUser(id, token);
-//       if (response.status === 200 || response.status === 201) {
-//         // toast.success("New Product has been added successfully ~");
-//         dispatch(allUser(response.data));
-//       } else {
-//         // toast.error("Post Product to fail");
-//         console.log("fail");
-//       }
-//     } catch (error) {
-//       console.error("Error occurred while posting auction:", error);
-//       // Xử lý lỗi ở đây, ví dụ hiển thị thông báo cho người dùng
-//     }
-//   };
-// }
+// Logout action
+export const logoutUser = (data) => async (dispatch) => {
+  try {
+    await UserServices.logoutUser(data);
+    dispatch({ type: LOGOUT_SUCCESS });
+  } catch (error) {
+    console.error("Logout failed", error);
+  }
+};
 
-export function actMemberCountGetAsync(token) {
-  return (dispatch) => {
-    UserServices.getAllMemberCount(token)
-      .then((response) => {
-        console.log("member count", response);
-        if (response.status === 200 || response.status === 201) {
-          dispatch(allMember(response.data));
-        } else {
-          // toast.error("get all syllabus to fail");
-          console.log("fail");
-        }
-      })
-      .catch((error) => {
-        // Xử lý lỗi nếu có
-        console.error("Error while fetching all user:", error);
-        // Nếu bạn muốn dispatch một action để xử lý lỗi, bạn có thể thực hiện ở đây
-      });
-  };
-}
-export function actHostCountGetAsync(token) {
-  return (dispatch) => {
-    UserServices.getAllHostCount(token)
-      .then((response) => {
-        console.log("host count", response);
-        if (response.status === 200 || response.status === 201) {
-          dispatch(allHost(response.data));
-        } else {
-          // toast.error("get all syllabus to fail");
-          console.log("fail");
-        }
-      })
-      .catch((error) => {
-        // Xử lý lỗi nếu có
-        console.error("Error while fetching all user:", error);
-        // Nếu bạn muốn dispatch một action để xử lý lỗi, bạn có thể thực hiện ở đây
-      });
-  };
-}
-export function actAgvMemberAuctiontGetAsync(token) {
-  return (dispatch) => {
-    UserServices.getAgvMemberAuctiont(token)
-      .then((response) => {
-        console.log("avg member in auc", response);
-        if (response.status === 200 || response.status === 201) {
-          dispatch(AgvMemberAuctiont(response.data));
-        } else {
-          // toast.error("get all syllabus to fail");
-          console.log("fail");
-        }
-      })
-      .catch((error) => {
-        // Xử lý lỗi nếu có
-        console.error("Error while fetching all user:", error);
-        // Nếu bạn muốn dispatch một action để xử lý lỗi, bạn có thể thực hiện ở đây
-      });
-  };
-}
+export const registerUser = (data) => async (dispatch) => {
+  // const navigation = useNavigation();
+  try {
+    const response = await UserServices.registerUser(data);
+    console.log("registerUser: ", response);
+    dispatch({ type: REGISTER_SUCCESS, payload: response.data });
+    ToastAndroid.show("Đăng kí thành công", ToastAndroid.SHORT);
+    // navigation.navigate("Login");
+  } catch (error) {
+    dispatch({ type: REGISTER_FAIL, payload: error.response.data });
+  }
+};
+
+export const getUserById = (id) => async (dispatch) => {
+  try {
+    const response = await UserServices.getUserById(id);
+    dispatch({ type: GET_USER_BY_ID, payload: response.data });
+  } catch (error) {
+    console.error("Get user by id error:", error);
+  }
+};

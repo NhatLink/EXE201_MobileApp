@@ -10,7 +10,7 @@ import AnimatedTitle from "./product/AnimatedText";
 import CartList from "./cart/cartList";
 import CartTile from "./cart/cartTile";
 import StarRating from "./StarRating";
-import CheckEmail from "./profile/CheckEmail";
+// import CheckEmail from "./profile/CheckEmail";
 import OtpModal from "./profile/OtpModal";
 import ListSchedule from "./Schedule/ListSchedule";
 import ListHistory from "./History/ListHistory";
@@ -30,7 +30,7 @@ export {
   CartTile,
   StarRating,
   ProductSpecialViewCard,
-  CheckEmail,
+  // CheckEmail,
   OtpModal,
   ListSchedule,
   ListHistory,

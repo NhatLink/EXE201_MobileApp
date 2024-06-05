@@ -14,30 +14,32 @@ import Input from "../components/auth/input";
 import Button from "../components/auth/Button";
 import BackButton from "../components/auth/BackButton";
 import React, { useEffect, useState } from "react";
+import { loginUser } from "../store/user/action";
+import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { baseUrl } from "../utils/IP";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { Ionicons, Feather } from "@expo/vector-icons";
 const LoginPage = () => {
-  const route = useRoute();
+  const dispatch = useDispatch();
   const navigation = useNavigation();
   const [loader, setLoader] = useState(false);
-  const [responseData, setResponseData] = useState(null);
-
   const [inputs, setInputs] = useState({
     username: "",
     password: "",
   });
-
   const [errors, setErrors] = useState({});
-
-  // useEffect(() => {
-  //   if (email) {
-  //     setInputs((prevState) => ({ ...prevState, username: email }));
-  //   }
-  // }, [email]);
-
+  // const user = useSelector((state) => state.USER.user);
+  // const error = useSelector((state) => state.USER.error);
+  // const isAuthenticated = useSelector((state) => state.USER.isAuthenticated);
+  const { isAuthenticated, error, user, accountId } = useSelector(
+    (state) => state.USER
+  );
+  console.log("user", user);
+  console.log("accountId", accountId);
+  console.log("is Auth", isAuthenticated);
+  console.log("error", error);
   const handleError = (errorMessage, input) => {
     setErrors((prevState) => ({ ...prevState, [input]: errorMessage }));
   };
@@ -45,18 +47,17 @@ const LoginPage = () => {
   const validate = () => {
     Keyboard.dismiss();
     let valid = true;
-    const { password, username } = inputs;
-    if (!username) {
+    if (!inputs.username) {
       handleError("Username is required", "username");
       valid = false;
-    } else if (username.length < 3) {
+    } else if (inputs.username.length < 3) {
       handleError("At least 3 characters are required", "username");
       valid = false;
     }
-    if (!password) {
+    if (!inputs.password) {
       handleError("Password is required", "password");
       valid = false;
-    } else if (password.length < 8) {
+    } else if (inputs.password.length < 8) {
       handleError("At least 8 characters are required", "password");
       valid = false;
     }
@@ -68,43 +69,22 @@ const LoginPage = () => {
   const login = async () => {
     setLoader(true);
     try {
-      const endpoint = `${baseUrl}/user/login`;
-      const data = inputs;
-      console.log(data);
-
-      const response = await axios.post(endpoint, data);
-
-      const responseData = response.data;
-      console.log("login response", responseData);
-
-      setLoader(false);
-      try {
-        await AsyncStorage.setItem(
-          "accessToken",
-          JSON.stringify(responseData.token)
-        );
-        await AsyncStorage.setItem(
-          `user${responseData.user._id}`,
-          JSON.stringify(responseData.user)
-        );
-        await AsyncStorage.setItem("id", JSON.stringify(responseData.user._id));
-        navigation.replace("Bottom Navigation");
-      } catch (error) {
-        console.error("Storage error:", error);
-        Alert.alert(
-          "Error",
-          "Oops, something went wrong with storage. Try again"
-        );
-      }
+      // Dispatching the loginUser action with inputs
+      await dispatch(loginUser(inputs));
+      // Handling post-login logic can be done within the loginUser action or here
     } catch (error) {
-      setLoader(false);
       console.error("Login error:", error);
       Alert.alert("Error", "Oops, something went wrong. Try again");
+    } finally {
+      setLoader(false);
     }
   };
 
   const handleChanges = (text, input) => {
     setInputs((prevState) => ({ ...prevState, [input]: text }));
+    if (errors[input]) {
+      handleError(null, input);
+    }
   };
 
   return (
@@ -159,7 +139,7 @@ const LoginPage = () => {
           <Button title={"LOGIN"} onPress={validate} />
           <Text
             style={styles.registered}
-            onPress={() => navigation.navigate("Signup")}
+            onPress={() => navigation.navigate("CheckEmail")}
           >
             Don't have an account? Register
           </Text>
@@ -179,7 +159,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     flexDirection: "column",
     justifyContent: "space-between",
-    marginBottom: 20,
   },
   img: {
     height: SIZES.height / 2.4,

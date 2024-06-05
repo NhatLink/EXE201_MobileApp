@@ -2,56 +2,18 @@ import { API } from "./api";
 
 export const UserServices = {
   loginUser(data) {
-    return API.post("/user/login", data);
+    return API.post("/api/v1/auth/Login", data);
   },
-  fetchMe: (token) => {
-    return API.get("/user/fetchMe", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+  fetchMe(data) {
+    return API.post("/api/v1/auth/RefreshToken", data);
   },
-  banUser(id, data, token) {
-    return API.put(`/users/ban-user/${id}`, data, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+  logoutUser(data) {
+    return API.post("/api/v1/auth/Logout", data);
   },
-  getAllUser(token) {
-    return API.get("/users", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+  registerUser(data) {
+    return API.post("/api/v1/accounts/RegisterAccount", data);
   },
-  // getOneUser(id, token) {
-  //   return API.get("/users//userid/:userid", id, {
-  //     headers: {
-  //       Authorization: `Bearer ${token}`,
-  //     },
-  //   });
-  // },
-
-  getAllMemberCount(token) {
-    return API.get("/users/MemberCount", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-  },
-  getAllHostCount(token) {
-    return API.get("/users/HostCount", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-  },
-  getAgvMemberAuctiont(token) {
-    return API.get("/users/AgvMemberAuction", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+  getUserById(id) {
+    return API.get(`/api/v1/accounts/GetAccountById/${id}`);
   },
 };

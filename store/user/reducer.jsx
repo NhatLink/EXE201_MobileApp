@@ -1,111 +1,74 @@
 import {
-  ACT_USER_LOGIN,
-  ACT_USER_NOT_FETCH_ME,
-  ALL_USER,
-  // GET_ALL_ADMIN_AND_SUPERADMIN_USER,
-  // GET_ALL_ADMIN_USER,
-  // GET_ALL_TRAINEE_USER,
-  // GET_ALL_TRAINER_USER,
-  // GET_ALL_USER,
-  // GET_ALL_USER_FAKE,
-  // UPDATE_USER,
-  ALL_HOST_COUNT,
-  ALL_MEMBER_COUNT,
-  AVG_MEMBER_AUCTION,
+  LOGIN_SUCCESS,
+  LOGIN_FAIL,
+  FETCH_USER_SUCCESS,
+  FETCH_USER_FAIL,
+  LOGOUT_SUCCESS,
+  REGISTER_SUCCESS,
+  REGISTER_FAIL,
+  GET_USER_BY_ID,
 } from "./action";
 
 const initialState = {
-  // fakeUser: [],
-  users: [],
-  token: null,
-  currentUser: null,
-  allUser: [],
-  allMember: null,
-  allHost: null,
-  AvgMemberAuction: null,
-  // role: null,
-  // trainer: [],
-  // admin: [],
-  // adminAndSuperAdmin: [],
-  // trainee: [],
+  error: null,
+  isAuthenticated: false,
+  accessToken: null,
+  refreshToken: null,
+  accountId: null,
+  user: null,
 };
 
-const reducer = (state = initialState, action) => {
+const userReducer = (state = initialState, action) => {
   switch (action.type) {
-    // case GET_ALL_USER:
-    //   return {
-    //     ...state,
-    //     users: { ...state, users: action.payload },
-    //     // users: [...action.payload],
-    //   };
-    // case GET_ALL_TRAINER_USER:
-    //   return {
-    //     ...state,
-    //     trainer: [...action.payload],
-    //   };
-    // case GET_ALL_TRAINEE_USER:
-    //   return {
-    //     ...state,
-    //     trainee: [...action.payload],
-    //   };
-    // case GET_ALL_ADMIN_USER:
-    //   return {
-    //     ...state,
-    //     admin: [...action.payload],
-    //   };
-    // case GET_ALL_ADMIN_AND_SUPERADMIN_USER:
-    //   return {
-    //     ...state,
-    //     adminAndSuperAdmin: [...action.payload],
-    //   };
-    // case UPDATE_USER:
-    //   return {
-    //     ...state,
-    //     users: [...state.users, action.payload],
-    //     error: null,
-    //   };
-    case ACT_USER_LOGIN:
-      localStorage.setItem("ACCESS_TOKEN", action.payload.token);
+    case LOGIN_SUCCESS:
       return {
         ...state,
-        currentUser: action.payload.currentUser,
-        token: action.payload.token,
-        role: action.payload.role,
+        isAuthenticated: true,
+        accessToken: action.payload.accessToken,
+        refreshToken: action.payload.refreshToken,
+        accountId: action.payload.accountId,
+        error: null,
       };
-    case ACT_USER_NOT_FETCH_ME:
-      localStorage.setItem("ACCESS_TOKEN", null);
+    case LOGIN_FAIL:
       return {
         ...state,
-        token: action.payload,
+        error: action.payload,
+        isAuthenticated: false,
       };
-    case ALL_USER:
+    case FETCH_USER_SUCCESS:
       return {
         ...state,
-        allUser: action.payload,
+        isAuthenticated: true,
+        error: null,
       };
-    case ALL_MEMBER_COUNT:
+    case FETCH_USER_FAIL:
       return {
         ...state,
-        allMember: action.payload,
+        error: action.payload,
       };
-    case ALL_HOST_COUNT:
+    case LOGOUT_SUCCESS:
+      return {
+        ...initialState,
+      };
+    case REGISTER_SUCCESS:
       return {
         ...state,
-        allHost: action.payload,
+        register: action.payload,
+        error: null,
       };
-    case AVG_MEMBER_AUCTION:
+    case REGISTER_FAIL:
       return {
         ...state,
-        AvgMemberAuction: action.payload,
+        error: action.payload,
       };
-    // case GET_ALL_USER_FAKE:
-    //   return {
-    //     ...state,
-    //     fakeUser: action.payload,
-    //   };
+    case GET_USER_BY_ID:
+      return {
+        ...state,
+        user: action.payload,
+      };
     default:
       return state;
   }
 };
 
-export default reducer;
+export default userReducer;

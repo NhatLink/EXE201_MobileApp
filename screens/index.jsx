@@ -14,6 +14,7 @@ import Schedule from "./Schedule";
 import History from "./History";
 import Booking from "./Booking";
 import DetailProfile from "./DetailProfile";
+import CheckEmail from "./CheckEmail";
 export {
   Home,
   Cart,
@@ -31,4 +32,5 @@ export {
   History,
   Booking,
   DetailProfile,
+  CheckEmail,
 };

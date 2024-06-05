@@ -23,22 +23,24 @@ import { Ionicons, Feather } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { Picker } from "@react-native-picker/picker";
+import { useDispatch, useSelector } from "react-redux";
 const DetailProfile = ({ navigation }) => {
+  const user = useSelector((state) => state.USER.user);
   const [userData, setUserData] = useState({
-    Avatar: "https://cafefcdn.com/2020/6/5/photo-1-1591315359692156876277.jpg",
-    Username: "nhật linh",
-    FullName: "Nguyễn Bá Nhật Linh",
-    DayOfBirth: new Date(),
-    Phone: 1123446863,
-    Gender: "Male",
-    Email: "nguyenbanhatlinh666@gmail.com",
+    img: user?.img,
+    username: user?.username,
+    fullName: user?.fullName,
+    dayOfBirth: user?.dayOfBirth,
+    phone: user?.phone,
+    gender: user?.gender,
+    email: user?.email,
   });
   const [modalAvatar, setModalAvatar] = useState(false);
   const [modalFullname, setModalFullname] = useState(false);
   const [modalPhone, setModalPhone] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
-  const [fullname, setFullname] = useState(userData.FullName);
-  const [phone, setPhone] = useState(userData.Phone);
+  const [fullname, setFullname] = useState(userData.fullName);
+  const [phone, setPhone] = useState(userData.phone);
   const [errors, setErrors] = useState({});
   const pickImageFromGallery = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -57,7 +59,7 @@ const DetailProfile = ({ navigation }) => {
     if (!result.canceled) {
       setUserData((prevState) => ({
         ...prevState,
-        Avatar: result.assets[0].uri,
+        avatar: result.assets[0].uri,
       }));
       setModalAvatar(false);
     }
@@ -79,7 +81,7 @@ const DetailProfile = ({ navigation }) => {
     if (!result.canceled) {
       setUserData((prevState) => ({
         ...prevState,
-        Avatar: result.assets[0].uri,
+        avatar: result.assets[0].uri,
       }));
       setModalAvatar(false);
     }
@@ -104,15 +106,15 @@ const DetailProfile = ({ navigation }) => {
       handleError("Phone is required", "phone");
     } else {
       setModalPhone(false);
-      handleChanges(phone, "Phone");
+      handleChanges(phone, "phone");
       handleError(null, "phone");
     }
   };
   const onChangeDate = (event, selectedDate) => {
-    const currentDate = selectedDate || userData.DayOfBirth;
+    const currentDate = selectedDate || userData.dayOfBirth;
     // setShowDatePicker(Platform.OS === "ios");
     setShowDatePicker(false);
-    setUserData((prevState) => ({ ...prevState, DayOfBirth: currentDate }));
+    setUserData((prevState) => ({ ...prevState, dayOfBirth: currentDate }));
   };
   return (
     <SafeAreaView style={styles.container}>
@@ -126,7 +128,7 @@ const DetailProfile = ({ navigation }) => {
         <View style={styles.containerUser}>
           <Image
             source={{
-              uri: userData.Avatar,
+              uri: userData.img,
             }}
             resizeMode="cover"
             style={styles.avatar}
@@ -148,7 +150,7 @@ const DetailProfile = ({ navigation }) => {
               />
               <Text style={styles.menuItemText}>Tên</Text>
             </View>
-            <Text style={styles.menuItemText}>{userData.Username}</Text>
+            <Text style={styles.menuItemText}>{userData.username}</Text>
           </View>
         </TouchableOpacity>
         <TouchableOpacity
@@ -165,7 +167,7 @@ const DetailProfile = ({ navigation }) => {
               />
               <Text style={styles.menuItemText}>Họ Tên</Text>
             </View>
-            <Text style={styles.menuItemText}>{userData.FullName}</Text>
+            <Text style={styles.menuItemText}>{userData.fullName}</Text>
           </View>
         </TouchableOpacity>
         <View>
@@ -179,11 +181,11 @@ const DetailProfile = ({ navigation }) => {
               <Text style={styles.menuItemText}>Giới tính</Text>
             </View>
             <View style={styles.menuItem2}>
-              <Text style={styles.menuItemText}>{userData.Gender}</Text>
+              <Text style={styles.menuItemText}>{userData.gender}</Text>
               <Picker
-                selectedValue={userData.Gender}
+                selectedValue={userData.gender}
                 onValueChange={(itemValue, itemIndex) =>
-                  handleChanges(itemValue, "Gender")
+                  handleChanges(itemValue, "gender")
                 }
                 style={styles.picker}
               >
@@ -208,9 +210,7 @@ const DetailProfile = ({ navigation }) => {
               />
               <Text style={styles.menuItemText}>Ngày sinh</Text>
             </View>
-            <Text style={styles.menuItemText}>
-              {userData.DayOfBirth.toLocaleDateString()}
-            </Text>
+            <Text style={styles.menuItemText}>{userData.dayOfBirth}</Text>
           </View>
         </TouchableOpacity>
 
@@ -224,7 +224,7 @@ const DetailProfile = ({ navigation }) => {
               />
               <Text style={styles.menuItemText}>Số điện thoại</Text>
             </View>
-            <Text style={styles.menuItemText}>{userData.Phone}</Text>
+            <Text style={styles.menuItemText}>{userData.phone}</Text>
           </View>
         </TouchableOpacity>
 
@@ -239,7 +239,7 @@ const DetailProfile = ({ navigation }) => {
               <Text style={styles.menuItemText}>Email</Text>
             </View>
             <Text style={styles.menuItemText} numberOfLines={1}>
-              {userData.Email}
+              {userData.email}
             </Text>
           </View>
         </TouchableOpacity>
@@ -383,7 +383,7 @@ const DetailProfile = ({ navigation }) => {
               <View style={styles.searchWrapper}>
                 <TextInput
                   style={styles.searchInput}
-                  value={phone.toString()}
+                  value={phone}
                   keyboardType="number-pad"
                   onChangeText={(text) => setPhone(text)}
                   placeholder="Số điện thoại"
@@ -450,7 +450,7 @@ export default DetailProfile;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    color: COLORS.lightWhite,
+    backgroundColor: COLORS.lightWhite,
     paddingTop: 20,
   },
   title: {
@@ -487,7 +487,7 @@ const styles = StyleSheet.create({
     marginTop: SIZES.xLarge,
     width: "auto",
     marginHorizontal: 10,
-    backgroundColor: COLORS.lightWhite,
+    backgroundColor: COLORS.offwhite,
     borderRadius: 12,
   },
   menuItem: {
@@ -592,7 +592,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
   },
   picker: {
-    backgroundColor: COLORS.lightWhite,
+    backgroundColor: COLORS.offwhite,
     height: 15,
     flexDirection: "row",
     paddingHorizontal: 15,

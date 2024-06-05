@@ -21,32 +21,31 @@ import { StatusBar } from "expo-status-bar";
 import { Ionicons, Feather } from "@expo/vector-icons";
 import { CheckEmail } from "../components";
 import LoginPage from "./LoginPage";
+import { useDispatch, useSelector } from "react-redux";
 
 const Profile = ({ navigation }) => {
   const [userData, setUserData] = useState(null);
-  const [userLogin, setUserLogin] = useState(true);
-
-  // useEffect(() => {
-  //   checkUserExistence();
-  // }, []);
-  const checkUserExistence = async () => {
-    const id = await AsyncStorage.getItem("id");
-    const userID = `user${JSON.parse(id)}`;
-    try {
-      const userData = await AsyncStorage.getItem(userID);
-      if (userData !== null) {
-        // User data exists
-        const parsedData = JSON.parse(userData);
-        // Use the retrieved data as needed
-        setUserData(parsedData);
-        setUserLogin(true);
-      } else {
-        navigation.navigate("Login");
-      }
-    } catch (error) {
-      console.error("Error retrieving user data:", error);
-    }
-  };
+  const user = useSelector((state) => state.USER.user);
+  const isAuthenticated = useSelector((state) => state.USER.isAuthenticated);
+  console.log("user Login:", user);
+  // const checkUserExistence = async () => {
+  //   const id = await AsyncStorage.getItem("id");
+  //   const userID = `user${JSON.parse(id)}`;
+  //   try {
+  //     const userData = await AsyncStorage.getItem(userID);
+  //     if (userData !== null) {
+  //       // User data exists
+  //       const parsedData = JSON.parse(userData);
+  //       // Use the retrieved data as needed
+  //       setUserData(parsedData);
+  //       setUserLogin(true);
+  //     } else {
+  //       navigation.navigate("Login");
+  //     }
+  //   } catch (error) {
+  //     console.error("Error retrieving user data:", error);
+  //   }
+  // };
 
   const deleteAllKeys = async () => {
     try {
@@ -107,7 +106,7 @@ const Profile = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      {userLogin ? (
+      {isAuthenticated ? (
         <>
           <View style={styles.maiImag2}>
             <View style={styles.containerUser}>
@@ -123,10 +122,8 @@ const Profile = ({ navigation }) => {
                   style={styles.avatar}
                 />
                 <View>
-                  <Text style={styles.title}>Nhật Linh</Text>
-                  <Text style={styles.subtitle}>
-                    nguyenbanhatlinh666@gmail.com
-                  </Text>
+                  <Text style={styles.title}>{user?.fullName}</Text>
+                  <Text style={styles.subtitle}>{user?.email}</Text>
                 </View>
               </TouchableOpacity>
             </View>

@@ -10,28 +10,34 @@ import {
   Button,
   TextInput,
   Keyboard,
+  ToastAndroid,
 } from "react-native";
 import React, { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { COLORS, SIZES, images } from "../../constants";
+import { COLORS, SIZES, images } from "../constants";
 import { useNavigation } from "@react-navigation/native";
-import formatDate from "../../utils/helper";
-import OrderTile from "../orders/OrderTile";
+import formatDate from "../utils/helper";
+import OrderTile from "../components/orders/OrderTile";
 import { SliderBox } from "react-native-image-slider-box";
 import { Ionicons, Feather } from "@expo/vector-icons";
+import { useDispatch, useSelector } from "react-redux";
+import { checkExistEmail, checkOtp, sendOtpEmail } from "../store/otp/action";
 const CheckEmail = () => {
   const navigation = useNavigation();
   const [email, setEmail] = useState("");
   const [userHaveAccount, setUserHaveAccount] = useState(false);
-
+  const [modalOtp, setModalOtp] = useState(false);
+  const [otp, setOtp] = useState(null);
   const [emailError, setEmailError] = useState("");
-
+  const dispatch = useDispatch();
+  const { loading, error, emailExists } = useSelector((state) => state.OTP);
+  console.log("emailExists: ", emailExists);
   const validateEmail = (email) => {
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return regex.test(email);
   };
 
-  const handleContinuePress = () => {
+  const handleContinuePress = async () => {
     if (!email) {
       setEmailError("Email không được để trống");
       return;
@@ -40,17 +46,68 @@ const CheckEmail = () => {
       setEmailError("Email không hợp lệ");
       return;
     }
+    if (error) {
+      setEmailError(error);
+    }
     setEmailError("");
 
-    if (userHaveAccount) {
-      navigation.navigate("Login", { email: email });
-    } else {
-      navigation.navigate("Signup", { email: email });
+    try {
+      await dispatch(
+        checkExistEmail(
+          { email },
+          {
+            email: email,
+            fullName: email,
+          }
+        )
+      );
+      if (!emailExists) {
+        setModalOtp(true);
+      }
+    } catch (error) {
+      // If checkExistEmail throws an error (status code 404), it means the email doesn't exist
+      setUserHaveAccount(true);
+      console.log(error);
+      // No need to dispatch sendOtpEmail here as it's already dispatched in the checkExistEmail action
+    }
+  };
+
+  const handleSubmitOTP = async () => {
+    if (!otp) {
+      ToastAndroid.show("Vui lòng nhập otp", ToastAndroid.SHORT);
+      return;
+    }
+    try {
+      await dispatch(
+        checkOtp({
+          otpRequest: otp,
+          email: email,
+        })
+      );
+      if (!emailExists) {
+        setModalOtp(false);
+        setOtp(null);
+        setEmail(null);
+        navigation.navigate("Signup", { email: email });
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
   return (
     <View style={styles.container2}>
       <View>
+        <TouchableOpacity
+          style={styles.buttonClose}
+          onPress={() => navigation.goBack()}
+        >
+          <Ionicons
+            style={styles.textStyle}
+            name="return-up-back"
+            size={24}
+            color="black"
+          />
+        </TouchableOpacity>
         <Text style={styles.title2}>Chào mừng đến với HairHub</Text>
         <Text style={styles.subtitle2}>
           Tạo tài khoản hoặc đăng nhập để đặt lịch và quản lý các cuộc hẹn của
@@ -97,35 +154,35 @@ const CheckEmail = () => {
           <Text style={styles.button}>Tiếp tục</Text>
         </TouchableOpacity>
       </View>
-      <View
-        style={{
-          width: "100%",
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalOtp}
+        onRequestClose={() => {
+          setModalOtp(false);
         }}
       >
-        <View style={styles.containerDate}>
-          <View style={styles.line} />
-          <Text style={styles.text}>or</Text>
-          <View style={styles.line} />
+        <View style={styles.fullScreenModal}>
+          <View style={styles.modalContainer}>
+            <Text style={styles.modalTextTitle}>Nhập OTP</Text>
+            <View style={styles.searchContainer}>
+              <TextInput
+                style={styles.searchInput}
+                value={otp}
+                placeholder="OTP"
+                keyboardType="number-pad"
+                onChangeText={(text) => {
+                  setOtp(text);
+                  setEmailError(""); // Clear error when user starts typing
+                }}
+              />
+            </View>
+            <TouchableOpacity onPress={handleSubmitOTP}>
+              <Text style={styles.button1}>Xác nhận</Text>
+            </TouchableOpacity>
+          </View>
         </View>
-        <TouchableOpacity style={styles.bookButton} onPress={() => {}}>
-          <Ionicons
-            style={styles.searchIcon}
-            name="logo-google"
-            size={24}
-            color="black"
-          />
-          <Text style={styles.button1}>Tiếp tục với Google</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.bookButton} onPress={() => {}}>
-          <Ionicons
-            style={styles.searchIcon}
-            name="logo-facebook"
-            size={24}
-            color="black"
-          />
-          <Text style={styles.button1}>Tiếp tục với Facebook</Text>
-        </TouchableOpacity>
-      </View>
+      </Modal>
     </View>
   );
 };
@@ -224,9 +281,14 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   button1: {
-    marginLeft: 10,
+    backgroundColor: COLORS.primary,
     textAlign: "center",
+    padding: 10,
+    borderRadius: 10,
+    marginHorizontal: 20,
+    marginVertical: 10,
     fontWeight: "bold",
+    color: COLORS.lightWhite,
   },
   containerDate: {
     flexDirection: "row",
@@ -244,5 +306,48 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: COLORS.gray,
     fontWeight: "bold",
+  },
+  buttonClose: {
+    marginTop: SIZES.small,
+    marginLeft: SIZES.small,
+  },
+  fullScreenModal: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  fullScreenModal1: {
+    flex: 1,
+    justifyContent: "flex-start",
+    alignItems: "flex-start",
+    marginTop: 10,
+    backgroundColor: COLORS.lightWhite,
+    color: COLORS.lightWhite,
+    paddingHorizontal: 20,
+  },
+  modalContainer: {
+    width: "80%",
+    padding: 20,
+    backgroundColor: COLORS.secondary,
+    borderRadius: 10,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.8,
+    shadowRadius: 2,
+    elevation: 5,
+  },
+  modalTextTitle: {
+    fontWeight: "bold",
+    textAlign: "center",
+    justifyContent: "center",
+    alignItems: "center",
+    fontSize: SIZES.medium,
+    marginLeft: 10,
+  },
+  buttonCloseModal: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    padding: 10,
   },
 });
