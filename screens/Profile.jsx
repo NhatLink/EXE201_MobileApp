@@ -27,7 +27,7 @@ const Profile = ({ navigation }) => {
   const [userData, setUserData] = useState(null);
   const user = useSelector((state) => state.USER.user);
   const isAuthenticated = useSelector((state) => state.USER.isAuthenticated);
-  console.log("user Login:", user);
+  // console.log("user Login:", user);
   // const checkUserExistence = async () => {
   //   const id = await AsyncStorage.getItem("id");
   //   const userID = `user${JSON.parse(id)}`;

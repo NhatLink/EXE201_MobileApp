@@ -23,17 +23,26 @@ import { Ionicons, Feather } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { Picker } from "@react-native-picker/picker";
+import { updateUserById } from "../store/user/action";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigation } from "@react-navigation/native";
 const DetailProfile = ({ navigation }) => {
-  const user = useSelector((state) => state.USER.user);
+  // const user = useSelector((state) => state.USER.user);
+  const { user, accountId } = useSelector((state) => state.USER);
+  // const navigation = useNavigation();
   const [userData, setUserData] = useState({
-    img: user?.img,
+    roleId: user?.roleId,
     username: user?.username,
+    password: user?.password,
     fullName: user?.fullName,
     dayOfBirth: user?.dayOfBirth,
-    phone: user?.phone,
     gender: user?.gender,
     email: user?.email,
+    phone: user?.phone,
+    address: user?.address,
+    img: user?.img,
+    bankAccount: user?.bankAccount,
+    bankName: user?.bankName,
   });
   const [modalAvatar, setModalAvatar] = useState(false);
   const [modalFullname, setModalFullname] = useState(false);
@@ -42,6 +51,7 @@ const DetailProfile = ({ navigation }) => {
   const [fullname, setFullname] = useState(userData.fullName);
   const [phone, setPhone] = useState(userData.phone);
   const [errors, setErrors] = useState({});
+  const dispatch = useDispatch();
   const pickImageFromGallery = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== "granted") {
@@ -97,7 +107,7 @@ const DetailProfile = ({ navigation }) => {
       handleError("Full name is required", "fullname");
     } else {
       setModalFullname(false);
-      handleChanges(fullname, "FullName");
+      handleChanges(fullname, "fullName");
       handleError(null, "fullname");
     }
   };
@@ -115,6 +125,46 @@ const DetailProfile = ({ navigation }) => {
     // setShowDatePicker(Platform.OS === "ios");
     setShowDatePicker(false);
     setUserData((prevState) => ({ ...prevState, dayOfBirth: currentDate }));
+  };
+  const isDifferent = JSON.stringify(user) !== JSON.stringify(userData);
+  console.log("isDifferent:", accountId);
+  console.log("userData:", JSON.stringify(userData));
+  console.log("user:", JSON.stringify(user));
+  const handlePressBack = () => {
+    if (isDifferent) {
+      Alert.alert(
+        "Những thông tin bạn thay đổi sẽ không được lưu",
+        "Bạn muốn quay về chứ?",
+        [
+          {
+            text: "Hủy",
+            style: "cancel",
+          },
+          {
+            text: "Tiếp tục",
+            onPress: () => {
+              setUserData(user);
+              navigation.goBack();
+            },
+          },
+        ]
+      );
+    } else {
+      navigation.goBack();
+    }
+  };
+
+  const updateUser = async () => {
+    try {
+      // Dispatching the loginUser action with inputs
+      await dispatch(updateUserById(accountId, userData));
+      // Handling post-login logic can be done within the loginUser action or here
+    } catch (error) {
+      console.error("Login error:", error);
+      Alert.alert("Error", "Oops, something went wrong. Try again");
+    } finally {
+      navigation.navigate("Profile");
+    }
   };
   return (
     <SafeAreaView style={styles.container}>
@@ -417,10 +467,7 @@ const DetailProfile = ({ navigation }) => {
           />
         )}
       </View>
-      <TouchableOpacity
-        style={styles.buttonClose}
-        onPress={() => navigation.goBack()}
-      >
+      <TouchableOpacity style={styles.buttonClose} onPress={handlePressBack}>
         <Ionicons
           style={styles.textStyle}
           name="return-up-back"
@@ -428,19 +475,16 @@ const DetailProfile = ({ navigation }) => {
           color="black"
         />
       </TouchableOpacity>
-      <TouchableOpacity
-        style={styles.buttonConfirm}
-        onPress={() => {
-          console.log(userData);
-        }}
-      >
-        <Ionicons
-          style={styles.textStyle}
-          name="checkmark-outline"
-          size={24}
-          color="red"
-        />
-      </TouchableOpacity>
+      {isDifferent && (
+        <TouchableOpacity style={styles.buttonConfirm} onPress={updateUser}>
+          <Ionicons
+            style={styles.textStyle}
+            name="checkmark-outline"
+            size={24}
+            color="red"
+          />
+        </TouchableOpacity>
+      )}
     </SafeAreaView>
   );
 };

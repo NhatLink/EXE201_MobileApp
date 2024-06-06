@@ -9,6 +9,7 @@ export const LOGOUT_SUCCESS = "LOGOUT_SUCCESS";
 export const REGISTER_SUCCESS = "REGISTER_SUCCESS";
 export const REGISTER_FAIL = "REGISTER_FAIL";
 export const GET_USER_BY_ID = "GET_USER_BY_ID";
+export const UPDATE_USER_BY_ID = "UPDATE_USER_BY_ID";
 
 // Login action
 export const loginUser = (credentials) => async (dispatch) => {
@@ -64,5 +65,15 @@ export const getUserById = (id) => async (dispatch) => {
     dispatch({ type: GET_USER_BY_ID, payload: response.data });
   } catch (error) {
     console.error("Get user by id error:", error);
+  }
+};
+
+export const updateUserById = (id, data) => async (dispatch) => {
+  try {
+    const response = await UserServices.updateUserById(id, data);
+    dispatch({ type: UPDATE_USER_BY_ID, payload: response.data });
+    ToastAndroid.show("Cập nhật thông tin thành công", ToastAndroid.SHORT);
+  } catch (error) {
+    console.error("Update user by id error:", error);
   }
 };

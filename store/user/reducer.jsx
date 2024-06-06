@@ -7,6 +7,7 @@ import {
   REGISTER_SUCCESS,
   REGISTER_FAIL,
   GET_USER_BY_ID,
+  UPDATE_USER_BY_ID,
 } from "./action";
 
 const initialState = {
@@ -62,6 +63,11 @@ const userReducer = (state = initialState, action) => {
         error: action.payload,
       };
     case GET_USER_BY_ID:
+      return {
+        ...state,
+        user: action.payload,
+      };
+    case UPDATE_USER_BY_ID:
       return {
         ...state,
         user: action.payload,

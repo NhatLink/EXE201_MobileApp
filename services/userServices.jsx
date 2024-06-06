@@ -16,4 +16,7 @@ export const UserServices = {
   getUserById(id) {
     return API.get(`/api/v1/accounts/GetAccountById/${id}`);
   },
+  updateUserById(id, data) {
+    return API.put(`/api/v1/accounts/UpdateAccount/${id}`, data);
+  },
 };
