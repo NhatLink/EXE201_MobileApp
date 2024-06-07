@@ -1,5 +1,12 @@
 import React from "react";
-import { View, Text, Image, TouchableOpacity, StyleSheet } from "react-native";
+import {
+  View,
+  Text,
+  Image,
+  TouchableOpacity,
+  StyleSheet,
+  useWindowDimensions,
+} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { SIZES, COLORS } from "../constants";
 import { useNavigation } from "@react-navigation/native";
@@ -8,15 +15,16 @@ import StarRating from "./StarRating";
 
 const ProductViewCard = ({ item }) => {
   const navigation = useNavigation();
+  const { width, height } = useWindowDimensions();
+  console.log(item);
   return (
     <TouchableOpacity
-      onPress={() => navigation.navigate("Details", { product: item._id })}
+      onPress={() => navigation.navigate("Details", { product: item?.id })}
     >
       <View style={styles.container}>
-        <View style={styles.imageContainer}>
-          <Image source={{ uri: item.image[0] }} style={styles.image} />
-          <View style={styles.ratingContainer}>
-            {/* <StarRating rating={item?.avgRating} /> */}
+        <View style={[styles.imageContainer, { width: width * 0.46 }]}>
+          <Image source={{ uri: item?.img }} style={styles.image} />
+          {/* <View style={styles.ratingContainer}>
             <Text style={styles.averageRatingText}>
               {item?.avgRating > 0
                 ? (item?.avgRating).toFixed(1) + "/5.0"
@@ -27,14 +35,14 @@ const ProductViewCard = ({ item }) => {
                 ? item?.reviewCount + " reviews"
                 : "(0 review)"}
             </Text>
-          </View>
+          </View> */}
         </View>
         <View style={styles.detailsContainer}>
           <Text style={styles.name} numberOfLines={1}>
-            {item.productName}
+            {item?.description}
           </Text>
           <Text style={styles.supplier} numberOfLines={4}>
-            {item.description}
+            {item?.address}
           </Text>
           {/* <Text style={styles.price}>${item.price}</Text>
           <View style={styles.ratingContainer}>
@@ -66,18 +74,16 @@ export default ProductViewCard;
 
 const styles = StyleSheet.create({
   container: {
-    width: 190,
     height: "auto",
-    marginEnd: 10,
+    marginEnd: 5,
     marginVertical: SIZES.small,
     borderRadius: SIZES.small,
     backgroundColor: COLORS.secondary,
   },
   imageContainer: {
     flex: 1,
-    width: 175,
-    marginLeft: SIZES.medium / 2,
-    marginTop: SIZES.medium / 2,
+    paddingHorizontal: SIZES.medium / 2,
+    paddingTop: SIZES.medium / 2,
     borderRadius: SIZES.small,
     overflow: "hidden",
   },

@@ -22,9 +22,18 @@ import { Ionicons, Feather } from "@expo/vector-icons";
 import { CheckEmail } from "../components";
 import LoginPage from "./LoginPage";
 import { useDispatch, useSelector } from "react-redux";
+import * as SecureStore from "expo-secure-store";
+import { getUserById, logoutUser } from "../store/user/action";
+import Loader from "../components/auth/Loader";
 
 const Profile = ({ navigation }) => {
+  const dispatch = useDispatch();
   const [userData, setUserData] = useState(null);
+  const [accessToken, setAccessToken] = useState(null);
+  const [refreshToken, setRefreshToken] = useState(null);
+  const [userInfo, setUserInfo] = useState(null);
+  const [idUser, setIdUser] = useState(null);
+  const [loader, setLoader] = useState(false);
   const user = useSelector((state) => state.USER.user);
   const isAuthenticated = useSelector((state) => state.USER.isAuthenticated);
   // console.log("user Login:", user);
@@ -46,7 +55,38 @@ const Profile = ({ navigation }) => {
   //     console.error("Error retrieving user data:", error);
   //   }
   // };
+  useEffect(() => {
+    async function fetchData() {
+      setLoader(true);
+      const accessToken = await SecureStore.getItemAsync("accessToken");
+      const refreshToken = await SecureStore.getItemAsync("refreshToken");
+      const userInfoJson = await SecureStore.getItemAsync("userInfo");
+      const accountId = await SecureStore.getItemAsync("accountId");
+      let userInfo = null;
+      if (userInfoJson) {
+        try {
+          userInfo = JSON.parse(userInfoJson);
+        } catch (error) {
+          console.error("Error parsing userInfo", error);
+        }
+      }
+      setAccessToken(accessToken);
+      setRefreshToken(refreshToken);
+      setUserInfo(userInfo);
+      setIdUser(accountId);
+      if (accountId) {
+        dispatch(getUserById(accountId));
+      }
+      setLoader(false);
+    }
+    fetchData();
+  }, []);
 
+  console.log("accessToken", accessToken);
+  console.log("refreshToken", refreshToken);
+  console.log("userInfo", userInfo);
+  console.log("accountId", idUser);
+  console.log("user", user);
   const deleteAllKeys = async () => {
     try {
       const allKeys = await AsyncStorage.getAllKeys();
@@ -58,13 +98,23 @@ const Profile = ({ navigation }) => {
   };
 
   const userLogout = async () => {
-    const id = await AsyncStorage.getItem("id");
-    const userID = `user${JSON.parse(id)}`;
     try {
-      await AsyncStorage.multiRemove([userID, "accessToken", "id"]);
+      await dispatch(
+        logoutUser({
+          refreshToken: refreshToken,
+        })
+      );
+      await SecureStore.deleteItemAsync("accessToken");
+      await SecureStore.deleteItemAsync("refreshToken");
+      await SecureStore.deleteItemAsync("userInfo");
+      await SecureStore.deleteItemAsync("accountId");
+      setAccessToken(null);
+      setRefreshToken(null);
+      setUserInfo(null);
       navigation.replace("Bottom Navigation");
+      console.log("User logged out");
     } catch (error) {
-      console.error("Error deleting keys:", error);
+      console.error("Error during logout:", error);
     }
   };
 
@@ -106,7 +156,10 @@ const Profile = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      {isAuthenticated ? (
+      <Loader visible={loader} />
+      {!userInfo ? (
+        <LoginPage />
+      ) : (
         <>
           <View style={styles.maiImag2}>
             <View style={styles.containerUser}>
@@ -116,14 +169,14 @@ const Profile = ({ navigation }) => {
               >
                 <Image
                   source={{
-                    uri: "https://cafefcdn.com/2020/6/5/photo-1-1591315359692156876277.jpg",
+                    uri: userInfo?.img,
                   }}
                   resizeMode="cover"
                   style={styles.avatar}
                 />
                 <View>
-                  <Text style={styles.title}>{user?.fullName}</Text>
-                  <Text style={styles.subtitle}>{user?.email}</Text>
+                  <Text style={styles.title}>{userInfo?.fullName}</Text>
+                  <Text style={styles.subtitle}>{userInfo?.email}</Text>
                 </View>
               </TouchableOpacity>
             </View>
@@ -193,8 +246,6 @@ const Profile = ({ navigation }) => {
             </TouchableOpacity> */}
           </View>
         </>
-      ) : (
-        <LoginPage />
       )}
     </SafeAreaView>
   );

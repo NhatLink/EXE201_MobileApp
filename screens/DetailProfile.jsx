@@ -26,32 +26,55 @@ import { Picker } from "@react-native-picker/picker";
 import { updateUserById } from "../store/user/action";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigation } from "@react-navigation/native";
+import * as SecureStore from "expo-secure-store";
 const DetailProfile = ({ navigation }) => {
   // const user = useSelector((state) => state.USER.user);
   const { user, accountId } = useSelector((state) => state.USER);
+  const [idUser, setIdUser] = useState(null);
   // const navigation = useNavigation();
-  const [userData, setUserData] = useState({
-    roleId: user?.roleId,
-    username: user?.username,
-    password: user?.password,
-    fullName: user?.fullName,
-    dayOfBirth: user?.dayOfBirth,
-    gender: user?.gender,
-    email: user?.email,
-    phone: user?.phone,
-    address: user?.address,
-    img: user?.img,
-    bankAccount: user?.bankAccount,
-    bankName: user?.bankName,
-  });
+  // const [userData, setUserData] = useState({
+  //   roleId: userInfo?.roleId,
+  //   username: userInfo?.username,
+  //   password: userInfo?.password,
+  //   fullName: userInfo?.fullName,
+  //   dayOfBirth: userInfo?.dayOfBirth,
+  //   gender: userInfo?.gender,
+  //   email: userInfo?.email,
+  //   phone: userInfo?.phone,
+  //   address: userInfo?.address,
+  //   img: userInfo?.img,
+  //   bankAccount: userInfo?.bankAccount,
+  //   bankName: userInfo?.bankName,
+  // });
+  const [userData, setUserData] = useState(user);
   const [modalAvatar, setModalAvatar] = useState(false);
   const [modalFullname, setModalFullname] = useState(false);
   const [modalPhone, setModalPhone] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
-  const [fullname, setFullname] = useState(userData.fullName);
-  const [phone, setPhone] = useState(userData.phone);
+  const [fullname, setFullname] = useState(user?.fullName);
+  const [phone, setPhone] = useState(user?.phone);
   const [errors, setErrors] = useState({});
   const dispatch = useDispatch();
+  useEffect(() => {
+    async function fetchData() {
+      const accountId = await SecureStore.getItemAsync("accountId");
+      const userInfoJson = await SecureStore.getItemAsync("userInfo");
+      let userInfo = null;
+      if (userInfoJson) {
+        try {
+          userInfo = JSON.parse(userInfoJson);
+        } catch (error) {
+          console.error("Error parsing userInfo", error);
+        }
+      }
+      setUserData(userInfo);
+      // setFullname(userInfo?.fullName);
+      // setPhone(userInfo?.phone);
+      setIdUser(accountId);
+    }
+
+    fetchData();
+  }, []);
   const pickImageFromGallery = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== "granted") {
@@ -69,7 +92,7 @@ const DetailProfile = ({ navigation }) => {
     if (!result.canceled) {
       setUserData((prevState) => ({
         ...prevState,
-        avatar: result.assets[0].uri,
+        img: result.assets[0].uri,
       }));
       setModalAvatar(false);
     }
@@ -91,7 +114,7 @@ const DetailProfile = ({ navigation }) => {
     if (!result.canceled) {
       setUserData((prevState) => ({
         ...prevState,
-        avatar: result.assets[0].uri,
+        img: result.assets[0].uri,
       }));
       setModalAvatar(false);
     }
@@ -122,14 +145,14 @@ const DetailProfile = ({ navigation }) => {
   };
   const onChangeDate = (event, selectedDate) => {
     const currentDate = selectedDate || userData.dayOfBirth;
-    // setShowDatePicker(Platform.OS === "ios");
+    const formattedDate = currentDate.toISOString().slice(0, 19);
     setShowDatePicker(false);
-    setUserData((prevState) => ({ ...prevState, dayOfBirth: currentDate }));
+    setUserData((prevState) => ({ ...prevState, dayOfBirth: formattedDate }));
   };
   const isDifferent = JSON.stringify(user) !== JSON.stringify(userData);
-  console.log("isDifferent:", accountId);
-  console.log("userData:", JSON.stringify(userData));
-  console.log("user:", JSON.stringify(user));
+
+  // console.log("userData:", JSON.stringify(userData));
+  // console.log("user:", JSON.stringify(user));
   const handlePressBack = () => {
     if (isDifferent) {
       Alert.alert(
@@ -157,15 +180,16 @@ const DetailProfile = ({ navigation }) => {
   const updateUser = async () => {
     try {
       // Dispatching the loginUser action with inputs
-      await dispatch(updateUserById(accountId, userData));
+      await dispatch(updateUserById(idUser, userData));
       // Handling post-login logic can be done within the loginUser action or here
     } catch (error) {
       console.error("Login error:", error);
       Alert.alert("Error", "Oops, something went wrong. Try again");
     } finally {
-      navigation.navigate("Profile");
+      navigation.replace("Bottom Navigation");
     }
   };
+
   return (
     <SafeAreaView style={styles.container}>
       <Text style={styles.modalTextTitle}>Chỉnh sửa thông tin người dùng</Text>
@@ -459,7 +483,8 @@ const DetailProfile = ({ navigation }) => {
         </Modal>
         {showDatePicker && (
           <DateTimePicker
-            value={userData.DayOfBirth}
+            // value={userData.dayOfBirth}
+            value={new Date(userData.dayOfBirth)}
             mode="date"
             display="default"
             onChange={onChangeDate}

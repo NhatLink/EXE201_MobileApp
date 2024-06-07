@@ -8,7 +8,7 @@ export const UserServices = {
     return API.post("/api/v1/auth/RefreshToken", data);
   },
   logoutUser(data) {
-    return API.post("/api/v1/auth/Logout", data);
+    return API.delete("/api/v1/auth/Logout", { data: data });
   },
   registerUser(data) {
     return API.post("/api/v1/accounts/RegisterAccount", data);

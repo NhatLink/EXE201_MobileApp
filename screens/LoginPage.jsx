@@ -21,10 +21,15 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { baseUrl } from "../utils/IP";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { Ionicons, Feather } from "@expo/vector-icons";
+import * as SecureStore from "expo-secure-store";
 const LoginPage = () => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
   const [loader, setLoader] = useState(false);
+  // const [accessToken, setAccessToken] = useState(null);
+  // const [refreshToken, setRefreshToken] = useState(null);
+  // const [userInfo, setUserInfo] = useState(null);
+
   const [inputs, setInputs] = useState({
     username: "",
     password: "",
@@ -36,6 +41,23 @@ const LoginPage = () => {
   const { isAuthenticated, error, user, accountId } = useSelector(
     (state) => state.USER
   );
+  // useEffect(() => {
+  //   async function fetchData() {
+  //     const accessToken = await SecureStore.getItemAsync("accessToken");
+  //     const refreshToken = await SecureStore.getItemAsync("refreshToken");
+  //     const userInfoJson = await SecureStore.getItemAsync("userInfo");
+  //     const userInfo = JSON.parse(userInfoJson);
+  //     setAccessToken(accessToken);
+  //     setRefreshToken(refreshToken);
+  //     setUserInfo(userInfo);
+  //   }
+
+  //   fetchData();
+  // }, []);
+
+  // console.log("accessToken", accessToken);
+  // console.log("refreshToken", refreshToken);
+  // console.log("userInfo", userInfo);
   console.log("user", user);
   console.log("accountId", accountId);
   console.log("is Auth", isAuthenticated);
@@ -71,6 +93,7 @@ const LoginPage = () => {
     try {
       // Dispatching the loginUser action with inputs
       await dispatch(loginUser(inputs));
+      navigation.replace("Bottom Navigation");
       // Handling post-login logic can be done within the loginUser action or here
     } catch (error) {
       console.error("Login error:", error);
