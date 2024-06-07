@@ -16,7 +16,21 @@ export const UserServices = {
   getUserById(id) {
     return API.get(`/api/v1/accounts/GetAccountById/${id}`);
   },
+  // updateUserById(id, data) {
+  //   return API.put(`/api/v1/accounts/UpdateAccount/${id}`, data);
+  // },
   updateUserById(id, data) {
-    return API.put(`/api/v1/accounts/UpdateAccount/${id}`, data);
+    let formData = new FormData();
+
+    // Loop through each key in data object
+    for (let key in data) {
+      formData.append(key, data[key]);
+    }
+    console.log(formData);
+    return API.put(`/api/v1/accounts/UpdateAccount/${id}`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
   },
 };

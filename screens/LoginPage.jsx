@@ -22,6 +22,7 @@ import { baseUrl } from "../utils/IP";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { Ionicons, Feather } from "@expo/vector-icons";
 import * as SecureStore from "expo-secure-store";
+import Loader from "../components/auth/Loader";
 const LoginPage = () => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
@@ -94,6 +95,7 @@ const LoginPage = () => {
       // Dispatching the loginUser action with inputs
       await dispatch(loginUser(inputs));
       navigation.replace("Bottom Navigation");
+      // navigation.navigate("Profile");
       // Handling post-login logic can be done within the loginUser action or here
     } catch (error) {
       console.error("Login error:", error);
@@ -112,6 +114,7 @@ const LoginPage = () => {
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
+      <Loader visible={loader} />
       <View style={styles.container}>
         <View>
           {/* <BackButton onPress={() => navigation.goBack()} />

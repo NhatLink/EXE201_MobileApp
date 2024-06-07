@@ -21,17 +21,74 @@ import OrderTile from "../components/orders/OrderTile";
 import { SliderBox } from "react-native-image-slider-box";
 import { Ionicons, Feather } from "@expo/vector-icons";
 import { useDispatch, useSelector } from "react-redux";
-import { checkExistEmail, checkOtp, sendOtpEmail } from "../store/otp/action";
+import {
+  checkExistEmail,
+  checkOtp,
+  sendOtpEmail,
+  resetCheckOtp,
+} from "../store/otp/action";
+import { useEffect } from "react";
+import Loader from "../components/auth/Loader";
 const CheckEmail = () => {
   const navigation = useNavigation();
   const [email, setEmail] = useState("");
   const [userHaveAccount, setUserHaveAccount] = useState(false);
   const [modalOtp, setModalOtp] = useState(false);
+  const [countdown, setCountdown] = useState(null);
   const [otp, setOtp] = useState(null);
   const [emailError, setEmailError] = useState("");
   const dispatch = useDispatch();
-  const { loading, error, emailExists } = useSelector((state) => state.OTP);
-  console.log("emailExists: ", emailExists);
+  const { loading, error, emailExists, CheckOtp } = useSelector(
+    (state) => state.OTP
+  );
+  console.log("emailExists", emailExists);
+  console.log("CheckOtp", CheckOtp);
+  console.log("lloading", loading);
+  useEffect(() => {
+    let timer;
+    if (modalOtp) {
+      setCountdown(120); // Set initial countdown time to 2 minutes (120 seconds)
+      timer = setInterval(() => {
+        setCountdown((prevCountdown) => {
+          if (prevCountdown <= 1) {
+            // If countdown reaches 0
+            clearInterval(timer);
+            setModalOtp(false); // Close the modal
+            return null; // Reset the countdown
+          } else {
+            return prevCountdown - 1; // Otherwise, decrease the countdown
+          }
+        });
+      }, 1000); // Update countdown every second
+    } else {
+      setCountdown(null); // Reset countdown when modal is closed
+    }
+    // Clean up function
+    return () => {
+      if (timer) {
+        clearInterval(timer);
+      }
+    };
+  }, [modalOtp]);
+
+  // Convert countdown time to minutes and seconds for display
+  const minutes = Math.floor(countdown / 60);
+  const seconds = countdown % 60;
+  useEffect(() => {
+    if (emailExists === true) {
+      setModalOtp(true);
+    }
+  }, [emailExists]);
+
+  useEffect(() => {
+    if (CheckOtp === true) {
+      setModalOtp(false);
+      setOtp(null);
+      setEmail(null);
+      navigation.navigate("Signup", { email: email });
+    }
+  }, [CheckOtp]);
+
   const validateEmail = (email) => {
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return regex.test(email);
@@ -61,9 +118,6 @@ const CheckEmail = () => {
           }
         )
       );
-      if (!emailExists) {
-        setModalOtp(true);
-      }
     } catch (error) {
       // If checkExistEmail throws an error (status code 404), it means the email doesn't exist
       setUserHaveAccount(true);
@@ -84,18 +138,18 @@ const CheckEmail = () => {
           email: email,
         })
       );
-      if (!emailExists) {
-        setModalOtp(false);
-        setOtp(null);
-        setEmail(null);
-        navigation.navigate("Signup", { email: email });
-      }
     } catch (error) {
       console.log(error);
     }
   };
+  const handleModalClose = () => {
+    // Reset all OTP-related states and dispatch Redux action
+    setModalOtp(false);
+    dispatch(resetCheckOtp());
+  };
   return (
     <View style={styles.container2}>
+      <Loader visible={loading} />
       <View>
         <TouchableOpacity
           style={styles.buttonClose}
@@ -158,13 +212,17 @@ const CheckEmail = () => {
         animationType="slide"
         transparent={true}
         visible={modalOtp}
-        onRequestClose={() => {
-          setModalOtp(false);
-        }}
+        onRequestClose={handleModalClose}
       >
         <View style={styles.fullScreenModal}>
           <View style={styles.modalContainer}>
             <Text style={styles.modalTextTitle}>Nhập OTP</Text>
+            {countdown !== null && (
+              <Text style={styles.modalTextTitle}>
+                Thời gian còn lại: {minutes}:
+                {seconds < 10 ? `0${seconds}` : seconds}
+              </Text>
+            )}
             <View style={styles.searchContainer}>
               <TextInput
                 style={styles.searchInput}

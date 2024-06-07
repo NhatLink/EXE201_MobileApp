@@ -22,7 +22,7 @@ const ProductRow = () => {
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const dispatch = useDispatch();
   const salonInformation = useSelector((state) => state.SALON.allSalon);
-  console.log(salonInformation.items);
+  console.log(salonInformation);
 
   useEffect(() => {
     dispatch(fetchSalonInformation(currentPage, itemsPerPage));

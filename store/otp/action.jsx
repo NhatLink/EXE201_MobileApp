@@ -12,7 +12,7 @@ export const CHECK_OTP_FAILURE = "CHECK_OTP_FAILURE";
 export const CHECK_EXIST_EMAIL_REQUEST = "CHECK_EXIST_EMAIL_REQUEST";
 export const CHECK_EXIST_EMAIL_SUCCESS = "CHECK_EXIST_EMAIL_SUCCESS";
 export const CHECK_EXIST_EMAIL_FAILURE = "CHECK_EXIST_EMAIL_FAILURE";
-
+export const RESET_OTP = "RESET_OTP";
 // Gửi OTP email action
 export const sendOtpEmail = (data) => async (dispatch) => {
   dispatch({ type: SEND_OTP_EMAIL_REQUEST });
@@ -44,14 +44,23 @@ export const checkExistEmail = (data, dataSend) => async (dispatch) => {
   dispatch({ type: CHECK_EXIST_EMAIL_REQUEST });
   try {
     const response = await otpServices.checkExistEmail(data);
-    dispatch({ type: CHECK_EXIST_EMAIL_SUCCESS, payload: response.data });
+    if (response.data === "Email valid") {
+      dispatch({ type: CHECK_EXIST_EMAIL_SUCCESS, payload: response.data });
+      console.log("sennd OTP");
+      dispatch(sendOtpEmail(dataSend));
+    }
+    if (response.data === "Email đã tồn tại trên hệ thống!") {
+      dispatch({ type: CHECK_EXIST_EMAIL_FAILURE, payload: response.data });
+    }
     ToastAndroid.show(response.data, ToastAndroid.SHORT);
   } catch (error) {
-    if (error.response && error.response.status === 404) {
-      dispatch(sendOtpEmail(dataSend));
-    } else {
-      dispatch({ type: CHECK_EXIST_EMAIL_FAILURE, payload: error.message });
-      ToastAndroid.show(error.message, ToastAndroid.SHORT);
-    }
+    dispatch({ type: CHECK_EXIST_EMAIL_FAILURE, payload: error.message });
+    ToastAndroid.show(error.message, ToastAndroid.SHORT);
   }
+};
+
+export const resetCheckOtp = () => {
+  return {
+    type: RESET_OTP,
+  };
 };

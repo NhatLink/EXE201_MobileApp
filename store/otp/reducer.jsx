@@ -8,13 +8,14 @@ import {
   CHECK_EXIST_EMAIL_REQUEST,
   CHECK_EXIST_EMAIL_SUCCESS,
   CHECK_EXIST_EMAIL_FAILURE,
+  RESET_OTP,
 } from "./action";
 
 const initialState = {
   loading: false,
-  otpData: null,
+  CheckOtp: false,
   error: null,
-  emailExists: true,
+  emailExists: false,
 };
 
 const otpReducer = (state = initialState, action) => {
@@ -27,9 +28,15 @@ const otpReducer = (state = initialState, action) => {
         loading: true,
       };
     case SEND_OTP_EMAIL_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+        error: null,
+      };
     case CHECK_OTP_SUCCESS:
       return {
         ...state,
+        CheckOtp: true,
         loading: false,
         error: null,
       };
@@ -48,11 +55,21 @@ const otpReducer = (state = initialState, action) => {
         error: action.payload,
       };
     case SEND_OTP_EMAIL_FAILURE:
-    case CHECK_OTP_FAILURE:
       return {
         ...state,
         loading: false,
         error: action.payload,
+      };
+    case CHECK_OTP_FAILURE:
+      return {
+        ...state,
+        CheckOtp: false,
+        loading: false,
+        error: action.payload,
+      };
+    case RESET_OTP:
+      return {
+        ...initialState,
       };
     default:
       return state;

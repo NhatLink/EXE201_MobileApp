@@ -98,6 +98,7 @@ const Profile = ({ navigation }) => {
   };
 
   const userLogout = async () => {
+    setLoader(true);
     try {
       await dispatch(
         logoutUser({
@@ -111,10 +112,12 @@ const Profile = ({ navigation }) => {
       setAccessToken(null);
       setRefreshToken(null);
       setUserInfo(null);
-      navigation.replace("Bottom Navigation");
+      navigation.navigate("Profile");
       console.log("User logged out");
     } catch (error) {
       console.error("Error during logout:", error);
+    } finally {
+      setLoader(false);
     }
   };
 

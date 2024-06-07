@@ -73,6 +73,7 @@ const About = (storeId) => {
           <View style={styles.mapContainer}>
             <MapView
               style={styles.map}
+              // provider={MapView.PROVIDER_GOOGLE}
               initialRegion={{
                 latitude: 10.875123789279687,
                 longitude: 106.79814847509016,

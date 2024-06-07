@@ -16,7 +16,6 @@ import StarRating from "./StarRating";
 const ProductViewCard = ({ item }) => {
   const navigation = useNavigation();
   const { width, height } = useWindowDimensions();
-  console.log(item);
   return (
     <TouchableOpacity
       onPress={() => navigation.navigate("Details", { product: item?.id })}

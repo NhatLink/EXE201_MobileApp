@@ -178,6 +178,7 @@ const DetailProfile = ({ navigation }) => {
   };
 
   const updateUser = async () => {
+    console.log("userDataUpdate:", userData);
     try {
       // Dispatching the loginUser action with inputs
       await dispatch(updateUserById(idUser, userData));

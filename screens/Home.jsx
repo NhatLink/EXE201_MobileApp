@@ -24,35 +24,35 @@ const Home = () => {
   const [location, setLocation] = useState("Ho Chi Minh, Vietnam");
 
   useEffect(() => {
-    checkUserExistence();
+    // checkUserExistence();
     getLocation();
   }, []);
 
-  const checkUserExistence = async () => {
-    const id = await AsyncStorage.getItem("id");
-    const userID = `user${JSON.parse(id)}`;
-    try {
-      const userData = await AsyncStorage.getItem(userID);
-      if (userData !== null) {
-        const parsedData = JSON.parse(userData);
-        setUserLoggedIn(true);
-        setUserData(parsedData);
+  // const checkUserExistence = async () => {
+  //   const id = await AsyncStorage.getItem("id");
+  //   const userID = `user${JSON.parse(id)}`;
+  //   try {
+  //     const userData = await AsyncStorage.getItem(userID);
+  //     if (userData !== null) {
+  //       const parsedData = JSON.parse(userData);
+  //       setUserLoggedIn(true);
+  //       setUserData(parsedData);
 
-        const count = await AsyncStorage.getItem("cartCount");
-        if (count !== null) {
-          const parsedCart = JSON.parse(count);
-          setCartCount(parsedCart);
-          console.log("cart count:", parsedCart);
-        } else {
-          return;
-        }
-      } else {
-        return;
-      }
-    } catch (error) {
-      console.error("Error retrieving user data:", error);
-    }
-  };
+  //       const count = await AsyncStorage.getItem("cartCount");
+  //       if (count !== null) {
+  //         const parsedCart = JSON.parse(count);
+  //         setCartCount(parsedCart);
+  //         console.log("cart count:", parsedCart);
+  //       } else {
+  //         return;
+  //       }
+  //     } else {
+  //       return;
+  //     }
+  //   } catch (error) {
+  //     console.error("Error retrieving user data:", error);
+  //   }
+  // };
 
   const handlePress = () => {
     if (userLoggedIn) {
