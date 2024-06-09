@@ -23,7 +23,7 @@ import { CheckEmail } from "../components";
 import LoginPage from "./LoginPage";
 import { useDispatch, useSelector } from "react-redux";
 import * as SecureStore from "expo-secure-store";
-import { getUserById, logoutUser } from "../store/user/action";
+import { getUserById, logoutUser, fetchUser } from "../store/user/action";
 import Loader from "../components/auth/Loader";
 
 const Profile = ({ navigation }) => {
@@ -74,19 +74,14 @@ const Profile = ({ navigation }) => {
       setRefreshToken(refreshToken);
       setUserInfo(userInfo);
       setIdUser(accountId);
-      if (accountId) {
-        dispatch(getUserById(accountId));
+      if (accessToken) {
+        dispatch(fetchUser(accessToken));
       }
       setLoader(false);
     }
     fetchData();
   }, []);
 
-  console.log("accessToken", accessToken);
-  console.log("refreshToken", refreshToken);
-  console.log("userInfo", userInfo);
-  console.log("accountId", idUser);
-  console.log("user", user);
   const deleteAllKeys = async () => {
     try {
       const allKeys = await AsyncStorage.getAllKeys();

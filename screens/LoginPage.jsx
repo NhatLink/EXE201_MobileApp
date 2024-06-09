@@ -42,27 +42,6 @@ const LoginPage = () => {
   const { isAuthenticated, error, user, accountId } = useSelector(
     (state) => state.USER
   );
-  // useEffect(() => {
-  //   async function fetchData() {
-  //     const accessToken = await SecureStore.getItemAsync("accessToken");
-  //     const refreshToken = await SecureStore.getItemAsync("refreshToken");
-  //     const userInfoJson = await SecureStore.getItemAsync("userInfo");
-  //     const userInfo = JSON.parse(userInfoJson);
-  //     setAccessToken(accessToken);
-  //     setRefreshToken(refreshToken);
-  //     setUserInfo(userInfo);
-  //   }
-
-  //   fetchData();
-  // }, []);
-
-  // console.log("accessToken", accessToken);
-  // console.log("refreshToken", refreshToken);
-  // console.log("userInfo", userInfo);
-  console.log("user", user);
-  console.log("accountId", accountId);
-  console.log("is Auth", isAuthenticated);
-  console.log("error", error);
   const handleError = (errorMessage, input) => {
     setErrors((prevState) => ({ ...prevState, [input]: errorMessage }));
   };

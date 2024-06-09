@@ -35,6 +35,7 @@ import { SliderBox } from "react-native-image-slider-box";
 import TabViewComponent from "../components/Detail/TabViewComponent";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchSalonInformationById } from "../store/salon/action";
+import * as SecureStore from "expo-secure-store";
 const Details = ({ navigation }) => {
   const StoreDetail = {
     storeId: 123,
@@ -145,14 +146,17 @@ const Details = ({ navigation }) => {
   const { setPaymentUrl } = usePayment();
   console.log("productId", product);
   const dispatch = useDispatch();
-  const salonDetail = useSelector((state) => state.SALON.salonDetail);
-
+  const { salonService, salonDetail, salonEmployee } = useSelector(
+    (state) => state.SALON
+  );
   useEffect(() => {
     dispatch(fetchSalonInformationById(product));
   }, [dispatch, product]);
   console.log("salonDetail:", salonDetail);
+  console.log("salonService:", salonService);
+  console.log("salonEmployee:", salonEmployee);
   const checkFavorites = async () => {
-    const userId = await AsyncStorage.getItem("id");
+    const userId = await SecureStore.getItemAsync("accountId");
     const favoritesId = `favorites${JSON.parse(userId)}`;
     try {
       const favoritesObj = await AsyncStorage.getItem(favoritesId);
@@ -167,7 +171,7 @@ const Details = ({ navigation }) => {
     }
   };
   const addFavorites = async () => {
-    const userId = await AsyncStorage.getItem("id");
+    const userId = await SecureStore.getItemAsync("accountId");
     const favoritesId = `favorites${JSON.parse(userId)}`;
     let productId = data?._id;
     let productObj = {

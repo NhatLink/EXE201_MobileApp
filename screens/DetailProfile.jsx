@@ -27,6 +27,7 @@ import { updateUserById } from "../store/user/action";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigation } from "@react-navigation/native";
 import * as SecureStore from "expo-secure-store";
+import Loader from "../components/auth/Loader";
 const DetailProfile = ({ navigation }) => {
   // const user = useSelector((state) => state.USER.user);
   const { user, accountId } = useSelector((state) => state.USER);
@@ -54,9 +55,11 @@ const DetailProfile = ({ navigation }) => {
   const [fullname, setFullname] = useState(user?.fullName);
   const [phone, setPhone] = useState(user?.phone);
   const [errors, setErrors] = useState({});
+  const [loader, setLoader] = useState(false);
   const dispatch = useDispatch();
   useEffect(() => {
     async function fetchData() {
+      setLoader(true);
       const accountId = await SecureStore.getItemAsync("accountId");
       const userInfoJson = await SecureStore.getItemAsync("userInfo");
       let userInfo = null;
@@ -71,6 +74,7 @@ const DetailProfile = ({ navigation }) => {
       // setFullname(userInfo?.fullName);
       // setPhone(userInfo?.phone);
       setIdUser(accountId);
+      setLoader(false);
     }
 
     fetchData();
@@ -128,6 +132,10 @@ const DetailProfile = ({ navigation }) => {
   const handleChangeFullName = () => {
     if (!fullname) {
       handleError("Full name is required", "fullname");
+    } else if (fullname.length < 3) {
+      handleError("Full name must be at least 3 characters", "fullname");
+    } else if (fullname.length > 40) {
+      handleError("Full name must be less than 40 characters", "fullname");
     } else {
       setModalFullname(false);
       handleChanges(fullname, "fullName");
@@ -137,6 +145,11 @@ const DetailProfile = ({ navigation }) => {
   const handleChangePhone = () => {
     if (!phone) {
       handleError("Phone is required", "phone");
+    } else if (!phone.match(/^[0-9]{10}$/)) {
+      handleError(
+        "Provide a valid phone number with exactly 10 digits",
+        "phone"
+      );
     } else {
       setModalPhone(false);
       handleChanges(phone, "phone");
@@ -144,15 +157,16 @@ const DetailProfile = ({ navigation }) => {
     }
   };
   const onChangeDate = (event, selectedDate) => {
-    const currentDate = selectedDate || userData.dayOfBirth;
+    const currentDate = selectedDate || userData?.dayOfBirth;
     const formattedDate = currentDate.toISOString().slice(0, 19);
     setShowDatePicker(false);
     setUserData((prevState) => ({ ...prevState, dayOfBirth: formattedDate }));
   };
   const isDifferent = JSON.stringify(user) !== JSON.stringify(userData);
 
-  // console.log("userData:", JSON.stringify(userData));
-  // console.log("user:", JSON.stringify(user));
+  console.log("userData:", JSON.stringify(userData));
+  console.log("user:", JSON.stringify(user));
+  console.log("isDifferent", isDifferent);
   const handlePressBack = () => {
     if (isDifferent) {
       Alert.alert(
@@ -178,21 +192,41 @@ const DetailProfile = ({ navigation }) => {
   };
 
   const updateUser = async () => {
-    console.log("userDataUpdate:", userData);
+    setLoader(true);
     try {
-      // Dispatching the loginUser action with inputs
-      await dispatch(updateUserById(idUser, userData));
+      let formData = new FormData();
+
+      // Loop through each key in data object
+      for (let key in userData) {
+        if (key === "img") {
+          const uriParts = userData[key].split(".");
+          const fileType = uriParts[uriParts.length - 1];
+
+          formData.append(key, {
+            uri: userData[key],
+            name: `image.${fileType}`,
+            type: `image/${fileType}`,
+          });
+        } else {
+          formData.append(key, userData[key]);
+        }
+      }
+      console.log("userformdataUpdate:", formData);
+      // Dispatching the loginUser action with formData
+      await dispatch(updateUserById(idUser, formData));
       // Handling post-login logic can be done within the loginUser action or here
     } catch (error) {
       console.error("Login error:", error);
       Alert.alert("Error", "Oops, something went wrong. Try again");
     } finally {
+      setLoader(false);
       navigation.replace("Bottom Navigation");
     }
   };
 
   return (
     <SafeAreaView style={styles.container}>
+      <Loader visible={loader} />
       <Text style={styles.modalTextTitle}>Chỉnh sửa thông tin người dùng</Text>
       <TouchableOpacity
         style={styles.maiImag2}
@@ -203,7 +237,7 @@ const DetailProfile = ({ navigation }) => {
         <View style={styles.containerUser}>
           <Image
             source={{
-              uri: userData.img,
+              uri: userData?.img,
             }}
             resizeMode="cover"
             style={styles.avatar}
@@ -225,7 +259,7 @@ const DetailProfile = ({ navigation }) => {
               />
               <Text style={styles.menuItemText}>Tên</Text>
             </View>
-            <Text style={styles.menuItemText}>{userData.username}</Text>
+            <Text style={styles.menuItemText}>{userData?.username}</Text>
           </View>
         </TouchableOpacity>
         <TouchableOpacity
@@ -242,7 +276,7 @@ const DetailProfile = ({ navigation }) => {
               />
               <Text style={styles.menuItemText}>Họ Tên</Text>
             </View>
-            <Text style={styles.menuItemText}>{userData.fullName}</Text>
+            <Text style={styles.menuItemText}>{userData?.fullName}</Text>
           </View>
         </TouchableOpacity>
         <View>
@@ -256,9 +290,9 @@ const DetailProfile = ({ navigation }) => {
               <Text style={styles.menuItemText}>Giới tính</Text>
             </View>
             <View style={styles.menuItem2}>
-              <Text style={styles.menuItemText}>{userData.gender}</Text>
+              <Text style={styles.menuItemText}>{userData?.gender}</Text>
               <Picker
-                selectedValue={userData.gender}
+                selectedValue={userData?.gender}
                 onValueChange={(itemValue, itemIndex) =>
                   handleChanges(itemValue, "gender")
                 }
@@ -285,7 +319,9 @@ const DetailProfile = ({ navigation }) => {
               />
               <Text style={styles.menuItemText}>Ngày sinh</Text>
             </View>
-            <Text style={styles.menuItemText}>{userData.dayOfBirth}</Text>
+            <Text style={styles.menuItemText}>
+              {userData?.dayOfBirth.split("T")[0]}
+            </Text>
           </View>
         </TouchableOpacity>
 
@@ -299,7 +335,7 @@ const DetailProfile = ({ navigation }) => {
               />
               <Text style={styles.menuItemText}>Số điện thoại</Text>
             </View>
-            <Text style={styles.menuItemText}>{userData.phone}</Text>
+            <Text style={styles.menuItemText}>{userData?.phone}</Text>
           </View>
         </TouchableOpacity>
 
@@ -314,7 +350,7 @@ const DetailProfile = ({ navigation }) => {
               <Text style={styles.menuItemText}>Email</Text>
             </View>
             <Text style={styles.menuItemText} numberOfLines={1}>
-              {userData.email}
+              {userData?.email}
             </Text>
           </View>
         </TouchableOpacity>
@@ -485,7 +521,7 @@ const DetailProfile = ({ navigation }) => {
         {showDatePicker && (
           <DateTimePicker
             // value={userData.dayOfBirth}
-            value={new Date(userData.dayOfBirth)}
+            value={new Date(userData?.dayOfBirth)}
             mode="date"
             display="default"
             onChange={onChangeDate}

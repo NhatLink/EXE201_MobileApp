@@ -12,4 +12,14 @@ export const SalonInfomationService = {
   getSalonById(id) {
     return API.get(`/api/v1/saloninformations/GetSalonInformationById/${id}`);
   },
+  GetSalonEmployeeBySalonInformationId(id) {
+    return API.get(
+      `/api/v1/salonemployees/GetSalonEmployeeBySalonInformationId/${id}`
+    );
+  },
+  GetServiceHairBySalonInformationId(id) {
+    return API.get(
+      `/api/v1/servicehairs/GetServiceHairBySalonInformationId/${id}`
+    );
+  },
 };

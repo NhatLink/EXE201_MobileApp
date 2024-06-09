@@ -20,12 +20,34 @@ import axios from "axios";
 import { baseUrl } from "../utils/IP";
 import { useNavigation } from "@react-navigation/native";
 import { Agenda } from "react-native-calendars";
+import { useDispatch, useSelector } from "react-redux";
+import { GetAppointmentByAccountId } from "../store/appointment/action";
+import Loader from "../components/auth/Loader";
+import * as SecureStore from "expo-secure-store";
 const timeToString = (time) => {
   const date = new Date(time);
   return date.toISOString().split("T")[0];
 };
 const Schedule = () => {
   const navigation = useNavigation();
+  const dispatch = useDispatch();
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const { appointment, loading } = useSelector((state) => state.APPOINTMENT);
+  console.log("appointment:", appointment);
+  useEffect(() => {
+    async function fetchData() {
+      const accountId = await SecureStore.getItemAsync("accountId");
+      if (accountId) {
+        dispatch(
+          GetAppointmentByAccountId(currentPage, itemsPerPage, accountId)
+        );
+      }
+      console.log("accountId", accountId);
+    }
+    fetchData();
+  }, []);
+
   const appointments = [
     {
       id: 1,
@@ -233,6 +255,7 @@ const Schedule = () => {
         marginTop: 10,
       }}
     >
+      <Loader visible={loading} />
       <Text style={styles.title}>Lịch hẹn của bạn</Text>
       {appointments.length === 0 ? (
         <View

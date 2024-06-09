@@ -4,7 +4,7 @@ export const UserServices = {
   loginUser(data) {
     return API.post("/api/v1/auth/Login", data);
   },
-  fetchMe(data) {
+  fetchToken(data) {
     return API.post("/api/v1/auth/RefreshToken", data);
   },
   logoutUser(data) {
@@ -16,21 +16,31 @@ export const UserServices = {
   getUserById(id) {
     return API.get(`/api/v1/accounts/GetAccountById/${id}`);
   },
-  // updateUserById(id, data) {
-  //   return API.put(`/api/v1/accounts/UpdateAccount/${id}`, data);
-  // },
+  fetchUser(accessToken) {
+    return API.get(`/api/v1/auth/FetchUser/${accessToken}`);
+  },
   updateUserById(id, data) {
-    let formData = new FormData();
-
-    // Loop through each key in data object
-    for (let key in data) {
-      formData.append(key, data[key]);
-    }
-    console.log(formData);
-    return API.put(`/api/v1/accounts/UpdateAccount/${id}`, formData, {
+    return API.put(`/api/v1/accounts/UpdateAccount/${id}`, data, {
       headers: {
         "Content-Type": "multipart/form-data",
       },
     });
   },
 };
+// updateUserById(id, data) {
+//   return API.put(`/api/v1/accounts/UpdateAccount/${id}`, data);
+// },
+// updateUserById(id, data) {
+//   let formData = new FormData();
+
+//   // Loop through each key in data object
+//   for (let key in data) {
+//     formData.append(key, data[key]);
+//   }
+//   console.log(formData);
+//   return API.put(`/api/v1/accounts/UpdateAccount/${id}`, formData, {
+//     headers: {
+//       "Content-Type": "multipart/form-data",
+//     },
+//   });
+// },

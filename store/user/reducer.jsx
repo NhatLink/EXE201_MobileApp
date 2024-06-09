@@ -8,6 +8,8 @@ import {
   REGISTER_FAIL,
   GET_USER_BY_ID,
   UPDATE_USER_BY_ID,
+  FETCH_TOKEN_FAIL,
+  FETCH_TOKEN_SUCCESS,
 } from "./action";
 
 const initialState = {
@@ -36,16 +38,27 @@ const userReducer = (state = initialState, action) => {
         error: action.payload,
         isAuthenticated: false,
       };
+    case FETCH_TOKEN_SUCCESS:
+      return {
+        ...state,
+        error: null,
+        accessToken: action.payload,
+      };
+    case FETCH_TOKEN_FAIL:
+      return {
+        ...initialState,
+      };
     case FETCH_USER_SUCCESS:
       return {
         ...state,
-        isAuthenticated: true,
         error: null,
+        user: action.payload,
       };
     case FETCH_USER_FAIL:
       return {
         ...state,
         error: action.payload,
+        user: null,
       };
     case LOGOUT_SUCCESS:
       return {
