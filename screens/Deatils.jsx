@@ -11,7 +11,7 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { baseUrl } from "../utils/IP";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { COLORS, SIZES, images } from "../constants";
 import {
   SimpleLineIcons,
@@ -20,7 +20,7 @@ import {
   Fontisto,
 } from "@expo/vector-icons";
 import { ColorList, StarRating } from "../components";
-import { useRoute } from "@react-navigation/native";
+import { useFocusEffect, useRoute } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import addToCart from "../hook/addToCart";
 import { WebView } from "react-native-webview";
@@ -36,6 +36,7 @@ import TabViewComponent from "../components/Detail/TabViewComponent";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchSalonInformationById } from "../store/salon/action";
 import * as SecureStore from "expo-secure-store";
+import Loader from "../components/auth/Loader";
 const Details = ({ navigation }) => {
   const StoreDetail = {
     storeId: 123,
@@ -140,26 +141,40 @@ const Details = ({ navigation }) => {
   const route = useRoute();
   const { product } = route.params;
   const [favorites, setFavorites] = useState(false);
-  const [data, setData] = useState({});
-  const [loading, setLoading] = useState(false);
+  const [idUser, setIdUser] = useState(null);
+  const [loader, setLoader] = useState(false);
   const userLogin = useUser(navigation);
   const { setPaymentUrl } = usePayment();
-  console.log("productId", product);
+  console.log("idUser", idUser);
   const dispatch = useDispatch();
   const { salonService, salonDetail, salonEmployee } = useSelector(
     (state) => state.SALON
   );
+  useFocusEffect(
+    useCallback(() => {
+      checkFavorites();
+      return () => {};
+    }, [checkFavorites])
+  );
   useEffect(() => {
-    dispatch(fetchSalonInformationById(product));
-  }, [dispatch, product]);
+    async function fetchData() {
+      setLoader(true);
+      const accountId = await SecureStore.getItemAsync("accountId");
+      dispatch(fetchSalonInformationById(product));
+      setIdUser(accountId);
+      setLoader(false);
+    }
+
+    fetchData();
+  }, []);
   console.log("salonDetail:", salonDetail);
   console.log("salonService:", salonService);
   console.log("salonEmployee:", salonEmployee);
   const checkFavorites = async () => {
     const userId = await SecureStore.getItemAsync("accountId");
-    const favoritesId = `favorites${JSON.parse(userId)}`;
+    const favoritesId = `favorites${userId}`;
     try {
-      const favoritesObj = await AsyncStorage.getItem(favoritesId);
+      const favoritesObj = await SecureStore.getItemAsync(favoritesId);
       if (favoritesObj !== null) {
         const favorites = JSON.parse(favoritesObj);
         if (favorites[product]) {
@@ -172,47 +187,66 @@ const Details = ({ navigation }) => {
   };
   const addFavorites = async () => {
     const userId = await SecureStore.getItemAsync("accountId");
-    const favoritesId = `favorites${JSON.parse(userId)}`;
-    let productId = data?._id;
+    const favoritesId = `favorites${userId}`;
+    let shopId = salonDetail?.id;
     let productObj = {
-      productName: data?.productName,
-      _id: data?._id,
-      description: data?.description,
-      image: data?.image[0],
-      price: data?.price,
+      address: salonDetail?.address,
+      id: salonDetail?.id,
+      description: salonDetail?.description,
+      img: salonDetail?.img,
+      isActive: salonDetail?.isActive,
     };
 
     try {
-      const existingItem = await AsyncStorage.getItem(favoritesId);
+      const existingItem = await SecureStore.getItemAsync(favoritesId);
       let favoritesObj = existingItem ? JSON.parse(existingItem) : {};
 
-      if (favoritesObj[productId]) {
+      if (favoritesObj[product]) {
         // Key already exists, so delete it
-        delete favoritesObj[productId];
+        delete favoritesObj[shopId];
 
-        console.log(`Deleted key: ${productId}`);
+        console.log(`Deleted key: ${shopId}`);
         setFavorites(false);
         Toast.show({
           type: "info",
-          text2: "Removed from favorite",
+          text1: `${salonDetail?.description}`,
+          text2: "Đã bị xóa khỏi danh sách yêu thích",
+          visibilityTime: 4000, // thời gian hiển thị Toast (tính bằng ms)
+          autoHide: true, // tự động ẩn Toast sau thời gian visibilityTime
+          topOffset: 30, // vị trí từ đỉnh màn hình (tính bằng px)
+          bottomOffset: 40, // vị trí từ đáy màn hình (tính bằng px)
+          textStyle: { fontSize: 20 }, // kiểu chữ cho text2
+          text1Style: { fontSize: 14, fontWeight: "bold" }, // kiểu chữ cho text1
+          backgroundColor: "#2196F3", // màu nền của Toast
+          onPress: () => console.log("Toast pressed"), // hàm sẽ được gọi khi người dùng nhấn vào Toast
         });
       } else {
-        favoritesObj[productId] = productObj;
-        console.log(`Added key: ${productId}`);
+        favoritesObj[shopId] = productObj;
+        console.log(`Added key: ${shopId}`);
         setFavorites(true);
         Toast.show({
-          type: "success",
-          text2: "Added to favorite",
+          type: "info",
+          text1: `${salonDetail?.description}`,
+          text2: "Đã được thêm vào danh sách yêu thích",
+          visibilityTime: 4000, // thời gian hiển thị Toast (tính bằng ms)
+          autoHide: true, // tự động ẩn Toast sau thời gian visibilityTime
+          topOffset: 30, // vị trí từ đỉnh màn hình (tính bằng px)
+          bottomOffset: 40, // vị trí từ đáy màn hình (tính bằng px)
+          textStyle: { fontSize: 20 }, // kiểu chữ cho text2
+          text1Style: { fontSize: 14, fontWeight: "bold" }, // kiểu chữ cho text1
+          backgroundColor: "#2196F3", // màu nền của Toast
+          onPress: () => console.log("Toast pressed"), // hàm sẽ được gọi khi người dùng nhấn vào Toast
         });
       }
 
-      await AsyncStorage.setItem(favoritesId, JSON.stringify(favoritesObj));
+      await SecureStore.setItemAsync(favoritesId, JSON.stringify(favoritesObj));
     } catch (error) {
       console.log(error);
     }
   };
   return (
     <View style={styles.container}>
+      <Loader visible={loader} />
       <ScrollView style={styles.wrapper}>
         <View style={styles.upperRow}>
           <TouchableOpacity onPress={() => navigation.goBack()}>
@@ -259,21 +293,23 @@ const Details = ({ navigation }) => {
         </View>
         <View style={styles.descriptionWrapper}>
           <View>
-            <Text style={styles.description}>{StoreDetail?.storeName}</Text>
-            <Text style={styles.descriptionText}>{StoreDetail?.location}</Text>
+            <Text style={styles.description}>{salonDetail?.description}</Text>
+            <Text style={styles.descriptionText}>{salonDetail?.address}</Text>
             {StoreDetail?.saleUp && (
               <Text style={styles.sale} numberOfLines={1}>
                 SALE
               </Text>
             )}
           </View>
-          <TouchableOpacity onPress={() => {}}>
-            {favorites ? (
-              <Ionicons name="heart" size={30} color="green" />
-            ) : (
-              <Ionicons name="heart-outline" size={40} color={COLORS.black} />
-            )}
-          </TouchableOpacity>
+          {idUser && (
+            <TouchableOpacity onPress={addFavorites}>
+              {favorites ? (
+                <Ionicons name="heart" size={40} color="red" />
+              ) : (
+                <Ionicons name="heart-outline" size={40} color={COLORS.black} />
+              )}
+            </TouchableOpacity>
+          )}
         </View>
         <TabViewComponent storeId={StoreDetail.storeId} />
       </ScrollView>

@@ -2,10 +2,24 @@ import { StyleSheet, Text, View, TouchableOpacity, Image } from "react-native";
 import React from "react";
 import { SIZES, COLORS, SHADOWS } from "../../constants";
 import { useNavigation } from "@react-navigation/native";
-
+import { useDispatch } from "react-redux";
+import {
+  addService,
+  setStoreId,
+  resetBooking,
+} from "../../store/bookingStore/action";
 const SearchTile = ({ item }) => {
   const navigation = useNavigation();
-
+  const dispatch = useDispatch();
+  const handleBook = (storeId, item) => {
+    dispatch(resetBooking());
+    dispatch(setStoreId(storeId));
+    dispatch(addService(item));
+    console.log("store", storeId);
+    console.log("item", item);
+    // Navigation or additional logic
+    navigation.navigate("Booking");
+  };
   return (
     // <View>
     //   <TouchableOpacity
@@ -34,10 +48,10 @@ const SearchTile = ({ item }) => {
     // </View>
     <View style={styles.container}>
       <TouchableOpacity
-        onPress={() => navigation.navigate("Details", { product: item._id })}
+        onPress={() => navigation.navigate("Details", { product: item?.id })}
       >
         <View style={styles.imageContainer}>
-          <Image source={{ uri: item.image[0] }} style={styles.image} />
+          <Image source={{ uri: item?.image[0] }} style={styles.image} />
           <View style={styles.ratingContainer}>
             {/* <StarRating rating={item?.avgRating} /> */}
             <Text style={styles.averageRatingText}>
@@ -54,20 +68,20 @@ const SearchTile = ({ item }) => {
         </View>
         <View style={styles.detailsContainer}>
           <Text style={styles.name} numberOfLines={1}>
-            {item.productName}
+            {item?.productName}
           </Text>
           <Text style={styles.supplier} numberOfLines={2}>
-            {item.description}
+            {item?.description}
           </Text>
           <Text style={styles.price} numberOfLines={1}>
-            SALE UP TO {item.price}%
+            SALE UP TO {item?.price}%
           </Text>
         </View>
       </TouchableOpacity>
-      {item.services &&
-        item.services?.map((item) => (
+      {item?.services &&
+        item?.services?.map((itemService) => (
           <View
-            key={item.serviceName}
+            key={itemService?.service_id}
             style={styles.serviceItem}
             onPress={() => {
               // Handle navigation or other actions
@@ -78,39 +92,42 @@ const SearchTile = ({ item }) => {
               // onPress={() => openModal(item)}
             >
               <Text style={styles.serviceName} numberOfLines={1}>
-                {item.serviceName}
+                {itemService?.serviceName}
               </Text>
               <Text style={styles.serviceDescription} numberOfLines={1}>
-                {item.description}
+                {itemService?.description}
               </Text>
             </TouchableOpacity>
             <View style={styles.pricingInfo}>
-              {item?.reducePrice ? (
+              {itemService?.reducePrice ? (
                 <>
                   <Text
                     style={styles.servicePrice}
                     numberOfLines={1}
-                  >{`${item?.reducePrice?.toLocaleString()} VND`}</Text>
+                  >{`${itemService?.reducePrice?.toLocaleString()} VND`}</Text>
                   <Text
                     style={styles.servicePrice2}
                     numberOfLines={1}
-                  >{`${item.price.toLocaleString()} VND`}</Text>
+                  >{`${itemService?.price.toLocaleString()} VND`}</Text>
                 </>
               ) : (
                 <>
                   <Text
                     style={styles.servicePrice}
                     numberOfLines={1}
-                  >{`${item.price.toLocaleString()} VND`}</Text>
+                  >{`${itemService?.price.toLocaleString()} VND`}</Text>
                 </>
               )}
 
               <Text
                 style={styles.serviceDescription}
                 numberOfLines={1}
-              >{`${item.serviceTime}`}</Text>
+              >{`${itemService?.serviceTime}`}</Text>
             </View>
-            <TouchableOpacity style={styles.bookButton} onPress={() => {}}>
+            <TouchableOpacity
+              style={styles.bookButton}
+              onPress={() => handleBook(item?.id, itemService)}
+            >
               <Text style={styles.button}>Book</Text>
             </TouchableOpacity>
           </View>

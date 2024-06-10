@@ -24,7 +24,7 @@ import SearchSeviceModal from "../components/Search/SearchSeviceModal";
 const Search = () => {
   const products = [
     {
-      _id: "1",
+      id: "1",
       image: [
         "https://images.squarespace-cdn.com/content/v1/5fd787d32a8a4a2604b22b5d/a1a982a2-8886-4017-a735-3fde5aeab145/msbs-barbershop-perspective-22000.jpg",
       ],
@@ -36,6 +36,7 @@ const Search = () => {
       reviewCount: 25,
       services: [
         {
+          service_id: 1,
           serviceName: "Basic Haircut",
           description: "Quick and suitable haircut for all ages.",
           price: 150000,
@@ -60,6 +61,7 @@ const Search = () => {
           ],
         },
         {
+          service_id: 2,
           serviceName: "Shaving",
           description: "Facial shave with a special razor, includes skin care.",
           price: 100000,
@@ -85,7 +87,7 @@ const Search = () => {
       ],
     },
     {
-      _id: "2",
+      id: "2",
       image: [
         "https://images.squarespace-cdn.com/content/v1/5fd787d32a8a4a2604b22b5d/a1a982a2-8886-4017-a735-3fde5aeab145/msbs-barbershop-perspective-22000.jpg",
       ],
@@ -97,7 +99,7 @@ const Search = () => {
       reviewCount: 18,
     },
     {
-      _id: "3",
+      id: "3",
       image: [
         "https://images.squarespace-cdn.com/content/v1/5fd787d32a8a4a2604b22b5d/a1a982a2-8886-4017-a735-3fde5aeab145/msbs-barbershop-perspective-22000.jpg",
       ],
@@ -109,7 +111,7 @@ const Search = () => {
       reviewCount: 10,
     },
     {
-      _id: "4",
+      id: "4",
       image: [
         "https://images.squarespace-cdn.com/content/v1/5fd787d32a8a4a2604b22b5d/a1a982a2-8886-4017-a735-3fde5aeab145/msbs-barbershop-perspective-22000.jpg",
       ],
@@ -121,7 +123,7 @@ const Search = () => {
       reviewCount: 30,
     },
     {
-      _id: "5",
+      id: "5",
       image: [
         "https://images.squarespace-cdn.com/content/v1/5fd787d32a8a4a2604b22b5d/a1a982a2-8886-4017-a735-3fde5aeab145/msbs-barbershop-perspective-22000.jpg",
       ],
@@ -133,7 +135,7 @@ const Search = () => {
       reviewCount: 20,
     },
     {
-      _id: "6",
+      id: "6",
       image: [
         "https://images.squarespace-cdn.com/content/v1/5fd787d32a8a4a2604b22b5d/a1a982a2-8886-4017-a735-3fde5aeab145/msbs-barbershop-perspective-22000.jpg",
       ],
@@ -145,6 +147,7 @@ const Search = () => {
       reviewCount: 20,
       services: [
         {
+          service_id: 1,
           serviceName: "Basic Haircut",
           description: "Quick and suitable haircut for all ages.",
           price: 150000,
@@ -171,7 +174,7 @@ const Search = () => {
       ],
     },
     {
-      _id: "7",
+      id: "7",
       image: [
         "https://images.squarespace-cdn.com/content/v1/5fd787d32a8a4a2604b22b5d/a1a982a2-8886-4017-a735-3fde5aeab145/msbs-barbershop-perspective-22000.jpg",
       ],
@@ -183,7 +186,7 @@ const Search = () => {
       reviewCount: 20,
     },
     {
-      _id: "8",
+      id: "8",
       image: [
         "https://images.squarespace-cdn.com/content/v1/5fd787d32a8a4a2604b22b5d/a1a982a2-8886-4017-a735-3fde5aeab145/msbs-barbershop-perspective-22000.jpg",
       ],
@@ -368,7 +371,7 @@ const Search = () => {
           </Text>
           <FlatList
             data={products}
-            keyExtractor={(item) => item?._id}
+            keyExtractor={(item) => item?.id}
             renderItem={({ item }) => <SearchTile item={item} />}
           />
         </>

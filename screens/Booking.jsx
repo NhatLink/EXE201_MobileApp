@@ -90,15 +90,32 @@ const Booking = ({ navigation }) => {
   const openModal = () => {
     setModalVisible(true);
   };
-
-  const [selected, setSelected] = useState("");
+  const formatDate = (date) => {
+    return date
+      .toLocaleDateString("vi-VN", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+      })
+      .split("/")
+      .reverse()
+      .join("-");
+  };
+  const [selected, setSelected] = useState(formatDate(new Date()));
+  const [minDate, setMinDate] = useState(new Date());
+  const [maxDate, setMaxDate] = useState(() => {
+    const date = new Date();
+    date.setDate(date.getDate() + 4);
+    return date;
+  });
+  console.log("selecteddate", selected);
+  console.log("minDate", minDate);
+  console.log("maxDate", maxDate);
 
   useEffect(() => {
-    const today = new Date().toISOString().split("T")[0];
-    // console.log(today);
-    dispatch(setDateBooking(today));
+    // const today = new Date().toISOString().split("T")[0];
+    dispatch(setDateBooking(selected));
     dispatch(setHourBooking(time[0].time));
-    setSelected(today);
   }, []);
 
   return (
@@ -119,27 +136,32 @@ const Booking = ({ navigation }) => {
           {/* <ScrollView style={styles.content}> */}
           <Calendar
             onDayPress={(day) => {
-              setSelected(day.dateString);
-              dispatch(setDateBooking(day.dateString));
+              const date = new Date(day.dateString);
+              setSelected(formatDate(date));
+              dispatch(setDateBooking(formatDate(date)));
+              // setSelected(day.dateString);
+              // dispatch(setDateBooking(day.dateString));
             }}
             markedDates={{
               [selected]: {
                 selected: true,
                 disableTouchEvent: true,
-                selectedColor: COLORS.secondary,
-                selectedTextColor: COLORS.red,
+                selectedColor: COLORS.primary,
+                selectedTextColor: COLORS.secondary,
               },
             }}
             theme={{
               backgroundColor: COLORS.gray,
-              calendarBackground: "#ffffff",
-              textSectionTitleColor: "#b6c1cd",
-              selectedDayBackgroundColor: "#00adf5",
-              selectedDayTextColor: "#ffffff",
-              todayTextColor: "#00adf5",
-              dayTextColor: "#2d4150",
-              textDisabledColor: "#d9e",
+              calendarBackground: COLORS.lightWhite,
+              textSectionTitleColor: "#00adf5",
+              selectedDayBackgroundColor: COLORS.red,
+              selectedDayTextColor: COLORS.black,
+              todayTextColor: COLORS.red,
+              dayTextColor: "#00adf5",
+              textDisabledColor: COLORS.gray2,
             }}
+            minDate={formatDate(minDate)}
+            maxDate={formatDate(maxDate)}
           />
           <ScrollView
             horizontal
@@ -173,12 +195,14 @@ const Booking = ({ navigation }) => {
           keyExtractor={(item) => item?.service_id.toString()}
           renderItem={({ item }) => <ListService item={item} />}
         /> */}
-          <Text style={styles.addServiceText}>+ Thêm dịch vụ</Text>
-          <ListService services={services} />
           <TouchableOpacity
             style={styles.addServiceContainer}
             onPress={() => openModal()}
-          ></TouchableOpacity>
+          >
+            <Text style={styles.addServiceText}>+ Thêm dịch vụ</Text>
+          </TouchableOpacity>
+          <ListService services={services} />
+
           {/* </ScrollView> */}
 
           <ListServiceModal isVisible={modalVisible} onClose={closeModal} />

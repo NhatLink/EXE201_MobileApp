@@ -9,97 +9,94 @@ import {
 import React, { useEffect, useState, useCallback } from "react";
 import { COLORS, SIZES, SHADOWS } from "../constants";
 import { SimpleLineIcons, Ionicons } from "@expo/vector-icons";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as SecureStore from "expo-secure-store";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useFocusEffect } from "@react-navigation/native";
 const Favorites = ({ navigation }) => {
-  // const [favoritesData, setFavoritesData] = useState([]);
-  // useFocusEffect(
-  //   useCallback(() => {
-  //     checkFavorites();
-  //     // Không cần trả về hàm dọn dẹp trong trường hợp này
-  //     return () => {};
-  //   }, [checkFavorites])
-  // );
+  const [favoritesData, setFavoritesData] = useState([]);
+  console.log("favoritesData", favoritesData);
 
-  // const checkFavorites = useCallback(async () => {
-  //   const id = await AsyncStorage.getItem("id");
-  //   if (id !== null) {
-  //     const favoritesId = `favorites${JSON.parse(id)}`;
-  //     console.log("fav", favoritesId);
-  //     try {
-  //       const favoritesObj = await AsyncStorage.getItem(favoritesId);
-  //       if (favoritesObj !== null) {
-  //         const favorites = JSON.parse(favoritesObj);
-  //         const favoritesArray = Object.values(favorites);
-  //         setFavoritesData(favoritesArray); // Đảm bảo bạn đã khai báo setFavoritesData
-  //       }
-  //     } catch (error) {
-  //       console.log(error);
-  //     }
-  //   }
-  // }, []);
+  useFocusEffect(
+    useCallback(() => {
+      checkFavorites();
+    }, [checkFavorites]) // Không cần trả về hàm dọn dẹp trong trường hợp này
+  );
 
-  // const deleteFavorite = async (id) => {
-  //   const userId = await AsyncStorage.getItem("id");
-  //   const favoritesId = `favorites${JSON.parse(userId)}`;
-  //   console.log(favoritesId);
-  //   let productId = id;
+  const checkFavorites = useCallback(async () => {
+    const userId = await SecureStore.getItemAsync("accountId");
+    if (userId !== null) {
+      const favoritesId = `favorites${userId}`;
+      console.log("fav", favoritesId);
+      try {
+        const favoritesObj = await SecureStore.getItemAsync(favoritesId);
+        if (favoritesObj !== null) {
+          const favorites = JSON.parse(favoritesObj);
+          const favoritesArray = Object.values(favorites);
+          setFavoritesData(favoritesArray);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    }
+  }, []);
 
-  //   console.log(productId);
-  //   try {
-  //     const existingItem = await AsyncStorage.getItem(favoritesId);
-  //     let favoritesObj = existingItem ? JSON.parse(existingItem) : {};
+  const deleteFavorite = async (id) => {
+    const userId = await SecureStore.getItemAsync("accountId");
+    const favoritesId = `favorites${userId}`;
+    console.log(favoritesId);
+    let productId = id;
+    try {
+      const existingItem = await SecureStore.getItemAsync(favoritesId);
+      let favoritesObj = existingItem ? JSON.parse(existingItem) : {};
 
-  //     if (favoritesObj[productId]) {
-  //       // Key exists, so delete it
-  //       delete favoritesObj[productId];
+      if (favoritesObj[productId]) {
+        delete favoritesObj[productId];
 
-  //       checkFavorites();
-  //     } else {
-  //       console.log(`Key does not exist: ${productId}`);
-  //       navigation.navigate("Home");
-  //     }
+        await checkFavorites();
+      } else {
+        console.log(`Key does not exist: ${productId}`);
+        navigation.navigate("Home");
+      }
 
-  //     await AsyncStorage.setItem(favoritesId, JSON.stringify(favoritesObj));
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
-  const favoritesData = [
-    {
-      _id: "1",
-      image:
-        "https://www.gento.vn/wp-content/uploads/2024/04/barber-la-gi-8.jpg",
-      productName: "Shop 1",
-      description: "Description for Shop 1",
-      price: 19.99,
-    },
-    {
-      _id: "2",
-      image:
-        "https://www.gento.vn/wp-content/uploads/2024/04/barber-la-gi-8.jpg",
-      productName: "Shop 2",
-      description: "Description for Shop 2",
-      price: 29.99,
-    },
-    {
-      _id: "3",
-      image:
-        "https://www.gento.vn/wp-content/uploads/2024/04/barber-la-gi-8.jpg",
-      productName: "Shop 3",
-      description: "Description for Shop 3",
-      price: 39.99,
-    },
-    {
-      _id: "4",
-      image:
-        "https://www.gento.vn/wp-content/uploads/2024/04/barber-la-gi-8.jpg",
-      productName: "Shop 4",
-      description: "Description for Shop 4",
-      price: 49.99,
-    },
-  ];
+      await SecureStore.setItem(favoritesId, JSON.stringify(favoritesObj));
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  // const favoritesData = [
+  //   {
+  //     _id: "1",
+  //     image:
+  //       "https://www.gento.vn/wp-content/uploads/2024/04/barber-la-gi-8.jpg",
+  //     productName: "Shop 1",
+  //     description: "Description for Shop 1",
+  //     price: 19.99,
+  //   },
+  //   {
+  //     _id: "2",
+  //     image:
+  //       "https://www.gento.vn/wp-content/uploads/2024/04/barber-la-gi-8.jpg",
+  //     productName: "Shop 2",
+  //     description: "Description for Shop 2",
+  //     price: 29.99,
+  //   },
+  //   {
+  //     _id: "3",
+  //     image:
+  //       "https://www.gento.vn/wp-content/uploads/2024/04/barber-la-gi-8.jpg",
+  //     productName: "Shop 3",
+  //     description: "Description for Shop 3",
+  //     price: 39.99,
+  //   },
+  //   {
+  //     _id: "4",
+  //     image:
+  //       "https://www.gento.vn/wp-content/uploads/2024/04/barber-la-gi-8.jpg",
+  //     productName: "Shop 4",
+  //     description: "Description for Shop 4",
+  //     price: 49.99,
+  //   },
+  // ];
 
   // console.log(favoritesData);
   return (
@@ -122,28 +119,28 @@ const Favorites = ({ navigation }) => {
               <TouchableOpacity
                 style={styles.favcontainer}
                 onPress={() =>
-                  navigation.navigate("Details", { product: item._id })
+                  navigation.navigate("Details", { product: item?.id })
                 }
               >
                 <TouchableOpacity style={styles.imageContainer}>
                   <Image
-                    source={{ uri: item?.image }}
+                    source={{ uri: item?.img }}
                     resizeMode="cover"
                     style={styles.productImg}
                   />
                 </TouchableOpacity>
                 <View style={styles.textContainer}>
                   <Text style={styles.productTxt} numberOfLines={1}>
-                    {item.productName}
+                    {item.description}
                   </Text>
                   <Text style={styles.supplierTxt} numberOfLines={1}>
-                    {item.description}
+                    {item.address}
                   </Text>
                   {/* <Text style={styles.supplierTxt} numberOfLines={1}>
                     $ {item.price}
                   </Text> */}
                 </View>
-                <TouchableOpacity onPress={() => deleteFavorite(item._id)}>
+                <TouchableOpacity onPress={() => deleteFavorite(item.id)}>
                   <SimpleLineIcons name="trash" size={24} color="black" />
                 </TouchableOpacity>
               </TouchableOpacity>

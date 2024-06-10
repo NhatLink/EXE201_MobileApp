@@ -37,7 +37,17 @@ export const fetchToken = (data) => async (dispatch) => {
     const response = await UserServices.fetchToken(data);
     dispatch({ type: FETCH_TOKEN_SUCCESS, payload: response.data });
   } catch (error) {
-    dispatch({ type: FETCH_TOKEN_FAIL, payload: error.response.data });
+    if (error.response.status === 400) {
+      console.log("Refresh token expired");
+      dispatch({
+        type: FETCH_TOKEN_FAIL,
+        payload: error.response.data,
+      });
+      await SecureStore.deleteItemAsync("accessToken");
+      await SecureStore.deleteItemAsync("refreshToken");
+      await SecureStore.deleteItemAsync("userInfo");
+      await SecureStore.deleteItemAsync("accountId");
+    }
   }
 };
 
