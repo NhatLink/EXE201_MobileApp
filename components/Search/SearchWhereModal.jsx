@@ -10,7 +10,10 @@ import {
 } from "react-native";
 import { COLORS, SIZES } from "../../constants";
 import { Ionicons, Feather } from "@expo/vector-icons";
+import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
+import * as Location from "expo-location";
 
+const GOOGLE_API_KEY = "AIzaSyCmAt2KHp7yJVDWMWlrd_uUMtvzhSExNaQ";
 const SearchWhereModal = ({
   isVisible,
   onClose,
@@ -18,28 +21,72 @@ const SearchWhereModal = ({
   searchKeyWhere,
 }) => {
   const [searchKey, setSearchKey] = useState("");
-  const [searchResults, setSearchResults] = useState([]);
-  const handleSearch = async () => {
+  // const [location, setLocation] = useState("Ho Chi Minh, Vietnam");
+  console.log("searchKeyWhere", searchKey);
+  const handleSearch = async (data, details) => {
     Keyboard.dismiss();
     try {
-      // const encodedSearchKey = encodeURIComponent(searchKey);
-      // const url = `${baseUrl}/product/searchProductByName?productName=${encodedSearchKey}`;
-
-      // const response = await axios.get(url);
-      // setSearchResults(response.data.products);
-      // console.log("Search data: ", response.data.products);
-
-      // Call the onSearchKeyChange prop to update the parent component
       if (onSearchKeyChange) {
-        onSearchKeyChange(searchKey);
+        onSearchKeyChange(data.description);
       }
-
-      // Close the modal
       onClose();
     } catch (error) {
       console.error("Failed to perform search:", error);
     }
   };
+  const handleManualSearch = () => {
+    Keyboard.dismiss();
+    try {
+      if (onSearchKeyChange) {
+        onSearchKeyChange(searchKey);
+      }
+      onClose();
+    } catch (error) {
+      console.error("Failed to perform search:", error);
+    }
+  };
+
+  const requestLocationPermission = async () => {
+    let { status } = await Location.requestForegroundPermissionsAsync();
+    if (status !== "granted") {
+      alert("Permission to access location was denied");
+      return false;
+    }
+    return true;
+  };
+
+  const getLocation = async () => {
+    if (await requestLocationPermission()) {
+      try {
+        let { coords } = await Location.getCurrentPositionAsync({});
+        const address = await Location.reverseGeocodeAsync({
+          latitude: coords.latitude,
+          longitude: coords.longitude,
+        });
+        console.log(address);
+        if (address.length > 0) {
+          // setLocation(address[0].subregion + ", " + address[0].region);
+          try {
+            if (onSearchKeyChange) {
+              // const parts = address[0].formattedAddress.split(",").slice(-4); // Tách chuỗi và lấy ba phần tử cuối cùng
+              // const formattedAddress = parts.join(",").trim();
+              onSearchKeyChange(
+                address[0].subregion + ", " + address[0].region
+                // formattedAddress
+              );
+            }
+            onClose();
+          } catch (error) {
+            console.error("Failed to perform search:", error);
+          }
+        }
+      } catch (error) {
+        console.error("Error getting location:", error);
+        Alert.alert("Error", "Unable to retrieve location. Please try again.");
+      }
+    }
+  };
+
   return (
     <Modal
       animationType="slide"
@@ -50,24 +97,47 @@ const SearchWhereModal = ({
       <View style={styles.fullScreenModal}>
         <Text style={styles.modalTextTitle}>Tìm kiếm theo vị trí</Text>
         <View style={styles.searchContainer}>
-          <TouchableOpacity>
-            <Ionicons
-              style={styles.searchIcon}
-              name="location"
-              size={24}
-              color="black"
-            />
-          </TouchableOpacity>
-          <View style={styles.searchWrapper}>
-            <TextInput
-              style={styles.searchInput}
-              value={searchKey}
-              onChangeText={setSearchKey}
-              placeholder="Bạn đang tìm gì?"
-            />
-          </View>
-
-          <TouchableOpacity style={styles.searchBtn} onPress={handleSearch}>
+          <Ionicons
+            style={styles.searchIcon}
+            name="location"
+            size={24}
+            color="black"
+          />
+          <GooglePlacesAutocomplete
+            placeholder="Bạn đang tìm gì?"
+            textInputProps={{
+              value: searchKey,
+              onChangeText: (text) => {
+                console.log("onChangeText called with:", text);
+                setSearchKey(text);
+              },
+            }}
+            onPress={handleSearch}
+            query={{
+              key: GOOGLE_API_KEY,
+              language: "vi", // Ngôn ngữ tìm kiếm
+            }}
+            styles={{
+              textInputContainer: {
+                flexDirection: "row",
+                alignItems: "center",
+                marginHorizontal: 10,
+              },
+              textInput: {
+                height: 38,
+                color: "#5d5d5d",
+                fontSize: 16,
+                flex: 1,
+              },
+              listView: {
+                marginHorizontal: 10,
+              },
+            }}
+          />
+          <TouchableOpacity
+            style={styles.searchBtn}
+            onPress={handleManualSearch}
+          >
             <Ionicons
               name="search"
               size={SIZES.xLarge}
@@ -75,9 +145,13 @@ const SearchWhereModal = ({
             />
           </TouchableOpacity>
         </View>
+        <TouchableOpacity style={styles.locationBtn} onPress={getLocation}>
+          <Ionicons style={styles.text} name="locate" size={24} color="red" />
+          <Text style={styles.text}>Lấy vị trí hiện tại</Text>
+        </TouchableOpacity>
+        {/* <Text style={styles.textStylet}>{location}</Text> */}
       </View>
       <TouchableOpacity style={styles.buttonClose} onPress={onClose}>
-        {/* <Text style={styles.textStyle}>Close</Text> */}
         <Ionicons
           style={styles.textStyle}
           name="return-up-back"
@@ -101,12 +175,13 @@ const styles = StyleSheet.create({
   },
   searchContainer: {
     justifyContent: "center",
-    alignItems: "center",
+    alignItems: "flex-start",
     flexDirection: "row",
     backgroundColor: COLORS.secondary,
     borderRadius: SIZES.medium,
-    marginTop: SIZES.small,
-    height: 50,
+    // marginTop: SIZES.small,
+    padding: 10,
+    // height: 50,
   },
   searchImage: {
     resizeMode: "contain",
@@ -131,17 +206,28 @@ const styles = StyleSheet.create({
     paddingHorizontal: SIZES.xSmall,
   },
   searchBtn: {
-    width: 50,
-    height: "100%",
+    // width: 50,
+    // height: 50,
     backgroundColor: COLORS.primary,
     borderRadius: SIZES.medium,
     justifyContent: "center",
     alignItems: "center",
+    // marginHorizontal: 10,
+    padding: 7,
   },
-
+  locationBtn: {
+    width: "100%",
+    flexDirection: "row",
+    backgroundColor: COLORS.primary,
+    borderRadius: SIZES.medium,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingVertical: 10,
+    marginTop: 10,
+  },
   searchIcon: {
-    marginLeft: 10,
     color: "gray",
+    paddingVertical: 7,
   },
   modalText: {
     marginBottom: 15,
@@ -163,6 +249,11 @@ const styles = StyleSheet.create({
   },
   textStyle: {
     color: COLORS.black,
+    fontWeight: "bold",
+    textAlign: "center",
+  },
+  text: {
+    color: COLORS.lightWhite,
     fontWeight: "bold",
     textAlign: "center",
   },
