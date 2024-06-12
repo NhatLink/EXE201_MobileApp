@@ -73,7 +73,7 @@ const LoginPage = () => {
     try {
       // Dispatching the loginUser action with inputs
       await dispatch(loginUser(inputs));
-      navigation.replace("Bottom Navigation");
+      // navigation.replace("Bottom Navigation");
       // navigation.navigate("Profile");
       // Handling post-login logic can be done within the loginUser action or here
     } catch (error) {

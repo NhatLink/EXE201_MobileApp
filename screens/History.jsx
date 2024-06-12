@@ -1,7 +1,7 @@
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons, Feather } from "@expo/vector-icons";
 import { SIZES, COLORS } from "../constants";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ListHistory } from "../components";
 import {
   View,
@@ -23,6 +23,10 @@ import SearchWhereModal from "../components/Search/SearchWhereModal";
 import SearchStoreModal from "../components/Search/SearchStoreModal";
 import SearchSeviceModal from "../components/Search/SearchSeviceModal";
 import { useNavigation } from "@react-navigation/native";
+import { useDispatch, useSelector } from "react-redux";
+import { GetAppointmentByHistoryCustomerId } from "../store/appointment/action";
+import Loader from "../components/auth/Loader";
+import * as SecureStore from "expo-secure-store";
 const History = () => {
   const navigation = useNavigation();
   const appointments = [
@@ -164,6 +168,40 @@ const History = () => {
     },
   ];
   // console.log("appoint", appointments);
+  const dispatch = useDispatch();
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const { historyAppointment, loading } = useSelector(
+    (state) => state.APPOINTMENT
+  );
+  const { user, accessToken, refreshToken, isAuthenticated } = useSelector(
+    (state) => state.USER
+  );
+  console.log("historyAppointment:", historyAppointment);
+  useEffect(() => {
+    async function fetchData() {
+      const userInfoJson = await SecureStore.getItemAsync("userInfo");
+      let userInfo = null;
+      if (userInfoJson) {
+        try {
+          userInfo = JSON.parse(userInfoJson);
+        } catch (error) {
+          console.error("Error parsing userInfo", error);
+        }
+      }
+      if (userInfo && userInfo?.id) {
+        dispatch(
+          GetAppointmentByHistoryCustomerId(
+            currentPage,
+            itemsPerPage,
+            userInfo?.id
+          )
+        );
+      }
+      console.log("accountId", userInfo);
+    }
+    fetchData();
+  }, []);
   return (
     <SafeAreaView
       style={{
@@ -172,6 +210,7 @@ const History = () => {
         marginTop: 10,
       }}
     >
+      <Loader visible={loading} />
       <View style={styles.upperRow}>
         <TouchableOpacity
           style={{ paddingLeft: 0 }}
@@ -182,7 +221,7 @@ const History = () => {
         <Text style={styles.title}> Lịch sử </Text>
       </View>
 
-      {appointments.length === 0 ? (
+      {historyAppointment.length === 0 ? (
         <View
           style={{
             flex: 1,
@@ -199,21 +238,27 @@ const History = () => {
               Không có lịch hẹn nào được tìm thấy
             </Text>
           </View>
-          <View>
+          <View style={styles.buttonContain}>
             <TouchableOpacity onPress={() => navigation.navigate("Search")}>
               <Text style={styles.button}>Tìm kiếm dịch vụ</Text>
             </TouchableOpacity>
-            <Text style={styles.emptyText2}>
-              ---------------Đã sử dụng HairHub---------------
-            </Text>
-            <TouchableOpacity onPress={() => navigation.navigate("Profile")}>
-              <Text style={styles.button}>Đăng Nhập</Text>
-            </TouchableOpacity>
+            {!isAuthenticated && (
+              <>
+                <Text style={styles.emptyText2}>
+                  ---------------Đã sử dụng HairHub---------------
+                </Text>
+                <TouchableOpacity
+                  onPress={() => navigation.navigate("Profile")}
+                >
+                  <Text style={styles.button}>Đăng Nhập</Text>
+                </TouchableOpacity>
+              </>
+            )}
           </View>
         </View>
       ) : (
         <FlatList
-          data={appointments}
+          data={historyAppointment}
           keyExtractor={(item) => item?.id}
           renderItem={({ item }) => <ListHistory item={item} />}
         />
@@ -264,5 +309,8 @@ const styles = StyleSheet.create({
     marginHorizontal: 5,
     width: SIZES.width - 20,
     fontWeight: "bold",
+  },
+  buttonContain: {
+    marginBottom: 10,
   },
 });

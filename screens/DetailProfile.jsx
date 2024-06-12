@@ -321,6 +321,7 @@ const DetailProfile = ({ navigation }) => {
             </View>
             <Text style={styles.menuItemText}>
               {userData?.dayOfBirth.split("T")[0]}
+              {/* {userData?.dayOfBirth} */}
             </Text>
           </View>
         </TouchableOpacity>

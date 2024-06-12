@@ -311,7 +311,7 @@ const Details = ({ navigation }) => {
             </TouchableOpacity>
           )}
         </View>
-        <TabViewComponent storeId={StoreDetail.storeId} />
+        <TabViewComponent storeId={salonDetail?.id} />
       </ScrollView>
     </View>
   );

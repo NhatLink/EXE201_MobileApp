@@ -221,7 +221,7 @@ const Service = (storeId) => {
 
   const handleBook = (storeId, item) => {
     dispatch(resetBooking());
-    dispatch(setStoreId(storeId));
+    dispatch(setStoreId(storeId?.storeId));
     dispatch(addService(item));
     console.log("store", storeId);
     console.log("item", item);

@@ -4,6 +4,7 @@ export const ACT_SALON_INFORMATION_BY_ID = "ACT_SALON_INFORMATION_BY_ID";
 export const GET_SALON_EMPPLOYEE_BY_SALON_ID =
   "GET_SALON_EMPPLOYEE_BY_SALON_ID";
 export const GET_SALON_SERVICE_BY_SALON_ID = "GET_SALON_SERVICE_BY_SALON_ID";
+export const SEARCH_SALON_INFORMATION = "SEARCH_SALON_INFORMATION";
 export function actSalonInformation(list) {
   return {
     type: ACT_SALON_INFORMATION,
@@ -35,6 +36,31 @@ export function fetchSalonInformation(page, size) {
       dispatch(actSalonInformation(response.data)); // Giả sử response.data là danh sách salon
     } catch (error) {
       console.error("Failed to fetch salon information:", error);
+    }
+  };
+}
+export function searchSalonInformation(
+  serviceName,
+  salonAddress,
+  salonName,
+  page,
+  size
+) {
+  return async (dispatch) => {
+    try {
+      const response = await SalonInfomationService.searchSalon(
+        serviceName,
+        salonAddress,
+        salonName,
+        page,
+        size
+      );
+      dispatch({
+        type: SEARCH_SALON_INFORMATION,
+        payload: response.data,
+      });
+    } catch (error) {
+      console.error("Failed to search salon information:", error);
     }
   };
 }

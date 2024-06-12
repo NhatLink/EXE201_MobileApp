@@ -3,13 +3,15 @@ import {
   ACT_SALON_INFORMATION_BY_ID,
   GET_SALON_EMPPLOYEE_BY_SALON_ID,
   GET_SALON_SERVICE_BY_SALON_ID,
+  SEARCH_SALON_INFORMATION,
 } from "./action";
 
 const initialState = {
-  allSalon: null,
+  allSalon: [],
   salonDetail: null,
   salonEmployee: null,
   salonService: null,
+  searchSalon: [],
 };
 
 const reducer = (state = initialState, action) => {
@@ -33,6 +35,11 @@ const reducer = (state = initialState, action) => {
       return {
         ...state,
         salonService: action.payload,
+      };
+    case SEARCH_SALON_INFORMATION:
+      return {
+        ...state,
+        searchSalon: action.payload.items,
       };
     default:
       return state;

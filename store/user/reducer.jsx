@@ -30,6 +30,7 @@ const userReducer = (state = initialState, action) => {
         accessToken: action.payload.accessToken,
         refreshToken: action.payload.refreshToken,
         accountId: action.payload.accountId,
+        user: action.payload.customerResponse,
         error: null,
       };
     case LOGIN_FAIL:
@@ -42,7 +43,8 @@ const userReducer = (state = initialState, action) => {
       return {
         ...state,
         error: null,
-        accessToken: action.payload,
+        accessToken: action.payload.accessToken,
+        refreshToken: action.payload.refreshToken,
       };
     case FETCH_TOKEN_FAIL:
       return {
@@ -51,8 +53,9 @@ const userReducer = (state = initialState, action) => {
     case FETCH_USER_SUCCESS:
       return {
         ...state,
+        isAuthenticated: true,
         error: null,
-        user: action.payload,
+        user: action.payload.customerResponse,
       };
     case FETCH_USER_FAIL:
       return {

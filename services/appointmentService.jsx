@@ -12,4 +12,15 @@ export const AppointmentService = {
       }
     );
   },
+  HistoryAppointmentByCustomerId(page, size, customerId) {
+    return API.get(
+      `/api/v1/appointments/GetHistoryAppointmentByCustomterId/${customerId}`,
+      {
+        params: {
+          page,
+          size,
+        },
+      }
+    );
+  },
 };

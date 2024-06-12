@@ -1,7 +1,7 @@
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons, Feather } from "@expo/vector-icons";
 import { SIZES, COLORS } from "../constants";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   TextInput,
@@ -21,6 +21,10 @@ import SearchTile from "../components/product/SearchTile";
 import SearchWhereModal from "../components/Search/SearchWhereModal";
 import SearchStoreModal from "../components/Search/SearchStoreModal";
 import SearchSeviceModal from "../components/Search/SearchSeviceModal";
+import { useDispatch, useSelector } from "react-redux";
+import { searchSalonInformation } from "../store/salon/action";
+import Loader from "../components/auth/Loader";
+import * as SecureStore from "expo-secure-store";
 const Search = () => {
   const products = [
     {
@@ -198,6 +202,7 @@ const Search = () => {
       reviewCount: 20,
     },
   ];
+  const dispatch = useDispatch();
   const [searchKeyService, setSearchKeyService] = useState("");
   const [searchKeyStore, setSearchKeyStore] = useState("");
   const [searchKeyWhere, setSearchKeyWhere] = useState("");
@@ -205,19 +210,36 @@ const Search = () => {
   const [modal1Visible, setModal1Visible] = useState(false);
   const [modal2Visible, setModal2Visible] = useState(false);
   const [modal3Visible, setModal3Visible] = useState(false);
-  const handleSearch = async () => {
-    Keyboard.dismiss();
-    try {
-      const encodedSearchKey = encodeURIComponent(searchKey);
-      const url = `${baseUrl}/product/searchProductByName?productName=${encodedSearchKey}`;
-
-      const response = await axios.get(url);
-      setSearchResults(response.data.products);
-      console.log("Search data: ", response.data.products);
-    } catch (error) {
-      console.error("Failed to perform search:", error);
+  const [loader, setLoader] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const { searchSalon } = useSelector((state) => state.SALON);
+  // console.log("serviceName", searchKeyService);
+  // console.log("salonAddress", searchKeyWhere);
+  // console.log("salonName", searchKeyStore);
+  console.log("searchSalon", searchSalon);
+  useEffect(() => {
+    async function fetchData() {
+      setLoader(true);
+      dispatch(
+        searchSalonInformation(
+          searchKeyService,
+          searchKeyWhere,
+          searchKeyStore,
+          currentPage,
+          itemsPerPage
+        )
+      );
+      setLoader(false);
     }
-  };
+    fetchData();
+  }, [
+    searchKeyService,
+    searchKeyWhere,
+    searchKeyStore,
+    currentPage,
+    itemsPerPage,
+  ]);
 
   const openModalWhere = () => {
     setModal1Visible(true);
@@ -259,6 +281,7 @@ const Search = () => {
         marginBottom: 70,
       }}
     >
+      <Loader visible={loader} />
       <View style={styles.wrapper}>
         <View style={styles.searchContainer}>
           <TouchableOpacity>
@@ -357,8 +380,11 @@ const Search = () => {
           </View>
         </View>
       </View>
-      {products.length === 0 ? (
+      {searchSalon.length === 0 ? (
         <View style={{ flex: 1 }}>
+          <Text style={styles.searchResultText}>
+            {`Kết quả tìm kiếm (${searchSalon.length})`}
+          </Text>
           <Image
             source={require("../assets/images/Pose23.png")}
             style={styles.searchImage}
@@ -367,10 +393,10 @@ const Search = () => {
       ) : (
         <>
           <Text style={styles.searchResultText}>
-            {`Kết quả tìm kiếm (${products.length})`}
+            {`Kết quả tìm kiếm (${searchSalon.length})`}
           </Text>
           <FlatList
-            data={products}
+            data={searchSalon}
             keyExtractor={(item) => item?.id}
             renderItem={({ item }) => <SearchTile item={item} />}
           />
@@ -445,7 +471,7 @@ const styles = StyleSheet.create({
   },
   searchImage: {
     resizeMode: "contain",
-    width: SIZES.width - 100,
+    width: SIZES.width - 50,
     height: SIZES.height - 300,
     opacity: 0.9,
   },

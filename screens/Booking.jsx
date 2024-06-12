@@ -75,7 +75,18 @@ const Booking = ({ navigation }) => {
   const dispatch = useDispatch();
   const { storeId, dateBooking, hourBooking, services, totalPrice, totalTime } =
     useSelector((state) => state.booking);
-  // console.log("service: ", services);
+
+  const confirmBooking = () => {
+    console.log("initialState: ", {
+      // storeId,
+      // dateBooking,
+      // hourBooking,
+      services,
+      // totalPrice,
+      // totalTime,
+    });
+  };
+
   const handleGoBack = () => {
     dispatch(resetBooking());
     navigation.goBack();
@@ -108,9 +119,6 @@ const Booking = ({ navigation }) => {
     date.setDate(date.getDate() + 4);
     return date;
   });
-  console.log("selecteddate", selected);
-  console.log("minDate", minDate);
-  console.log("maxDate", maxDate);
 
   useEffect(() => {
     // const today = new Date().toISOString().split("T")[0];
@@ -215,7 +223,7 @@ const Booking = ({ navigation }) => {
             style={styles.priceText}
           >{`${totalPrice.toLocaleString()} VND`}</Text>
         </View>
-        <Button title="Đặt Lịch" />
+        <Button title="Đặt Lịch" onPress={confirmBooking} />
       </View>
     </>
   );

@@ -13,7 +13,7 @@ const SearchTile = ({ item }) => {
   const dispatch = useDispatch();
   const handleBook = (storeId, item) => {
     dispatch(resetBooking());
-    dispatch(setStoreId(storeId));
+    dispatch(setStoreId(storeId?.storeId));
     dispatch(addService(item));
     console.log("store", storeId);
     console.log("item", item);
@@ -51,7 +51,7 @@ const SearchTile = ({ item }) => {
         onPress={() => navigation.navigate("Details", { product: item?.id })}
       >
         <View style={styles.imageContainer}>
-          <Image source={{ uri: item?.image[0] }} style={styles.image} />
+          <Image source={{ uri: item?.img }} style={styles.image} />
           <View style={styles.ratingContainer}>
             {/* <StarRating rating={item?.avgRating} /> */}
             <Text style={styles.averageRatingText}>
@@ -68,20 +68,23 @@ const SearchTile = ({ item }) => {
         </View>
         <View style={styles.detailsContainer}>
           <Text style={styles.name} numberOfLines={1}>
-            {item?.productName}
+            {item?.name}
           </Text>
           <Text style={styles.supplier} numberOfLines={2}>
             {item?.description}
           </Text>
-          <Text style={styles.price} numberOfLines={1}>
-            SALE UP TO {item?.price}%
+          <Text style={styles.supplier} numberOfLines={2}>
+            {item?.address}
           </Text>
+          {/* <Text style={styles.price} numberOfLines={1}>
+            SALE UP TO {item?.price}%
+          </Text> */}
         </View>
       </TouchableOpacity>
       {item?.services &&
         item?.services?.map((itemService) => (
           <View
-            key={itemService?.service_id}
+            key={itemService?.id}
             style={styles.serviceItem}
             onPress={() => {
               // Handle navigation or other actions
@@ -119,10 +122,9 @@ const SearchTile = ({ item }) => {
                 </>
               )}
 
-              <Text
-                style={styles.serviceDescription}
-                numberOfLines={1}
-              >{`${itemService?.serviceTime}`}</Text>
+              <Text style={styles.serviceDescription} numberOfLines={1}>{`${
+                (itemService?.time ?? 0) * 60
+              } phút`}</Text>
             </View>
             <TouchableOpacity
               style={styles.bookButton}
@@ -210,7 +212,6 @@ const styles = StyleSheet.create({
   container: {
     width: "auto",
     height: "auto",
-    marginEnd: 10,
     marginBottom: SIZES.medium,
     borderBottomWidth: 1,
     borderBottomColor: "#ccc",
