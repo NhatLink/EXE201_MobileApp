@@ -38,13 +38,13 @@ const ListService = ({ services }) => {
     <>
       {services.map((item) => (
         <View
-          key={item.service_id}
+          key={item.id}
           style={[services.length > 1 && styles.subcontainer]}
         >
           <View style={styles.container}>
             <View style={styles.serviceConatainer}>
               <View
-                key={item.service_id}
+                key={item.id}
                 style={styles.serviceItem}
                 onPress={() => {
                   // Handle navigation or other actions
@@ -79,10 +79,9 @@ const ListService = ({ services }) => {
                     </>
                   )}
 
-                  <Text
-                    style={styles.serviceDescription}
-                    numberOfLines={1}
-                  >{`${item.serviceTime} phut`}</Text>
+                  <Text style={styles.serviceDescription} numberOfLines={1}>{`${
+                    item.time * 60
+                  } phút`}</Text>
                 </View>
               </View>
             </View>
@@ -90,18 +89,18 @@ const ListService = ({ services }) => {
               <View style={styles.containerInfo}>
                 <Image
                   source={{
-                    uri: item?.staff?.avatar,
+                    uri: item?.staff?.img,
                   }}
                   resizeMode="cover"
                   style={styles.avatar}
                 />
                 <View>
-                  <Text style={styles.title}>{item?.staff?.name}</Text>
+                  <Text style={styles.title}>{item?.staff?.fullName}</Text>
                 </View>
               </View>
               <TouchableOpacity
                 style={styles.bookButton}
-                onPress={() => openModal(item.service_id)}
+                onPress={() => openModal(item.id)}
               >
                 <Text style={styles.button}>Đổi nhân viên</Text>
               </TouchableOpacity>
@@ -110,7 +109,7 @@ const ListService = ({ services }) => {
           {services.length > 1 && (
             <TouchableOpacity
               style={styles.cancelButton}
-              onPress={() => handleDelete(item.service_id)}
+              onPress={() => handleDelete(item.id)}
             >
               <Ionicons name="close-circle" size={30} color={COLORS.black} />
             </TouchableOpacity>

@@ -107,10 +107,9 @@ function bookingReducer(state = initialState, action) {
           {
             ...action.payload,
             staff: {
-              staffId: "0",
-              name: "Bất cứ ai",
-              avatar:
-                "https://cdn1.iconfinder.com/data/icons/user-pictures/100/unknown-512.png",
+              id: "0",
+              fullName: "Bất cứ ai",
+              img: "https://cdn1.iconfinder.com/data/icons/user-pictures/100/unknown-512.png",
             },
           },
         ],
@@ -119,7 +118,7 @@ function bookingReducer(state = initialState, action) {
       };
     case UPDATE_SERVICE:
       const updatedServices = state.services.map((service) =>
-        service.service_id === action.payload.service_id
+        service.id === action.payload.service_id
           ? { ...service, ...action.payload.updatedService }
           : service
       );
@@ -137,7 +136,7 @@ function bookingReducer(state = initialState, action) {
       };
     case UPDATE_SERVICE_STAFF:
       const updatedServicesWithStaff = state.services.map((service) =>
-        service.service_id === action.payload.service_id
+        service.id === action.payload.service_id
           ? { ...service, staff: action.payload.staff }
           : service
       );
@@ -147,7 +146,7 @@ function bookingReducer(state = initialState, action) {
       };
     case REMOVE_SERVICE:
       const remainingServices = state.services.filter(
-        (service) => service.service_id !== action.payload
+        (service) => service.id !== action.payload
       );
       return {
         ...state,

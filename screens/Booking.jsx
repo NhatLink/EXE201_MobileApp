@@ -6,6 +6,7 @@ import {
   Image,
   FlatList,
   ScrollView,
+  ActivityIndicator,
 } from "react-native";
 import React, { useEffect, useState, useCallback } from "react";
 import { COLORS, SIZES, SHADOWS } from "../constants";
@@ -25,6 +26,8 @@ import {
 } from "../store/bookingStore/action";
 import { useDispatch, useSelector } from "react-redux";
 import Button from "../components/auth/Button";
+import { GetAvailableTime } from "../store/booking/action";
+import Loader from "../components/auth/Loader";
 
 const Booking = ({ navigation }) => {
   const barber = [
@@ -75,15 +78,15 @@ const Booking = ({ navigation }) => {
   const dispatch = useDispatch();
   const { storeId, dateBooking, hourBooking, services, totalPrice, totalTime } =
     useSelector((state) => state.booking);
-
+  const { loading, availableTime } = useSelector((state) => state.BOOKING);
   const confirmBooking = () => {
     console.log("initialState: ", {
-      // storeId,
-      // dateBooking,
-      // hourBooking,
+      storeId,
+      dateBooking,
+      hourBooking,
       services,
-      // totalPrice,
-      // totalTime,
+      totalPrice,
+      totalTime,
     });
   };
 
@@ -113,21 +116,35 @@ const Booking = ({ navigation }) => {
       .join("-");
   };
   const [selected, setSelected] = useState(formatDate(new Date()));
+  const [selectedDate, setSelectedDate] = useState(formatDate(new Date()));
+  const [loadingTime, setSelectedDateTime] = useState(false);
   const [minDate, setMinDate] = useState(new Date());
   const [maxDate, setMaxDate] = useState(() => {
     const date = new Date();
-    date.setDate(date.getDate() + 4);
+    date.setDate(date.getDate() + 5);
     return date;
   });
+  useEffect(() => {
+    setSelectedDateTime(true);
+    dispatch(setDateBooking(selectedDate));
+    dispatch(setHourBooking(availableTime[0]?.timeSlot));
+    setSelectedDateTime(false);
+  }, [selectedDate, availableTime]);
 
   useEffect(() => {
-    // const today = new Date().toISOString().split("T")[0];
-    dispatch(setDateBooking(selected));
-    dispatch(setHourBooking(time[0].time));
-  }, []);
-
+    let data = {
+      day: new Date(dateBooking).toISOString(),
+      salonId: storeId,
+      serviceHairId: services[0]?.id,
+      salonEmployeeId:
+        services[0]?.staff?.id !== "0" ? services[0]?.staff?.id : null,
+      isAnyOne: services[0]?.staff?.id === "0",
+    };
+    dispatch(GetAvailableTime(data));
+  }, [dateBooking, storeId, services]);
   return (
     <>
+      <Loader visible={loading} />
       <ScrollView>
         <SafeAreaView style={styles.container}>
           <View style={styles.upperRow}>
@@ -146,8 +163,8 @@ const Booking = ({ navigation }) => {
             onDayPress={(day) => {
               const date = new Date(day.dateString);
               setSelected(formatDate(date));
+              setSelectedDate(formatDate(date));
               dispatch(setDateBooking(formatDate(date)));
-              // setSelected(day.dateString);
               // dispatch(setDateBooking(day.dateString));
             }}
             markedDates={{
@@ -171,33 +188,61 @@ const Booking = ({ navigation }) => {
             minDate={formatDate(minDate)}
             maxDate={formatDate(maxDate)}
           />
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            style={{
-              borderTopWidth: 0.5,
-              borderTopColor: COLORS.gray2,
-              paddingVertical: 10,
-              marginVertical: 15,
-              borderBottomWidth: 0.5,
-              borderBottomColor: COLORS.gray2,
-            }}
-          >
-            {time.map((item) => (
-              <TouchableOpacity
-                key={item.id}
-                style={[
-                  styles.item,
-                  item.time === hourBooking ? styles.selectedItem : null,
-                ]}
-                onPress={() => {
-                  dispatch(setHourBooking(item.time));
-                }}
-              >
-                <Text style={styles.text}>{item.time}</Text>
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
+          {availableTime && availableTime.length > 0 ? (
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              style={{
+                borderTopWidth: 0.5,
+                borderTopColor: COLORS.gray2,
+                paddingVertical: 10,
+                marginVertical: 15,
+                borderBottomWidth: 0.5,
+                borderBottomColor: COLORS.gray2,
+              }}
+            >
+              {availableTime?.map((item, index) => {
+                // Chuyển đổi timeSlot thành giờ và phút
+                const hours = Math.floor(item.timeSlot);
+                const minutes = (item.timeSlot - hours) * 60;
+                const timeString = `${hours}:${minutes === 0 ? "00" : minutes}`;
+
+                return (
+                  <TouchableOpacity
+                    key={index}
+                    style={[
+                      styles.item,
+                      item.timeSlot === hourBooking
+                        ? styles.selectedItem
+                        : null,
+                    ]}
+                    onPress={() => {
+                      dispatch(setHourBooking(item.timeSlot));
+                    }}
+                  >
+                    <Text style={styles.text}>{timeString}</Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </ScrollView>
+          ) : (
+            <View
+              style={{
+                borderTopWidth: 0.5,
+                borderTopColor: COLORS.gray2,
+                paddingVertical: 10,
+                marginVertical: 15,
+                borderBottomWidth: 0.5,
+                borderBottomColor: COLORS.gray2,
+              }}
+            >
+              <Text style={styles.text}>
+                Xin lỗi, không có nhân viên nào có thể phục vụ bạn trong ngày{" "}
+                {selectedDate}!!
+              </Text>
+            </View>
+          )}
+
           {/* <FlatList
           data={services}
           keyExtractor={(item) => item?.service_id.toString()}

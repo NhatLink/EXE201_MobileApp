@@ -7,6 +7,7 @@ import {
   StyleSheet,
   Keyboard,
   TextInput,
+  useWindowDimensions,
 } from "react-native";
 import { COLORS, SIZES } from "../../constants";
 import { Ionicons, Feather } from "@expo/vector-icons";
@@ -23,6 +24,7 @@ const SearchWhereModal = ({
   const [searchKey, setSearchKey] = useState("");
   // const [location, setLocation] = useState("Ho Chi Minh, Vietnam");
   console.log("searchKeyWhere", searchKey);
+  const { width, height } = useWindowDimensions();
   const handleSearch = async (data, details) => {
     Keyboard.dismiss();
     try {
@@ -119,6 +121,7 @@ const SearchWhereModal = ({
             }}
             styles={{
               textInputContainer: {
+                width: "100%",
                 flexDirection: "row",
                 alignItems: "center",
                 marginHorizontal: 10,
@@ -126,10 +129,12 @@ const SearchWhereModal = ({
               textInput: {
                 height: 38,
                 color: "#5d5d5d",
+                backgroundColor: COLORS.secondary,
                 fontSize: 16,
                 flex: 1,
               },
               listView: {
+                // width: width,
                 marginHorizontal: 10,
               },
             }}

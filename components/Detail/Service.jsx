@@ -19,7 +19,7 @@ import formatDate from "../../utils/helper";
 import OrderTile from "../../components/orders/OrderTile";
 import { SliderBox } from "react-native-image-slider-box";
 import { Ionicons, Feather } from "@expo/vector-icons";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
   addService,
   setStoreId,
@@ -27,6 +27,7 @@ import {
 } from "../../store/bookingStore/action";
 const Service = (storeId) => {
   const navigation = useNavigation();
+  const { salonService, salonEmployee } = useSelector((state) => state.SALON);
   const services = [
     {
       service_id: 1,
@@ -216,7 +217,7 @@ const Service = (storeId) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedService, setSelectedService] = useState(null);
   const [searchKey, setSearchKey] = useState("");
-  const [filteredServices, setFilteredServices] = useState(services);
+  const [filteredServices, setFilteredServices] = useState(salonService);
   const dispatch = useDispatch();
 
   const handleBook = (storeId, item) => {
@@ -246,7 +247,7 @@ const Service = (storeId) => {
   };
   const handleSearch = () => {
     Keyboard.dismiss();
-    const filtered = services.filter((service) =>
+    const filtered = salonService.filter((service) =>
       service.serviceName.toLowerCase().includes(searchKey.toLowerCase())
     );
     setFilteredServices(filtered);
@@ -282,7 +283,7 @@ const Service = (storeId) => {
         </View>
         {filteredServices.map((item) => (
           <View
-            key={item.service_id}
+            key={item.id}
             style={styles.serviceItem}
             onPress={() => {
               // Handle navigation or other actions
@@ -293,10 +294,10 @@ const Service = (storeId) => {
               onPress={() => openModal(item)}
             >
               <Text style={styles.serviceName} numberOfLines={1}>
-                {item.serviceName}
+                {item?.serviceName}
               </Text>
               <Text style={styles.serviceDescription} numberOfLines={1}>
-                {item.description}
+                {item?.description}
               </Text>
             </TouchableOpacity>
             <View style={styles.pricingInfo}>
@@ -309,21 +310,21 @@ const Service = (storeId) => {
                   <Text
                     style={styles.servicePrice2}
                     numberOfLines={1}
-                  >{`${item.price.toLocaleString()} VND`}</Text>
+                  >{`${item?.price?.toLocaleString()} VND`}</Text>
                 </>
               ) : (
                 <>
                   <Text
                     style={styles.servicePrice}
                     numberOfLines={1}
-                  >{`${item.price.toLocaleString()} VND`}</Text>
+                  >{`${item?.price?.toLocaleString()} VND`}</Text>
                 </>
               )}
 
               <Text
                 style={styles.serviceDescription}
                 numberOfLines={1}
-              >{`${item.serviceTime}`}</Text>
+              >{`${item?.time}`}</Text>
             </View>
             <TouchableOpacity
               style={styles.bookButton}

@@ -168,8 +168,8 @@ const Details = ({ navigation }) => {
     fetchData();
   }, []);
   console.log("salonDetail:", salonDetail);
-  console.log("salonService:", salonService);
-  console.log("salonEmployee:", salonEmployee);
+  // console.log("salonService:", salonService);
+  // console.log("salonEmployee:", salonEmployee);
   const checkFavorites = async () => {
     const userId = await SecureStore.getItemAsync("accountId");
     const favoritesId = `favorites${userId}`;

@@ -257,7 +257,7 @@ const Schedule = () => {
     >
       <Loader visible={loading} />
       <Text style={styles.title}>Lịch hẹn của bạn</Text>
-      {appointments.length === 0 ? (
+      {appointment.length === 0 ? (
         <View
           style={{
             flex: 1,

@@ -1,6 +1,7 @@
 import { ToastAndroid } from "react-native";
 import { UserServices } from "../../services/userServices";
 import * as SecureStore from "expo-secure-store";
+import { useDispatch, useSelector } from "react-redux";
 // import { useNavigation } from "@react-navigation/native";
 export const LOGIN_SUCCESS = "LOGIN_SUCCESS";
 export const LOGIN_FAIL = "LOGIN_FAIL";
@@ -156,6 +157,38 @@ export const fetchUser = (accessToken) => async (dispatch) => {
       }
     } else {
       dispatch({ type: FETCH_USER_FAIL, payload: error.response.data });
+    }
+  }
+};
+
+export const fetchUser2 = () => async (dispatch, getState) => {
+  try {
+    const { accessToken } = getState().USER;
+    const response = await UserServices.fetchUser(accessToken);
+    SecureStore.setItemAsync("accountId", response.data.accountId);
+    SecureStore.setItemAsync(
+      "userInfo",
+      JSON.stringify(response.data.customerResponse)
+    );
+    dispatch({ type: FETCH_USER_SUCCESS, payload: response.data });
+  } catch (error) {
+    if (error.response.status === 401) {
+      const refreshToken = await SecureStore.getItemAsync("refreshToken");
+      await dispatch(fetchToken(refreshToken));
+      const { accessToken } = getState().USER;
+      if (accessToken) {
+        const response = await UserServices.fetchUser(accessToken);
+        SecureStore.setItemAsync("accountId", response.data.accountId);
+        SecureStore.setItemAsync(
+          "userInfo",
+          JSON.stringify(response.data.customerResponse)
+        );
+        dispatch({ type: FETCH_USER_SUCCESS, payload: response.data });
+      } else {
+        dispatch({ type: FETCH_USER_FAIL, payload: error.response?.data });
+      }
+    } else {
+      dispatch({ type: FETCH_USER_FAIL, payload: error.response?.data });
     }
   }
 };

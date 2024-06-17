@@ -36,11 +36,14 @@ const ProductViewCard = ({ item }) => {
             </Text>
           </View> */}
         </View>
-        <View style={styles.detailsContainer}>
+        <View style={[styles.detailsContainer, { maxWidth: width * 0.46 }]}>
           <Text style={styles.name} numberOfLines={1}>
+            {item?.name}
+          </Text>
+          <Text style={styles.supplier} numberOfLines={2}>
             {item?.description}
           </Text>
-          <Text style={styles.supplier} numberOfLines={4}>
+          <Text style={styles.supplier} numberOfLines={2}>
             {item?.address}
           </Text>
           {/* <Text style={styles.price}>${item.price}</Text>

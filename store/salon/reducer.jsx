@@ -8,9 +8,9 @@ import {
 
 const initialState = {
   allSalon: [],
-  salonDetail: null,
-  salonEmployee: null,
-  salonService: null,
+  salonDetail: [],
+  salonEmployee: [],
+  salonService: [],
   searchSalon: [],
 };
 

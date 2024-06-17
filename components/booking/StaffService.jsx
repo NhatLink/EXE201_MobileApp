@@ -13,10 +13,10 @@ import {
 import { COLORS, SIZES } from "../../constants";
 import { Ionicons, Feather } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { updateServiceStaff } from "../../store/bookingStore/action";
 const StaffService = ({ isVisible, onClose, Service }) => {
-  console.log("serviceID", Service);
+  const { salonEmployee } = useSelector((state) => state.SALON);
   const staff = [
     {
       staffId: 1,
@@ -56,6 +56,7 @@ const StaffService = ({ isVisible, onClose, Service }) => {
   const handleBook = (item) => {
     dispatch(updateServiceStaff(Service, item));
     console.log("item", item);
+    console.log("Service", Service);
     onClose();
   };
   return (
@@ -77,9 +78,9 @@ const StaffService = ({ isVisible, onClose, Service }) => {
               color="black"
             />
           </TouchableOpacity>
-          {staff?.map((item) => (
+          {salonEmployee?.map((item) => (
             <View
-              key={item.staffId}
+              key={item.id}
               style={styles.serviceItem}
               onPress={() => {
                 // Handle navigation or other actions
@@ -89,14 +90,17 @@ const StaffService = ({ isVisible, onClose, Service }) => {
                 <View style={styles.containerInfo}>
                   <Image
                     source={{
-                      uri: item?.avatar,
+                      uri: item?.img,
                     }}
                     resizeMode="cover"
                     style={styles.avatar}
                   />
                   <View>
-                    <Text style={styles.title}>{item?.name}</Text>
-                    {item.status === "sẵn sàng phục vụ" ? (
+                    <Text style={styles.title}>{item?.fullName}</Text>
+                    <Text style={styles.title2} numberOfLines={1}>
+                      {item?.gender}
+                    </Text>
+                    {/* {item.status === "sẵn sàng phục vụ" ? (
                       <Text style={styles.title2} numberOfLines={1}>
                         {item.status}
                       </Text>
@@ -106,37 +110,11 @@ const StaffService = ({ isVisible, onClose, Service }) => {
                         {item.status === "chưa thể phục vụ" &&
                           ` cho tới ${item.waitingTime}`}
                       </Text>
-                    )}
+                    )} */}
                   </View>
                 </View>
               </View>
-              {/* <View style={styles.pricingInfo}>
-                {item?.reducePrice ? (
-                  <>
-                    <Text
-                      style={styles.servicePrice}
-                      numberOfLines={1}
-                    >{`${item?.reducePrice?.toLocaleString()} VND`}</Text>
-                    <Text
-                      style={styles.servicePrice2}
-                      numberOfLines={1}
-                    >{`${item.price.toLocaleString()} VND`}</Text>
-                  </>
-                ) : (
-                  <>
-                    <Text
-                      style={styles.servicePrice}
-                      numberOfLines={1}
-                    >{`${item.price.toLocaleString()} VND`}</Text>
-                  </>
-                )}
-
-                <Text
-                  style={styles.serviceDescription}
-                  numberOfLines={1}
-                >{`${item.serviceTime} phút`}</Text>
-              </View> */}
-              {(item.status === "sẵn sàng phục vụ" ||
+              {/* {(item.status === "sẵn sàng phục vụ" ||
                 item.status === "chưa thể phục vụ") && (
                 <TouchableOpacity
                   style={styles.bookButton}
@@ -146,7 +124,15 @@ const StaffService = ({ isVisible, onClose, Service }) => {
                     Đổi nhân viên
                   </Text>
                 </TouchableOpacity>
-              )}
+              )} */}
+              <TouchableOpacity
+                style={styles.bookButton}
+                onPress={() => handleBook(item)}
+              >
+                <Text style={styles.button} numberOfLines={1}>
+                  Đổi nhân viên
+                </Text>
+              </TouchableOpacity>
             </View>
           ))}
         </View>
