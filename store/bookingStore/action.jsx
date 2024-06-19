@@ -2,9 +2,13 @@
 export const SET_STORE_ID = "SET_STORE_ID";
 export const SET_DATE_BOOKING = "SET_DATE_BOOKING";
 export const SET_HOUR_BOOKING = "SET_HOUR_BOOKING";
+export const SET_SERVICE_STAFF = "SET_SERVICE_STAFF";
+export const SET_SERVICE = "SET_SERVICE";
 export const ADD_SERVICE = "ADD_SERVICE";
 export const UPDATE_SERVICE = "UPDATE_SERVICE";
 export const REMOVE_SERVICE = "REMOVE_SERVICE";
+export const ADD_VOUCHER = "ADD_VOUCHER";
+export const REMOVE_VOUCHER = "REMOVE_VOUCHER";
 export const RESET_BOOKING = "RESET_BOOKING"; // Define the action type as a constant
 export const UPDATE_SERVICE_STAFF = "UPDATE_SERVICE_STAFF";
 
@@ -21,6 +25,25 @@ export const setDateBooking = (date) => ({
 export const setHourBooking = (hour) => ({
   type: SET_HOUR_BOOKING,
   payload: hour,
+});
+
+export const setServiceStaff = (staff) => ({
+  type: SET_SERVICE_STAFF,
+  payload: staff,
+});
+
+export const setService = (services) => ({
+  type: SET_SERVICE,
+  payload: services,
+});
+
+export const addVoucher = (voucher) => ({
+  type: ADD_VOUCHER,
+  payload: voucher,
+});
+
+export const removeVoucher = () => ({
+  type: REMOVE_VOUCHER,
 });
 
 export const addService = (service) => ({

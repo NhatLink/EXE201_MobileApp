@@ -9,15 +9,18 @@ import {
   ScrollView,
   Button,
 } from "react-native";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { COLORS, SIZES } from "../../constants";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import formatDate from "../../utils/helper";
 import OrderTile from "../../components/orders/OrderTile";
-import MapView, { Marker } from "react-native-maps";
-
+import MapView, { Polyline, Marker } from "react-native-maps";
+import { useDispatch, useSelector } from "react-redux";
+import * as Location from "expo-location";
+import axios from "axios";
+const GOOGLE_API_KEY = "AIzaSyCmAt2KHp7yJVDWMWlrd_uUMtvzhSExNaQ";
 const About = (storeId) => {
   const navigation = useNavigation();
   const workingDays = [
@@ -52,18 +55,119 @@ const About = (storeId) => {
       closeTime: "21:00",
     },
   ];
+  const { salonService, salonDetail, salonEmployee } = useSelector(
+    (state) => state.SALON
+  );
+
+  const [destination, setDestination] = useState({
+    latitude: 10.875123789279687,
+    longitude: 106.79814847509016,
+  });
+  // const [origin, setOrigin] = useState({
+  //   latitude: 10.762622, // Vị trí mặc định tại TP Hồ Chí Minh
+  //   longitude: 106.660172,
+  // });
+  // const [route, setRoute] = useState([]);
+  // const [distance, setDistance] = useState("");
+  // const [duration, setDuration] = useState("");
+  // const [startAddress, setStartAddress] = useState("");
+  // const [endAddress, setEndAddress] = useState("");
+  // useEffect(() => {
+  //   (async () => {
+  //     let { status } = await Location.requestForegroundPermissionsAsync();
+  //     if (status !== "granted") {
+  //       Alert.alert("Permission to access location was denied");
+  //       return;
+  //     }
+
+  //     let { coords } = await Location.getCurrentPositionAsync({});
+  //     setOrigin({
+  //       latitude: coords.latitude,
+  //       longitude: coords.longitude,
+  //     });
+  //   })();
+  // }, []);
+  useEffect(() => {
+    if (salonDetail) {
+      setDestination({
+        latitude: parseFloat(salonDetail?.latitude),
+        longitude: parseFloat(salonDetail?.longitude),
+      });
+    }
+  }, [salonDetail]);
+
+  // const getDirections = async () => {
+  //   if (!origin) return;
+
+  //   const originString = `${origin.latitude},${origin.longitude}`;
+  //   const destinationString = `${destination.latitude},${destination.longitude}`;
+
+  //   try {
+  //     const response = await axios.get(
+  //       `https://maps.googleapis.com/maps/api/directions/json?origin=${originString}&destination=${destinationString}&key=${GOOGLE_API_KEY}`
+  //     );
+
+  //     const route = response.data.routes[0];
+  //     const leg = route.legs[0];
+
+  //     setDistance(leg.distance.text);
+  //     setDuration(leg.duration.text);
+  //     setStartAddress(leg.start_address);
+  //     setEndAddress(leg.end_address);
+
+  //     const points = decode(route.overview_polyline.points);
+  //     console.log("points", points);
+  //     const validPoints = points.filter(
+  //       (point) => !isNaN(point.latitude) && !isNaN(point.longitude)
+  //     );
+  //     setRoute(validPoints);
+  //   } catch (error) {
+  //     console.error("Error getting directions:", error);
+  //     Alert.alert("Error", "Unable to retrieve directions. Please try again.");
+  //   }
+  // };
+
+  // const decode = (t, e) => {
+  //   let d = [];
+  //   let index = 0,
+  //     len = t.length;
+  //   let lat = 0,
+  //     lng = 0;
+
+  //   while (index < len) {
+  //     let b,
+  //       shift = 0,
+  //       result = 0;
+  //     do {
+  //       b = t.charCodeAt(index++) - 63;
+  //       result |= (b & 0x1f) << shift;
+  //       shift += 5;
+  //     } while (b >= 0x20);
+  //     let dlat = result & 1 ? ~(result >> 1) : result >> 1;
+  //     lat += dlat;
+
+  //     shift = 0;
+  //     result = 0;
+  //     do {
+  //       b = t.charCodeAt(index++) - 63;
+  //       result |= (b & 0x1f) << shift;
+  //       shift += 5;
+  //     } while (b >= 0x20);
+  //     let dlng = result & 1 ? ~(result >> 1) : result >> 1;
+  //     lng += dlng;
+
+  //     d.push({ latitude: lat / 1e5, longitude: lng / 1e5 });
+  //   }
+  //   return d;
+  // };
+
   return (
     <SafeAreaView style={styles.container}>
       <View>
         <Text style={styles.title}>Giới thiệu</Text>
         <View style={styles.AboutUsContanner}>
           <Text style={styles.serviceDescription} numberOfLines={3}>
-            Tóc của bạn đang bị chẻ ngọn và khô xơ? Hãy đến với chúng tôi để tóc
-            bạn được chăm sóc và tái tạo sức sống như mới.
-          </Text>
-          <Text style={styles.serviceDescription} numberOfLines={3}>
-            Cảm thấy nhàm chán với kiểu tóc hiện tại? Hãy để chúng tôi giúp bạn
-            tạo nên một phong cách tóc mới, thật cá tính và độc đáo.
+            {salonDetail?.description}
           </Text>
         </View>
       </View>
@@ -71,27 +175,55 @@ const About = (storeId) => {
         <Text style={styles.title}>Map</Text>
         <View style={styles.AboutUsContanner}>
           <View style={styles.mapContainer}>
-            <MapView
-              style={styles.map}
-              // provider={MapView.PROVIDER_GOOGLE}
-              initialRegion={{
-                latitude: 10.875123789279687,
-                longitude: 106.79814847509016,
-                latitudeDelta: 0.0922,
-                longitudeDelta: 0.0421,
-              }}
-            >
-              <Marker
-                coordinate={{
-                  latitude: 10.875123789279687,
-                  longitude: 106.79814847509016,
+            {/* {salonDetail?.latitude && salonDetail?.longitude && (
+              <MapView
+                style={styles.map}
+                provider={MapView.PROVIDER_GOOGLE}
+                initialRegion={{
+                  latitude: destination?.latitude ?? 10.875123789279687,
+                  longitude: destination?.longitude ?? 106.79814847509016,
+                  latitudeDelta: 0.0922,
+                  longitudeDelta: 0.0421,
                 }}
-                title={"Nhà Văn hóa Sinh viên TP.HCM"}
-                description={"A nice place in Ho Chi Minh City"}
-              />
-            </MapView>
+              >
+                {route.length > 0 && origin && (
+                  <Marker coordinate={origin} title="Your Location" />
+                )}
+                <Marker
+                  coordinate={{
+                    latitude: destination?.latitude ?? 10.875123789279687,
+                    longitude: destination?.longitude ?? 106.79814847509016,
+                  }}
+                  title={salonDetail?.name}
+                  description={salonDetail?.address}
+                />
+                {route.length > 0 && (
+                  <Polyline
+                    coordinates={route}
+                    strokeWidth={5}
+                    strokeColor="blue"
+                  />
+                )}
+              </MapView>
+            )} */}
           </View>
+          {/* {route.length > 0 && (
+            <View style={styles.distance}>
+              <Text style={styles.textDistance}>Bắt đầu: {startAddress}</Text>
+              <Text style={styles.textDistance}>Kết thúc: {endAddress}</Text>
+              <Text style={styles.textDistance}>Khoảng cách: {distance}</Text>
+              <Text style={styles.textDistance}>Thời gian: {duration}</Text>
+            </View>
+          )} */}
         </View>
+
+        {/* <Button title="Get Directions" onPress={getDirections} /> */}
+
+        {/* {route.length === 0 && (
+          <TouchableOpacity style={styles.bookButton2} onPress={getDirections}>
+            <Text style={styles.button}>Chỉ vị trí</Text>
+          </TouchableOpacity>
+        )} */}
       </View>
       <View>
         <Text style={styles.title}>Số Liên Hệ</Text>
@@ -114,7 +246,7 @@ const About = (storeId) => {
           <View style={styles.contactInfo}>
             <Ionicons name="logo-facebook" size={20} color={COLORS.primary} />
             <Text style={styles.conntactItem} numberOfLines={1}>
-              Baber's Haven
+              {salonDetail?.name}
             </Text>
           </View>
           <TouchableOpacity style={styles.bookButton} onPress={() => {}}>
@@ -125,7 +257,7 @@ const About = (storeId) => {
           <View style={styles.contactInfo}>
             <Ionicons name="logo-instagram" size={20} color={COLORS.primary} />
             <Text style={styles.conntactItem} numberOfLines={1}>
-              Baber's Haven
+              {salonDetail?.name}
             </Text>
           </View>
           <TouchableOpacity style={styles.bookButton} onPress={() => {}}>
@@ -225,6 +357,9 @@ const styles = StyleSheet.create({
   bookButton: {
     flex: 2, // 1 part
   },
+  bookButton2: {
+    marginHorizontal: 20,
+  },
   button: {
     backgroundColor: COLORS.secondary,
     textAlign: "center",
@@ -276,6 +411,12 @@ const styles = StyleSheet.create({
     borderColor: COLORS.primary,
     borderWidth: 2,
     width: "100%",
+  },
+  distance: {},
+  textDistance: {
+    fontSize: SIZES.small,
+    fontWeight: "bold",
+    marginHorizontal: SIZES.xSmall,
   },
   map: {
     width: "100%",

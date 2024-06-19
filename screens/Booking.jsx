@@ -23,11 +23,19 @@ import {
   updateService,
   removeService,
   resetBooking,
+  setServiceStaff,
+  setService,
 } from "../store/bookingStore/action";
 import { useDispatch, useSelector } from "react-redux";
 import Button from "../components/auth/Button";
-import { GetAvailableTime } from "../store/booking/action";
+import {
+  GetAvailableTime,
+  BookAppointment,
+  resetAvailable,
+} from "../store/booking/action";
 import Loader from "../components/auth/Loader";
+import { GetVoucherBySalonId } from "../store/voucher/action";
+import VoucherModal from "../components/booking/VoucherModal";
 
 const Booking = ({ navigation }) => {
   const barber = [
@@ -76,34 +84,55 @@ const Booking = ({ navigation }) => {
   ];
 
   const dispatch = useDispatch();
-  const { storeId, dateBooking, hourBooking, services, totalPrice, totalTime } =
-    useSelector((state) => state.booking);
-  const { loading, availableTime } = useSelector((state) => state.BOOKING);
+  const {
+    storeId,
+    dateBooking,
+    hourBooking,
+    services,
+    totalPrice,
+    totalTime,
+    voucher,
+  } = useSelector((state) => state.booking);
+  const { loading, availableTime, bookAppoinment, error } = useSelector(
+    (state) => state.BOOKING
+  );
+  // console.log("availableTime", availableTime);
+  console.log("bookAppoinment", bookAppoinment?.bookingDetailResponses);
+  // console.log("voucher:", voucher);
+  const canPressButton = availableTime && availableTime.length > 0;
   const confirmBooking = () => {
     console.log("initialState: ", {
-      storeId,
-      dateBooking,
-      hourBooking,
+      // storeId,
+      // dateBooking,
+      // hourBooking,
       services,
-      totalPrice,
-      totalTime,
+      // totalPrice,
+      // totalTime,
+      // voucher,
     });
   };
 
   const handleGoBack = () => {
     dispatch(resetBooking());
+    dispatch(resetAvailable());
     navigation.goBack();
   };
 
   const [modalVisible, setModalVisible] = useState(false);
-
+  const [modalVoucherVisible, setModalVoucherVisible] = useState(false);
   const closeModal = () => {
     setModalVisible(false);
   };
-
   const openModal = () => {
     setModalVisible(true);
   };
+  const openVoucherModal = () => {
+    setModalVoucherVisible(true);
+  };
+  const closeVoucherModal = () => {
+    setModalVoucherVisible(false);
+  };
+
   const formatDate = (date) => {
     return date
       .toLocaleDateString("vi-VN", {
@@ -118,30 +147,158 @@ const Booking = ({ navigation }) => {
   const [selected, setSelected] = useState(formatDate(new Date()));
   const [selectedDate, setSelectedDate] = useState(formatDate(new Date()));
   const [loadingTime, setSelectedDateTime] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
   const [minDate, setMinDate] = useState(new Date());
   const [maxDate, setMaxDate] = useState(() => {
     const date = new Date();
     date.setDate(date.getDate() + 5);
     return date;
   });
-  useEffect(() => {
-    setSelectedDateTime(true);
-    dispatch(setDateBooking(selectedDate));
-    dispatch(setHourBooking(availableTime[0]?.timeSlot));
-    setSelectedDateTime(false);
-  }, [selectedDate, availableTime]);
+
+  // useEffect(() => {
+  //   dispatch(GetVoucherBySalonId(storeId, currentPage, itemsPerPage));
+  // }, []);
 
   useEffect(() => {
-    let data = {
-      day: new Date(dateBooking).toISOString(),
-      salonId: storeId,
-      serviceHairId: services[0]?.id,
-      salonEmployeeId:
-        services[0]?.staff?.id !== "0" ? services[0]?.staff?.id : null,
-      isAnyOne: services[0]?.staff?.id === "0",
-    };
-    dispatch(GetAvailableTime(data));
+    dispatch(setDateBooking(selectedDate));
+    if (availableTime.length > 0 && !hourBooking) {
+      const firstTimeSlot = availableTime[0].timeSlot;
+      dispatch(setHourBooking(firstTimeSlot));
+    }
+    dispatch(GetVoucherBySalonId(storeId, currentPage, itemsPerPage));
+  }, [selectedDate, availableTime]);
+
+  // useEffect(() => {
+  //   if (availableTime.length > 0) {
+  //     const selectedTime = availableTime.find(
+  //       (time) => time.timeSlot === hourBooking
+  //     );
+  //     console.log(
+  //       "employeeAvailables: ",
+  //       selectedTime ? selectedTime.employeeAvailables : []
+  //     );
+  //     if (selectedTime && selectedTime.employeeAvailables) {
+  //       dispatch(setServiceStaff(selectedTime.employeeAvailables));
+  //     }
+  //   }
+  // }, [hourBooking, availableTime]);
+
+  // useEffect(() => {
+  //   if (services.length > 0) {
+  //     let data = {
+  //       day: new Date(dateBooking).toISOString(),
+  //       salonId: storeId,
+  //       serviceHairId: services[0]?.id,
+  //       salonEmployeeId:
+  //         services[0]?.staff?.id !== "0" ? services[0]?.staff?.id : null,
+  //       isAnyOne: services[0]?.staff?.id === "0",
+  //     };
+  //     dispatch(GetAvailableTime(data));
+  //   } else if (services.length > 1 && hourBooking) {
+  //     let bookingDetails = services.map((service) => {
+  //       return {
+  //         serviceHairId: service.id,
+  //         salonEmployeeId: service.staff?.id !== "0" ? service.staff?.id : null,
+  //         isAnyOne: service.staff?.id === "0",
+  //       };
+  //     });
+
+  //     let data = {
+  //       day: new Date(dateBooking).toISOString(),
+  //       availableSlot: hourBooking,
+  //       salonId: storeId,
+  //       bookingDetail: bookingDetails,
+  //     };
+  //     dispatch(BookAppointment(data));
+  //   }
+  // }, [dateBooking, storeId, services, hourBooking]);
+
+  // useEffect(() => {
+  //   // Kiểm tra điều kiện khi dateBooking và services thay đổi
+  //   if (dateBooking && services.length > 0 && services.length <= 1) {
+  //     let data = {
+  //       day: new Date(dateBooking).toISOString(),
+  //       salonId: storeId,
+  //       serviceHairId: services[0]?.id,
+  //       salonEmployeeId:
+  //         services[0]?.staff?.id !== "0" ? services[0]?.staff?.id : null,
+  //       isAnyOne: services[0]?.staff?.id === "0",
+  //     };
+  //     dispatch(GetAvailableTime(data));
+  //   }
+
+  //   // Kiểm tra điều kiện khi hourBooking, services và services.length > 1 thay đổi
+  //   if (hourBooking && services.length > 0) {
+  //     let bookingDetails = services.map((service) => ({
+  //       serviceHairId: service.id,
+  //       salonEmployeeId: service.staff?.id !== "0" ? service.staff?.id : null,
+  //       isAnyOne: service.staff?.id === "0",
+  //     }));
+
+  //     let data = {
+  //       day: new Date(dateBooking).toISOString(),
+  //       availableSlot: hourBooking,
+  //       salonId: storeId,
+  //       bookingDetail: bookingDetails,
+  //     };
+  //     dispatch(BookAppointment(data));
+  //   }
+  // }, [dateBooking, storeId, services, hourBooking]);
+  useEffect(() => {
+    if (dateBooking && services.length > 0) {
+      let data = {
+        day: new Date(dateBooking).toISOString(),
+        salonId: storeId,
+        serviceHairId: services[0]?.id,
+        salonEmployeeId:
+          services[0]?.staff?.id !== "0" ? services[0]?.staff?.id : null,
+        isAnyOne: services[0]?.staff?.id === "0",
+      };
+      // dispatch(setHourBooking(null));
+      dispatch(GetAvailableTime(data));
+    }
   }, [dateBooking, storeId, services]);
+
+  useEffect(() => {
+    if (hourBooking && services.length > 0) {
+      let bookingDetails = services.map((service) => ({
+        serviceHairId: service.id,
+        salonEmployeeId: service.staff?.id !== "0" ? service.staff?.id : null,
+        isAnyOne: service.staff?.id === "0",
+      }));
+
+      let data = {
+        day: new Date(dateBooking).toISOString(),
+        availableSlot: hourBooking,
+        salonId: storeId,
+        bookingDetail: bookingDetails,
+      };
+      dispatch(BookAppointment(data));
+    }
+  }, [storeId, services, hourBooking]);
+
+  // useEffect(() => {
+  //   if (bookAppoinment && bookAppoinment.bookingDetailResponses) {
+  //     const timesArray = bookAppoinment.bookingDetailResponses.map(
+  //       (detail) => ({
+  //         id: detail.serviceHair.id,
+  //         startTime: detail.serviceHair.startTime,
+  //         endTime: detail.serviceHair.endTime,
+  //         waitingTime: detail.serviceHair.waitingTime,
+  //       })
+  //     );
+
+  //     const combinedData = services.map((service) => ({
+  //       ...service,
+  //       ...timesArray.find((time) => time.id === service.id),
+  //     }));
+
+  //     dispatch(setService(combinedData));
+  //     console.log("data service", combinedData);
+  //   }
+  // }, [bookAppoinment]);
+
   return (
     <>
       <Loader visible={loading} />
@@ -237,8 +394,9 @@ const Booking = ({ navigation }) => {
               }}
             >
               <Text style={styles.text}>
-                Xin lỗi, không có nhân viên nào có thể phục vụ bạn trong ngày{" "}
-                {selectedDate}!!
+                {error}
+                {" vào ngày "}
+                {selectedDate}
               </Text>
             </View>
           )}
@@ -248,17 +406,23 @@ const Booking = ({ navigation }) => {
           keyExtractor={(item) => item?.service_id.toString()}
           renderItem={({ item }) => <ListService item={item} />}
         /> */}
-          <TouchableOpacity
-            style={styles.addServiceContainer}
-            onPress={() => openModal()}
-          >
-            <Text style={styles.addServiceText}>+ Thêm dịch vụ</Text>
-          </TouchableOpacity>
-          <ListService services={services} />
+          <ListService />
+          {availableTime && availableTime.length > 0 && (
+            <TouchableOpacity
+              style={styles.voucherButton}
+              onPress={() => openModal()}
+            >
+              <Text style={styles.buttonVoucher}>+ Thêm dịch vụ</Text>
+            </TouchableOpacity>
+          )}
 
           {/* </ScrollView> */}
 
           <ListServiceModal isVisible={modalVisible} onClose={closeModal} />
+          <VoucherModal
+            isVisible={modalVoucherVisible}
+            onClose={closeVoucherModal}
+          />
         </SafeAreaView>
       </ScrollView>
       <View style={styles.bookContainer}>
@@ -268,6 +432,68 @@ const Booking = ({ navigation }) => {
             style={styles.priceText}
           >{`${totalPrice.toLocaleString()} VND`}</Text>
         </View>
+        {/* <TouchableOpacity
+          style={styles.voucherButton}
+          onPress={() => openVoucherModal()}
+        >
+          <Text style={styles.buttonVoucher}>Thêm Voucher</Text>
+        </TouchableOpacity> */}
+        {voucher.length === 0 ? (
+          <TouchableOpacity
+            style={styles.voucherButton}
+            onPress={() => openVoucherModal()}
+          >
+            <Text style={styles.buttonVoucher}>Thêm Voucher</Text>
+          </TouchableOpacity>
+        ) : (
+          <View
+            key={voucher?.id}
+            style={styles.serviceItem}
+            onPress={() => {
+              // Handle navigation or other actions
+            }}
+          >
+            <View style={styles.serviceInfo}>
+              <TouchableOpacity style={styles.imageContainer}>
+                <Image
+                  source={{
+                    uri: "https://cdn-icons-png.flaticon.com/128/8074/8074470.png",
+                  }}
+                  resizeMode="cover"
+                  style={styles.productImg}
+                />
+              </TouchableOpacity>
+            </View>
+            <View style={styles.pricingInfo}>
+              <Text style={styles.serviceName} numberOfLines={1}>
+                {voucher?.code} {`(Giảm ${voucher?.discountPercentage * 100}%)`}
+              </Text>
+              <Text style={styles.serviceDescription} numberOfLines={1}>
+                {voucher?.description}
+              </Text>
+              <Text
+                style={styles.serviceDescription}
+                numberOfLines={1}
+              >{`Ngày hết hạn: ${voucher?.expiryDate?.split("T")[0]} `}</Text>
+              {voucher?.isSystemCreated ? (
+                <Text style={styles.serviceDescription} numberOfLines={3}>
+                  Được tặng bởi HairHub
+                </Text>
+              ) : (
+                <Text style={styles.serviceDescription} numberOfLines={3}>
+                  Được tặng bởi Salon
+                </Text>
+              )}
+            </View>
+            <TouchableOpacity
+              style={styles.bookButton}
+              onPress={() => openVoucherModal()}
+            >
+              <Text style={styles.button}>Thay đổi</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+
         <Button title="Đặt Lịch" onPress={confirmBooking} />
       </View>
     </>
@@ -333,11 +559,82 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    marginHorizontal: 15,
+    marginHorizontal: 10,
     marginTop: 5,
   },
   priceText: {
     fontSize: SIZES.medium,
     fontWeight: "bold",
+  },
+  voucherButton: {
+    borderWidth: 2,
+    borderColor: "#000", // Màu của border
+    borderStyle: "dashed", // Kiểu nét đứt
+    padding: 10,
+    borderRadius: 5, // Đường cong của góc
+    alignItems: "center",
+    justifyContent: "center",
+    marginHorizontal: 10,
+    marginTop: 10,
+  },
+  buttonVoucher: {
+    color: "#000", // Màu của text
+    fontSize: 16,
+  },
+  serviceItem: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    padding: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: "#ccc",
+    marginVertical: 5,
+    // marginHorizontal: SIZES.xSmall,
+  },
+  serviceInfo: {
+    flex: 2, // 7 parts
+    flexDirection: "column",
+    marginRight: 10,
+  },
+  pricingInfo: {
+    flex: 5, // 2 parts
+    flexDirection: "column",
+    alignItems: "flex-start", // Align text to right if needed
+  },
+  bookButton: {
+    flex: 3, // 1 part
+  },
+  button: {
+    backgroundColor: COLORS.secondary,
+    textAlign: "center",
+    padding: 10,
+    borderRadius: 10,
+    marginLeft: 5,
+    fontWeight: "bold",
+  },
+  serviceName: {
+    fontSize: SIZES.small,
+    fontWeight: "bold",
+  },
+  serviceDescription: {
+    fontSize: SIZES.xSmall,
+  },
+  servicePrice: {
+    fontSize: SIZES.xSmall,
+    fontWeight: "bold",
+  },
+  servicePrice2: {
+    fontSize: SIZES.xSmall,
+    textDecorationLine: "line-through",
+  },
+  imageContainer: {
+    borderRadius: SIZES.medium,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  productImg: {
+    width: "100%",
+    height: 65,
+    borderRadius: SIZES.small,
   },
 });

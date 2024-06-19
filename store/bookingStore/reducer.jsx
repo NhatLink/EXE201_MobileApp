@@ -74,6 +74,10 @@ import {
   REMOVE_SERVICE,
   RESET_BOOKING,
   UPDATE_SERVICE_STAFF,
+  SET_SERVICE_STAFF,
+  SET_SERVICE,
+  ADD_VOUCHER,
+  REMOVE_VOUCHER,
 } from "./action";
 
 const initialState = {
@@ -81,6 +85,8 @@ const initialState = {
   dateBooking: null,
   hourBooking: null,
   services: [],
+  serviceStaff: [],
+  voucher: [],
   totalPrice: 0,
   totalTime: 0,
 };
@@ -98,6 +104,32 @@ function bookingReducer(state = initialState, action) {
       return {
         ...state,
         hourBooking: action.payload,
+      };
+    case SET_SERVICE_STAFF:
+      const defaultStaff = {
+        id: "0",
+        fullName: "Bất cứ ai",
+        img: "https://cdn1.iconfinder.com/data/icons/user-pictures/100/unknown-512.png",
+      };
+      const updatedStaff = [defaultStaff, ...action.payload];
+      return {
+        ...state,
+        serviceStaff: updatedStaff,
+      };
+    case SET_SERVICE:
+      return {
+        ...state,
+        services: action.payload,
+      };
+    case ADD_VOUCHER:
+      return {
+        ...state,
+        voucher: action.payload,
+      };
+    case REMOVE_VOUCHER:
+      return {
+        ...state,
+        voucher: [],
       };
     case ADD_SERVICE:
       return {

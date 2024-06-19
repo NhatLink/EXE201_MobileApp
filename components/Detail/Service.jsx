@@ -25,6 +25,7 @@ import {
   setStoreId,
   resetBooking,
 } from "../../store/bookingStore/action";
+import { resetAvailable } from "../../store/booking/action";
 const Service = (storeId) => {
   const navigation = useNavigation();
   const { salonService, salonEmployee } = useSelector((state) => state.SALON);
@@ -222,6 +223,7 @@ const Service = (storeId) => {
 
   const handleBook = (storeId, item) => {
     dispatch(resetBooking());
+    dispatch(resetAvailable());
     dispatch(setStoreId(storeId?.storeId));
     dispatch(addService(item));
     console.log("store", storeId);
@@ -245,17 +247,17 @@ const Service = (storeId) => {
     setModalVisible(false);
     setSelectedService(null);
   };
-  const handleSearch = () => {
-    Keyboard.dismiss();
-    const filtered = salonService.filter((service) =>
-      service.serviceName.toLowerCase().includes(searchKey.toLowerCase())
-    );
-    setFilteredServices(filtered);
-  };
+  // const handleSearch = () => {
+  //   Keyboard.dismiss();
+  //   const filtered = salonService.filter((service) =>
+  //     service.serviceName.toLowerCase().includes(searchKey.toLowerCase())
+  //   );
+  //   setFilteredServices(filtered);
+  // };
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView>
-        <View style={styles.searchContainer}>
+        {/* <View style={styles.searchContainer}>
           <TouchableOpacity>
             <Feather
               style={styles.searchIcon}
@@ -280,8 +282,8 @@ const Service = (storeId) => {
               color={COLORS.offwhite}
             />
           </TouchableOpacity>
-        </View>
-        {filteredServices.map((item) => (
+        </View> */}
+        {salonService.map((item) => (
           <View
             key={item.id}
             style={styles.serviceItem}
@@ -291,7 +293,7 @@ const Service = (storeId) => {
           >
             <TouchableOpacity
               style={styles.serviceInfo}
-              onPress={() => openModal(item)}
+              // onPress={() => openModal(item)}
             >
               <Text style={styles.serviceName} numberOfLines={1}>
                 {item?.serviceName}
@@ -321,10 +323,9 @@ const Service = (storeId) => {
                 </>
               )}
 
-              <Text
-                style={styles.serviceDescription}
-                numberOfLines={1}
-              >{`${item?.time}`}</Text>
+              <Text style={styles.serviceDescription} numberOfLines={1}>{`${
+                item?.time * 60
+              } phút`}</Text>
             </View>
             <TouchableOpacity
               style={styles.bookButton}

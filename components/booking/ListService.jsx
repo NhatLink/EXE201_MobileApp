@@ -11,7 +11,7 @@ import {
   TextInput,
   Keyboard,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { COLORS, SHADOWS, SIZES, images } from "../../constants";
 import { useNavigation } from "@react-navigation/native";
@@ -19,11 +19,36 @@ import { Ionicons, Feather } from "@expo/vector-icons";
 import { removeService } from "../../store/bookingStore/action";
 import { useDispatch, useSelector } from "react-redux";
 import StaffService from "./StaffService";
-const ListService = ({ services }) => {
+import Loader from "../auth/Loader";
+const ListService = () => {
   const dispatch = useDispatch();
+  const { services } = useSelector((state) => state.booking);
+  const { loading, availableTime, bookAppoinment, error } = useSelector(
+    (state) => state.BOOKING
+  );
+  const [load, setLoad] = useState(false);
   const handleDelete = (id) => {
+    setLoad(true);
     dispatch(removeService(id));
+    if (bookAppoinment && bookAppoinment.bookingDetailResponses && services) {
+      let timesArray = bookAppoinment.bookingDetailResponses.map((detail) => ({
+        id: detail.serviceHair.id,
+        startTime: detail.serviceHair.startTime,
+        endTime: detail.serviceHair.endTime,
+        waitingTime: detail.serviceHair.waitingTime,
+      }));
+
+      const combinedData = services.map((service) => ({
+        ...service,
+        ...timesArray.find((time) => time.id === service.id),
+      }));
+
+      settotalService(combinedData);
+      console.log("data service", combinedData);
+    }
+    setLoad(false);
   };
+  const [totalService, settotalService] = useState(services);
   const [modalVisible, setModalVisible] = useState(false);
   const [serviceId, setserviceId] = useState(false);
   const closeModal = () => {
@@ -34,12 +59,36 @@ const ListService = ({ services }) => {
     setModalVisible(true);
     setserviceId(item);
   };
+  const canPressButton = services.length > 0 && availableTime.length > 0;
+  useEffect(() => {
+    if (bookAppoinment && bookAppoinment.bookingDetailResponses && services) {
+      let timesArray = bookAppoinment.bookingDetailResponses.map((detail) => ({
+        id: detail.serviceHair.id,
+        startTime: detail.serviceHair.startTime,
+        endTime: detail.serviceHair.endTime,
+        waitingTime: detail.serviceHair.waitingTime,
+      }));
+
+      const combinedData = services.map((service) => ({
+        ...service,
+        ...timesArray.find((time) => time.id === service.id),
+      }));
+
+      settotalService(combinedData);
+      console.log("data service", combinedData);
+    }
+  }, [bookAppoinment]);
   return (
     <>
-      {services.map((item) => (
+      <Loader visible={load} />
+      {totalService.map((item) => (
         <View
           key={item.id}
-          style={[services.length > 1 && styles.subcontainer]}
+          style={[
+            services.length > 1 &&
+              availableTime.length > 0 &&
+              styles.subcontainer,
+          ]}
         >
           <View style={styles.container}>
             <View style={styles.serviceConatainer}>
@@ -68,20 +117,24 @@ const ListService = ({ services }) => {
                       <Text
                         style={styles.servicePrice2}
                         numberOfLines={1}
-                      >{`${item.price.toLocaleString()} VND`}</Text>
+                      >{`${item?.price?.toLocaleString()} VND`}</Text>
                     </>
                   ) : (
                     <>
                       <Text
                         style={styles.servicePrice}
                         numberOfLines={1}
-                      >{`${item.price.toLocaleString()} VND`}</Text>
+                      >{`${item?.price?.toLocaleString()} VND`}</Text>
                     </>
                   )}
 
-                  <Text style={styles.serviceDescription} numberOfLines={1}>{`${
+                  {/* <Text style={styles.serviceDescription} numberOfLines={1}>{`${
                     item.time * 60
-                  } phút`}</Text>
+                  } phút`}</Text> */}
+                  <Text style={styles.serviceDescription} numberOfLines={2}>
+                    Thời gian : {item?.startTime?.split("T")[1]} -{" "}
+                    {item?.endTime?.split("T")[1]}
+                  </Text>
                 </View>
               </View>
             </View>
@@ -100,13 +153,18 @@ const ListService = ({ services }) => {
               </View>
               <TouchableOpacity
                 style={styles.bookButton}
-                onPress={() => openModal(item.id)}
+                onPress={canPressButton ? () => openModal(item.id) : null}
+                activeOpacity={canPressButton ? 0.7 : 1}
               >
-                <Text style={styles.button}>Đổi nhân viên</Text>
+                <Text
+                  style={canPressButton ? styles.button : styles.disabledButton}
+                >
+                  Đổi nhân viên
+                </Text>
               </TouchableOpacity>
             </View>
           </View>
-          {services.length > 1 && (
+          {services.length > 1 && availableTime.length > 0 && (
             <TouchableOpacity
               style={styles.cancelButton}
               onPress={() => handleDelete(item.id)}
@@ -162,11 +220,11 @@ const styles = StyleSheet.create({
     // marginHorizontal: SIZES.xSmall,
   },
   serviceInfo: {
-    flex: 6, // 7 parts
+    flex: 5, // 7 parts
     flexDirection: "column",
   },
   pricingInfo: {
-    flex: 2, // 2 parts
+    flex: 5, // 2 parts
     flexDirection: "column",
     alignItems: "flex-end", // Align text to right if needed
   },
@@ -197,6 +255,14 @@ const styles = StyleSheet.create({
   },
   button: {
     backgroundColor: COLORS.secondary,
+    textAlign: "center",
+    padding: 5,
+    borderRadius: 10,
+    marginLeft: 5,
+    fontWeight: "bold",
+  },
+  disabledButton: {
+    backgroundColor: "#b1b1b3",
     textAlign: "center",
     padding: 5,
     borderRadius: 10,

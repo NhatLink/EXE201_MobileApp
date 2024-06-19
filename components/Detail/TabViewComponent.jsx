@@ -37,7 +37,7 @@ const TabViewComponent = ({ storeId }) => {
   const [routes] = useState([
     { key: "dichvu", title: "Dịch Vụ" },
     { key: "danhgia", title: "Đánh Giá" },
-    { key: "hinhanh", title: "Hình Ảnh" },
+    // { key: "hinhanh", title: "Hình Ảnh" },
     { key: "chitiet", title: "Chi Tiết" },
   ]);
   // console.log("storeId in tab", storeId);
@@ -47,8 +47,8 @@ const TabViewComponent = ({ storeId }) => {
         return <Service storeId={storeId} />;
       case "danhgia":
         return <Review storeId={storeId} />;
-      case "hinhanh":
-        return <ImageInWork storeId={storeId} />;
+      // case "hinhanh":
+      //   return <ImageInWork storeId={storeId} />;
       case "chitiet":
         return <About storeId={storeId} />;
       default:

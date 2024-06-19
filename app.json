@@ -21,6 +21,11 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/HairhubIcon.png",
         "backgroundColor": "#ffffff"
+      },
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyCmAt2KHp7yJVDWMWlrd_uUMtvzhSExNaQ"
+        }
       }
     },
     "web": {

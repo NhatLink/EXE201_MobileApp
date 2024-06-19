@@ -34,7 +34,11 @@ import formatDate from "../utils/helper";
 import { SliderBox } from "react-native-image-slider-box";
 import TabViewComponent from "../components/Detail/TabViewComponent";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchSalonInformationById } from "../store/salon/action";
+import {
+  fetchSalonEmployeeBySalonInformationId,
+  fetchSalonInformationById,
+  fetchServiceHairBySalonInformationId,
+} from "../store/salon/action";
 import * as SecureStore from "expo-secure-store";
 import Loader from "../components/auth/Loader";
 const Details = ({ navigation }) => {
@@ -161,6 +165,8 @@ const Details = ({ navigation }) => {
       setLoader(true);
       const accountId = await SecureStore.getItemAsync("accountId");
       dispatch(fetchSalonInformationById(product));
+      // dispatch(fetchSalonEmployeeBySalonInformationId(product));
+      // dispatch(fetchServiceHairBySalonInformationId(product));
       setIdUser(accountId);
       setLoader(false);
     }
@@ -259,13 +265,13 @@ const Details = ({ navigation }) => {
           <View style={styles.ratingContainer}>
             {/* <StarRating rating={item?.avgRating} /> */}
             <Text style={styles.averageRatingText}>
-              {StoreDetail?.averageRating > 0
-                ? (StoreDetail?.averageRating).toFixed(1) + "/5.0"
+              {salonDetail?.averageRating > 0
+                ? (salonDetail?.rate).toFixed(1) + "/5.0"
                 : "No ratings"}
             </Text>
             <Text style={styles.averageRatingText}>
-              {StoreDetail?.totalReviews
-                ? StoreDetail?.totalReviews + " reviews"
+              {salonDetail?.totalReviewer
+                ? salonDetail?.totalReviewer + " reviews"
                 : "(0 review)"}
             </Text>
           </View>
@@ -295,21 +301,25 @@ const Details = ({ navigation }) => {
           <View>
             <Text style={styles.description}>{salonDetail?.description}</Text>
             <Text style={styles.descriptionText}>{salonDetail?.address}</Text>
-            {StoreDetail?.saleUp && (
+            {/* {StoreDetail?.saleUp && (
               <Text style={styles.sale} numberOfLines={1}>
                 SALE
               </Text>
+            )} */}
+            {idUser && (
+              <TouchableOpacity onPress={addFavorites}>
+                {favorites ? (
+                  <Ionicons name="heart" size={40} color="red" />
+                ) : (
+                  <Ionicons
+                    name="heart-outline"
+                    size={40}
+                    color={COLORS.black}
+                  />
+                )}
+              </TouchableOpacity>
             )}
           </View>
-          {idUser && (
-            <TouchableOpacity onPress={addFavorites}>
-              {favorites ? (
-                <Ionicons name="heart" size={40} color="red" />
-              ) : (
-                <Ionicons name="heart-outline" size={40} color={COLORS.black} />
-              )}
-            </TouchableOpacity>
-          )}
         </View>
         <TabViewComponent storeId={salonDetail?.id} />
       </ScrollView>
