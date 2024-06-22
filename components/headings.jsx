@@ -148,13 +148,13 @@ const Headings = () => {
       </View>
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Special offer</Text>
-        <TouchableOpacity onPress={() => navigation.navigate("New-Rivals")}>
+        {/* <TouchableOpacity onPress={() => navigation.navigate("New-Rivals")}>
           <Ionicons
             name="chevron-forward-circle-outline"
             size={24}
             color={COLORS.primary}
           />
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
       <View style={styles.cardsContainer}>
         {/* {isLoading ? (

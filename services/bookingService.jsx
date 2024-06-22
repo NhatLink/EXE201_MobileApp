@@ -10,4 +10,7 @@ export const BookingService = {
   CalculatePrice(data) {
     return API.post(`/api/v1/appointments/CalculatePrice`, data);
   },
+  CreateAppointment(data) {
+    return API.post(`/api/v1/appointments/CreateAppointment`, data);
+  },
 };

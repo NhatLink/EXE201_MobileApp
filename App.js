@@ -129,7 +129,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import * as SplashScreen from "expo-splash-screen";
 import { useFonts } from "expo-font";
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 import BottomTabNavigation from "./navigation/BottomTabNavigation";
 import {
   Cart,
@@ -148,13 +148,62 @@ import {
 } from "./screens";
 import Orders from "./screens/Orders";
 import { PaymentProvider } from "./hook/PaymentContext";
-import { Provider } from "react-redux";
+import { Provider, useDispatch } from "react-redux";
 import store from "./store";
 import Toast from "react-native-toast-message";
+import { fetchUser2 } from "./store/user/action";
+import * as SecureStore from "expo-secure-store";
+import { AppState } from "react-native";
 
 const Stack = createNativeStackNavigator();
 
 export default function App() {
+  // useEffect(() => {
+  //   const handleUserFetch = async () => {
+  //     try {
+  //       const dispatch = useDispatch();
+
+  //       const accessToken = await SecureStore.getItemAsync("accessToken");
+
+  //       if (accessToken) {
+  //         await dispatch(fetchUser2(accessToken));
+  //       }
+  //     } catch (error) {
+  //       console.error("Failed to fetch accessToken", error);
+  //     }
+  //   };
+
+  //   const appStateSubscription = AppState.addEventListener(
+  //     "change",
+  //     (nextAppState) => {
+  //       if (nextAppState === "active") {
+  //         handleUserFetch();
+  //       }
+  //     }
+  //   );
+
+  //   handleUserFetch(); // Fetch user data when the app starts
+
+  //   return () => {
+  //     appStateSubscription.remove();
+  //   };
+  // }, []);
+  // const dispatch = useDispatch();
+  // useEffect(() => {
+  //   const handleUserFetch = async () => {
+  //     try {
+  //       const accessToken = await SecureStore.getItemAsync("accessToken");
+
+  //       if (accessToken) {
+  //         await dispatch(fetchUser2(accessToken));
+  //       }
+  //     } catch (error) {
+  //       console.error("Lỗi khi lấy accessToken", error);
+  //     }
+  //   };
+
+  //   handleUserFetch();
+  // }, [dispatch]);
   const [fontsLoaded] = useFonts({
     regular: require("./assets/fonts/Poppins-Regular.ttf"),
     light: require("./assets/fonts/Poppins-Light.ttf"),

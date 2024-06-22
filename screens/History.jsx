@@ -221,7 +221,7 @@ const History = () => {
         <Text style={styles.title}> Lịch sử </Text>
       </View>
 
-      {historyAppointment.length === 0 ? (
+      {historyAppointment && historyAppointment.length === 0 ? (
         <View
           style={{
             flex: 1,

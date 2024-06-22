@@ -215,7 +215,7 @@ const Details = ({ navigation }) => {
         setFavorites(false);
         Toast.show({
           type: "info",
-          text1: `${salonDetail?.description}`,
+          text1: `${salonDetail?.name}`,
           text2: "Đã bị xóa khỏi danh sách yêu thích",
           visibilityTime: 4000, // thời gian hiển thị Toast (tính bằng ms)
           autoHide: true, // tự động ẩn Toast sau thời gian visibilityTime
@@ -232,7 +232,7 @@ const Details = ({ navigation }) => {
         setFavorites(true);
         Toast.show({
           type: "info",
-          text1: `${salonDetail?.description}`,
+          text1: `${salonDetail?.name}`,
           text2: "Đã được thêm vào danh sách yêu thích",
           visibilityTime: 4000, // thời gian hiển thị Toast (tính bằng ms)
           autoHide: true, // tự động ẩn Toast sau thời gian visibilityTime
@@ -299,7 +299,10 @@ const Details = ({ navigation }) => {
         </View>
         <View style={styles.descriptionWrapper}>
           <View>
-            <Text style={styles.description}>{salonDetail?.description}</Text>
+            <Text style={styles.description}>{salonDetail?.name}</Text>
+            <Text style={styles.descriptionText}>
+              {salonDetail?.description}
+            </Text>
             <Text style={styles.descriptionText}>{salonDetail?.address}</Text>
             {/* {StoreDetail?.saleUp && (
               <Text style={styles.sale} numberOfLines={1}>

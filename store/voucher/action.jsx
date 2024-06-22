@@ -14,7 +14,7 @@ export const GetVoucherBySalonId =
         page,
         size
       );
-      console.log("GetVoucherBySalonId response:", response.data);
+      // console.log("GetVoucherBySalonId response:", response.data);
       dispatch({ type: GET_VOUCHER_ID_SUCCESS, payload: response.data });
     } catch (error) {
       const errorMessage = error.response?.data?.message || error.message;

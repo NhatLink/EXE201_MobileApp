@@ -116,7 +116,7 @@ const VoucherModal = ({ isVisible, onClose }) => {
                 borderBottomColor: COLORS.gray2,
               }}
             >
-              <Text style={styles.text}>Không còn dịch vụ nào nữa !!!</Text>
+              <Text style={styles.text}>Không còn voucher nào !!!</Text>
             </View>
           )}
         </View>

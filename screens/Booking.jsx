@@ -25,6 +25,7 @@ import {
   resetBooking,
   setServiceStaff,
   setService,
+  removeVoucher,
 } from "../store/bookingStore/action";
 import { useDispatch, useSelector } from "react-redux";
 import Button from "../components/auth/Button";
@@ -32,86 +33,103 @@ import {
   GetAvailableTime,
   BookAppointment,
   resetAvailable,
+  CalculatePrice,
+  CreateAppointment,
 } from "../store/booking/action";
 import Loader from "../components/auth/Loader";
 import { GetVoucherBySalonId } from "../store/voucher/action";
 import VoucherModal from "../components/booking/VoucherModal";
+import * as SecureStore from "expo-secure-store";
 
 const Booking = ({ navigation }) => {
-  const barber = [
-    {
-      id: "1",
-      image:
-        "https://thegioitongdo.net/wp-content/uploads/2018/01/cat-toc-cho-be.jpg",
-      company: "Jonh",
-    },
-    {
-      id: "2",
-      image:
-        "https://tocnamdep.com/wp-content/uploads/2020/06/1557200230-1526030688-4-ti-m-c-t-toc-nam-p-qu-n-10-ang-m-t-l-n-n-va-tr-i-nghi-m.jpg",
-      company: "Alex",
-    },
-    {
-      id: "3",
-      image:
-        "https://hocvientoc.edu.vn/wp-content/uploads/2019/05/lich-cat-toc-nu-thang-5.jpg",
-      company: "Mina",
-    },
-    {
-      id: "4",
-      image:
-        "https://cdn.sanity.io/images/zqgvoczt/vietnam-migration/6d9d446d8510d7c052e77cbc731bf1759343ce7d-1200x800.jpg",
-      company: "Hola",
-    },
-  ];
-
-  const time = [
-    { id: 1, time: "08:00 AM" },
-    { id: 2, time: "08:30 AM" },
-    { id: 3, time: "09:00 AM" },
-    { id: 4, time: "09:30 AM" },
-    { id: 5, time: "10:00 AM" },
-    { id: 6, time: "10:30 AM" },
-    { id: 7, time: "11:00 AM" },
-    { id: 8, time: "11:30 AM" },
-    { id: 13, time: "02:00 PM" },
-    { id: 14, time: "02:30 PM" },
-    { id: 15, time: "03:00 PM" },
-    { id: 16, time: "03:30 PM" },
-    { id: 17, time: "04:00 PM" },
-    { id: 18, time: "04:30 PM" },
-    { id: 19, time: "05:00 PM" },
-  ];
-
   const dispatch = useDispatch();
   const {
     storeId,
     dateBooking,
     hourBooking,
     services,
-    totalPrice,
+    // totalPrice,
     totalTime,
     voucher,
   } = useSelector((state) => state.booking);
-  const { loading, availableTime, bookAppoinment, error } = useSelector(
-    (state) => state.BOOKING
-  );
+  const {
+    loading,
+    availableTime,
+    bookAppoinment,
+    error,
+    totalPrice,
+    createAppointment,
+  } = useSelector((state) => state.BOOKING);
   // console.log("availableTime", availableTime);
-  console.log("bookAppoinment", bookAppoinment?.bookingDetailResponses);
+  // console.log("bookAppoinment", bookAppoinment?.bookingDetailResponses);
   // console.log("voucher:", voucher);
   const canPressButton = availableTime && availableTime.length > 0;
-  const confirmBooking = () => {
-    console.log("initialState: ", {
-      // storeId,
-      // dateBooking,
-      // hourBooking,
-      services,
-      // totalPrice,
-      // totalTime,
-      // voucher,
-    });
-  };
+  const confirmBooking = async () => {
+    const userInfoJson = await SecureStore.getItemAsync("userInfo");
+    const accountId = await SecureStore.getItemAsync("accountId");
+    let userInfo = null;
+    if (userInfoJson) {
+      try {
+        userInfo = JSON.parse(userInfoJson);
+      } catch (error) {
+        console.error("Error parsing userInfo", error);
+      }
+    }
 
+    if (
+      userInfo &&
+      userInfo?.id &&
+      bookAppoinment &&
+      bookAppoinment.bookingDetailResponses &&
+      totalPrice &&
+      services &&
+      accountId
+    ) {
+      const createAppointmentObject = () => {
+        const appointmentDetails = bookAppoinment.bookingDetailResponses.map(
+          (detail) => {
+            const service = services.find(
+              (s) => s.id === detail.serviceHair.id
+            );
+            return {
+              // salonEmployeeId: detail.employees[0].id,
+              salonEmployeeId:
+                service.staff?.id !== "0"
+                  ? service.staff?.id
+                  : detail.employees[0].id,
+              serviceHairId: service.id,
+              description: service.description,
+              endTime: detail.serviceHair.endTime,
+              startTime: detail.serviceHair.startTime,
+            };
+          }
+        );
+
+        return {
+          customerId: userInfo?.id,
+          startDate: bookAppoinment?.day,
+          totalPrice: totalPrice.totalPrice,
+          originalPrice: totalPrice.originalPrice,
+          discountedPrice: totalPrice.discountedPrice,
+          appointmentDetails: appointmentDetails,
+          voucherIds: voucher ? [voucher.id] : [],
+        };
+      };
+
+      const appointmentObject = createAppointmentObject();
+      // console.log(JSON.stringify(appointmentObject, null, 2));
+      dispatch(
+        CreateAppointment(
+          appointmentObject,
+          navigation,
+          currentPage,
+          itemsPerPage,
+          accountId
+        )
+      );
+    }
+  };
+  console.log("createAppointment", createAppointment);
   const handleGoBack = () => {
     dispatch(resetBooking());
     dispatch(resetAvailable());
@@ -162,89 +180,13 @@ const Booking = ({ navigation }) => {
 
   useEffect(() => {
     dispatch(setDateBooking(selectedDate));
-    if (availableTime.length > 0 && !hourBooking) {
+    if (availableTime.length > 0 && hourBooking < availableTime[0].timeSlot) {
       const firstTimeSlot = availableTime[0].timeSlot;
       dispatch(setHourBooking(firstTimeSlot));
     }
     dispatch(GetVoucherBySalonId(storeId, currentPage, itemsPerPage));
   }, [selectedDate, availableTime]);
 
-  // useEffect(() => {
-  //   if (availableTime.length > 0) {
-  //     const selectedTime = availableTime.find(
-  //       (time) => time.timeSlot === hourBooking
-  //     );
-  //     console.log(
-  //       "employeeAvailables: ",
-  //       selectedTime ? selectedTime.employeeAvailables : []
-  //     );
-  //     if (selectedTime && selectedTime.employeeAvailables) {
-  //       dispatch(setServiceStaff(selectedTime.employeeAvailables));
-  //     }
-  //   }
-  // }, [hourBooking, availableTime]);
-
-  // useEffect(() => {
-  //   if (services.length > 0) {
-  //     let data = {
-  //       day: new Date(dateBooking).toISOString(),
-  //       salonId: storeId,
-  //       serviceHairId: services[0]?.id,
-  //       salonEmployeeId:
-  //         services[0]?.staff?.id !== "0" ? services[0]?.staff?.id : null,
-  //       isAnyOne: services[0]?.staff?.id === "0",
-  //     };
-  //     dispatch(GetAvailableTime(data));
-  //   } else if (services.length > 1 && hourBooking) {
-  //     let bookingDetails = services.map((service) => {
-  //       return {
-  //         serviceHairId: service.id,
-  //         salonEmployeeId: service.staff?.id !== "0" ? service.staff?.id : null,
-  //         isAnyOne: service.staff?.id === "0",
-  //       };
-  //     });
-
-  //     let data = {
-  //       day: new Date(dateBooking).toISOString(),
-  //       availableSlot: hourBooking,
-  //       salonId: storeId,
-  //       bookingDetail: bookingDetails,
-  //     };
-  //     dispatch(BookAppointment(data));
-  //   }
-  // }, [dateBooking, storeId, services, hourBooking]);
-
-  // useEffect(() => {
-  //   // Kiểm tra điều kiện khi dateBooking và services thay đổi
-  //   if (dateBooking && services.length > 0 && services.length <= 1) {
-  //     let data = {
-  //       day: new Date(dateBooking).toISOString(),
-  //       salonId: storeId,
-  //       serviceHairId: services[0]?.id,
-  //       salonEmployeeId:
-  //         services[0]?.staff?.id !== "0" ? services[0]?.staff?.id : null,
-  //       isAnyOne: services[0]?.staff?.id === "0",
-  //     };
-  //     dispatch(GetAvailableTime(data));
-  //   }
-
-  //   // Kiểm tra điều kiện khi hourBooking, services và services.length > 1 thay đổi
-  //   if (hourBooking && services.length > 0) {
-  //     let bookingDetails = services.map((service) => ({
-  //       serviceHairId: service.id,
-  //       salonEmployeeId: service.staff?.id !== "0" ? service.staff?.id : null,
-  //       isAnyOne: service.staff?.id === "0",
-  //     }));
-
-  //     let data = {
-  //       day: new Date(dateBooking).toISOString(),
-  //       availableSlot: hourBooking,
-  //       salonId: storeId,
-  //       bookingDetail: bookingDetails,
-  //     };
-  //     dispatch(BookAppointment(data));
-  //   }
-  // }, [dateBooking, storeId, services, hourBooking]);
   useEffect(() => {
     if (dateBooking && services.length > 0) {
       let data = {
@@ -276,29 +218,27 @@ const Booking = ({ navigation }) => {
       };
       dispatch(BookAppointment(data));
     }
-  }, [storeId, services, hourBooking]);
+  }, [storeId, services, hourBooking, dateBooking]);
 
-  // useEffect(() => {
-  //   if (bookAppoinment && bookAppoinment.bookingDetailResponses) {
-  //     const timesArray = bookAppoinment.bookingDetailResponses.map(
-  //       (detail) => ({
-  //         id: detail.serviceHair.id,
-  //         startTime: detail.serviceHair.startTime,
-  //         endTime: detail.serviceHair.endTime,
-  //         waitingTime: detail.serviceHair.waitingTime,
-  //       })
-  //     );
+  useEffect(() => {
+    if (bookAppoinment && bookAppoinment.bookingDetailResponses) {
+      const timesArray = bookAppoinment?.bookingDetailResponses?.map(
+        (detail) => ({
+          id: detail.serviceHair.id,
+        })
+      );
+      const voucherId = voucher?.id ?? null;
+      const serviceHairId = timesArray.map((item) => item.id);
 
-  //     const combinedData = services.map((service) => ({
-  //       ...service,
-  //       ...timesArray.find((time) => time.id === service.id),
-  //     }));
-
-  //     dispatch(setService(combinedData));
-  //     console.log("data service", combinedData);
-  //   }
-  // }, [bookAppoinment]);
-
+      const result = {
+        voucherId: voucherId,
+        serviceHairId: serviceHairId,
+      };
+      // console.log("total price data", result);
+      dispatch(CalculatePrice(result));
+    }
+  }, [voucher, bookAppoinment]);
+  // console.log("totalPrice: ", totalPrice);
   return (
     <>
       <Loader visible={loading} />
@@ -359,27 +299,34 @@ const Booking = ({ navigation }) => {
               }}
             >
               {availableTime?.map((item, index) => {
-                // Chuyển đổi timeSlot thành giờ và phút
-                const hours = Math.floor(item.timeSlot);
-                const minutes = (item.timeSlot - hours) * 60;
-                const timeString = `${hours}:${minutes === 0 ? "00" : minutes}`;
+                // Chỉ hiển thị timeSlot nếu có employeeAvailables.length > 0
+                if (item.employeeAvailables.length > 0) {
+                  // Chuyển đổi timeSlot thành giờ và phút
+                  const hours = Math.floor(item.timeSlot);
+                  const minutes = (item.timeSlot - hours) * 60;
+                  const timeString = `${hours}:${
+                    minutes === 0 ? "00" : minutes
+                  }`;
 
-                return (
-                  <TouchableOpacity
-                    key={index}
-                    style={[
-                      styles.item,
-                      item.timeSlot === hourBooking
-                        ? styles.selectedItem
-                        : null,
-                    ]}
-                    onPress={() => {
-                      dispatch(setHourBooking(item.timeSlot));
-                    }}
-                  >
-                    <Text style={styles.text}>{timeString}</Text>
-                  </TouchableOpacity>
-                );
+                  return (
+                    <TouchableOpacity
+                      key={index}
+                      style={[
+                        styles.item,
+                        item.timeSlot === hourBooking
+                          ? styles.selectedItem
+                          : null,
+                      ]}
+                      onPress={() => {
+                        dispatch(setHourBooking(item.timeSlot));
+                      }}
+                    >
+                      <Text style={styles.text}>{timeString}</Text>
+                    </TouchableOpacity>
+                  );
+                } else {
+                  return null;
+                }
               })}
             </ScrollView>
           ) : (
@@ -409,7 +356,7 @@ const Booking = ({ navigation }) => {
           <ListService />
           {availableTime && availableTime.length > 0 && (
             <TouchableOpacity
-              style={styles.voucherButton}
+              style={styles.serviceButton}
               onPress={() => openModal()}
             >
               <Text style={styles.buttonVoucher}>+ Thêm dịch vụ</Text>
@@ -428,9 +375,30 @@ const Booking = ({ navigation }) => {
       <View style={styles.bookContainer}>
         <View style={styles.bookPriceContainer}>
           <Text style={styles.priceText}>Total Price:</Text>
-          <Text
+          {/* <Text
             style={styles.priceText}
-          >{`${totalPrice.toLocaleString()} VND`}</Text>
+          >{`${totalPrice?.originalPrice?.toLocaleString()} VND`}</Text> */}
+          <View style={styles.pricingInfo}>
+            {totalPrice?.originalPrice != totalPrice?.totalPrice ? (
+              <>
+                <Text
+                  style={styles.servicePrice}
+                  numberOfLines={1}
+                >{`${totalPrice?.totalPrice?.toLocaleString()} VND`}</Text>
+                <Text
+                  style={styles.servicePrice2}
+                  numberOfLines={1}
+                >{`${totalPrice?.originalPrice.toLocaleString()} VND`}</Text>
+              </>
+            ) : (
+              <>
+                <Text
+                  style={styles.servicePrice}
+                  numberOfLines={1}
+                >{`${totalPrice?.totalPrice?.toLocaleString()} VND`}</Text>
+              </>
+            )}
+          </View>
         </View>
         {/* <TouchableOpacity
           style={styles.voucherButton}
@@ -438,7 +406,7 @@ const Booking = ({ navigation }) => {
         >
           <Text style={styles.buttonVoucher}>Thêm Voucher</Text>
         </TouchableOpacity> */}
-        {voucher.length === 0 ? (
+        {voucher === null ? (
           <TouchableOpacity
             style={styles.voucherButton}
             onPress={() => openVoucherModal()}
@@ -446,13 +414,7 @@ const Booking = ({ navigation }) => {
             <Text style={styles.buttonVoucher}>Thêm Voucher</Text>
           </TouchableOpacity>
         ) : (
-          <View
-            key={voucher?.id}
-            style={styles.serviceItem}
-            onPress={() => {
-              // Handle navigation or other actions
-            }}
-          >
+          <View key={voucher?.id} style={styles.serviceItem}>
             <View style={styles.serviceInfo}>
               <TouchableOpacity style={styles.imageContainer}>
                 <Image
@@ -464,7 +426,7 @@ const Booking = ({ navigation }) => {
                 />
               </TouchableOpacity>
             </View>
-            <View style={styles.pricingInfo}>
+            <View style={styles.voucherInfo}>
               <Text style={styles.serviceName} numberOfLines={1}>
                 {voucher?.code} {`(Giảm ${voucher?.discountPercentage * 100}%)`}
               </Text>
@@ -487,9 +449,9 @@ const Booking = ({ navigation }) => {
             </View>
             <TouchableOpacity
               style={styles.bookButton}
-              onPress={() => openVoucherModal()}
+              onPress={() => dispatch(removeVoucher())}
             >
-              <Text style={styles.button}>Thay đổi</Text>
+              <Text style={styles.button}>Xóa</Text>
             </TouchableOpacity>
           </View>
         )}
@@ -577,6 +539,17 @@ const styles = StyleSheet.create({
     marginHorizontal: 10,
     marginTop: 10,
   },
+  serviceButton: {
+    borderWidth: 2,
+    borderColor: "#000", // Màu của border
+    borderStyle: "dashed", // Kiểu nét đứt
+    padding: 10,
+    borderRadius: 5, // Đường cong của góc
+    alignItems: "center",
+    justifyContent: "center",
+    marginHorizontal: 10,
+    marginVertical: 10,
+  },
   buttonVoucher: {
     color: "#000", // Màu của text
     fontSize: 16,
@@ -597,6 +570,11 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   pricingInfo: {
+    flex: 5, // 2 parts
+    flexDirection: "column",
+    alignItems: "flex-end", // Align text to right if needed
+  },
+  voucherInfo: {
     flex: 5, // 2 parts
     flexDirection: "column",
     alignItems: "flex-start", // Align text to right if needed
@@ -620,11 +598,11 @@ const styles = StyleSheet.create({
     fontSize: SIZES.xSmall,
   },
   servicePrice: {
-    fontSize: SIZES.xSmall,
+    fontSize: SIZES.medium,
     fontWeight: "bold",
   },
   servicePrice2: {
-    fontSize: SIZES.xSmall,
+    fontSize: SIZES.small,
     textDecorationLine: "line-through",
   },
   imageContainer: {

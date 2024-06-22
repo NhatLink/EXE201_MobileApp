@@ -25,6 +25,7 @@ import {
   setStoreId,
   resetBooking,
 } from "../../store/bookingStore/action";
+import { ToastAndroid } from "react-native";
 import { resetAvailable } from "../../store/booking/action";
 const Service = (storeId) => {
   const navigation = useNavigation();
@@ -221,15 +222,37 @@ const Service = (storeId) => {
   const [filteredServices, setFilteredServices] = useState(salonService);
   const dispatch = useDispatch();
 
-  const handleBook = (storeId, item) => {
-    dispatch(resetBooking());
-    dispatch(resetAvailable());
-    dispatch(setStoreId(storeId?.storeId));
-    dispatch(addService(item));
-    console.log("store", storeId);
-    console.log("item", item);
-    // Navigation or additional logic
-    navigation.navigate("Booking");
+  const handleBook = async (storeId, item) => {
+    try {
+      const accessToken = await SecureStore.getItemAsync("accessToken");
+
+      if (accessToken) {
+        dispatch(resetBooking());
+        dispatch(resetAvailable());
+        dispatch(setStoreId(storeId?.storeId));
+        dispatch(addService(item));
+        console.log("store", storeId);
+        console.log("item", item);
+        // Điều hướng hoặc logic bổ sung
+        navigation.navigate("Booking");
+      } else {
+        throw new Error("Access token không tồn tại");
+      }
+    } catch (error) {
+      console.log("Lỗi trong handleBook:", error);
+      ToastAndroid.show(
+        "Vui lòng đăng nhập để sử dụng tính năng trên",
+        ToastAndroid.SHORT
+      );
+    }
+    // dispatch(resetBooking());
+    // dispatch(resetAvailable());
+    // dispatch(setStoreId(storeId?.storeId));
+    // dispatch(addService(item));
+    // console.log("store", storeId);
+    // console.log("item", item);
+    // // Navigation or additional logic
+    // navigation.navigate("Booking");
   };
   const getImageUrls = (images) => {
     return images.map((image) => image.src);

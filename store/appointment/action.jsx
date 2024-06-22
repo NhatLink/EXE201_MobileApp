@@ -20,6 +20,7 @@ export const GetAppointmentByAccountId =
       dispatch({ type: APPOINTMENT_SUCCESS, payload: response.data });
     } catch (error) {
       dispatch({ type: APPOINTMENT_FAILURE, payload: error.message });
+      console.log("error GetAppointmentByAccountId", error);
     }
   };
 

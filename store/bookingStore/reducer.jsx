@@ -86,7 +86,7 @@ const initialState = {
   hourBooking: null,
   services: [],
   serviceStaff: [],
-  voucher: [],
+  voucher: null,
   totalPrice: 0,
   totalTime: 0,
 };
@@ -129,7 +129,7 @@ function bookingReducer(state = initialState, action) {
     case REMOVE_VOUCHER:
       return {
         ...state,
-        voucher: [],
+        voucher: null,
       };
     case ADD_SERVICE:
       return {

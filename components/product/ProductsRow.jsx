@@ -19,18 +19,33 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchSalonInformation } from "../../store/salon/action";
 const ProductRow = () => {
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [itemsPerPage, setItemsPerPage] = useState(4);
   const dispatch = useDispatch();
   const salonInformation = useSelector((state) => state.SALON.allSalon);
 
   useEffect(() => {
+    setCurrentPage(1);
+  }, []);
+
+  useEffect(() => {
     dispatch(fetchSalonInformation(currentPage, itemsPerPage));
-  }, [dispatch, currentPage, itemsPerPage]);
+  }, [currentPage, itemsPerPage]);
 
   const hasItems =
     salonInformation &&
     salonInformation?.items &&
     salonInformation?.items?.length > 0;
+
+  const Decrease = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+  const Increase = () => {
+    if (currentPage < salonInformation?.totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -45,6 +60,27 @@ const ProductRow = () => {
           ))
         ) : (
           <Text>Not found!!</Text>
+        )}
+      </View>
+      <View style={styles.paging}>
+        {currentPage > 1 && (
+          <TouchableOpacity style={styles.pagingArrow} onPress={Decrease}>
+            <Ionicons
+              name="arrow-back-circle-outline"
+              size={24}
+              color={COLORS.primary}
+            />
+          </TouchableOpacity>
+        )}
+        <Text style={styles.pagingArrow}>{salonInformation?.page}</Text>
+        {currentPage < salonInformation?.totalPages && (
+          <TouchableOpacity style={styles.pagingArrow} onPress={Increase}>
+            <Ionicons
+              name="arrow-forward-circle-outline"
+              size={24}
+              color={COLORS.primary}
+            />
+          </TouchableOpacity>
         )}
       </View>
     </View>
@@ -96,6 +132,15 @@ const styles = StyleSheet.create({
   },
   card: {
     width: "50%",
+  },
+  paging: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  pagingArrow: {
+    marginVertical: 10,
+    padding: 10,
   },
 });
 // const products = [

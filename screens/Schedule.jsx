@@ -35,6 +35,7 @@ const Schedule = () => {
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const { appointment, loading } = useSelector((state) => state.APPOINTMENT);
   console.log("appointment:", appointment);
+  const accountId = SecureStore.getItemAsync("accountId");
   useEffect(() => {
     async function fetchData() {
       const accountId = await SecureStore.getItemAsync("accountId");
@@ -221,19 +222,20 @@ const Schedule = () => {
   // };
   useEffect(() => {
     const newItems = {};
-    appointments.forEach((appointment) => {
-      const { dateSchedule } = appointment;
+    appointment.forEach((appointment) => {
+      const dateSchedule = appointment.startDate.split("T")[0];
       if (!newItems[dateSchedule]) {
         newItems[dateSchedule] = [];
       }
       newItems[dateSchedule].push(appointment);
     });
     setItems(newItems);
-  }, []);
+  }, [appointment]);
 
   const renderItem = (item) => {
     return <ListSchedule item={item} />;
   };
+
   const renderEmptyDate = () => {
     return (
       <View style={styles.Imgcontainer}>
@@ -242,7 +244,7 @@ const Schedule = () => {
           resizeMode="cover"
           style={styles.img}
         />
-        <Text>Không có lịch hẹn nào vào ngày cả</Text>
+        <Text>Không có lịch hẹn nào vào ngày này</Text>
       </View>
     );
   };
@@ -257,7 +259,7 @@ const Schedule = () => {
     >
       <Loader visible={loading} />
       <Text style={styles.title}>Lịch hẹn của bạn</Text>
-      {appointment.length === 0 ? (
+      {appointment && appointment?.length === 0 ? (
         <View
           style={{
             flex: 1,
@@ -278,12 +280,18 @@ const Schedule = () => {
             <TouchableOpacity onPress={() => navigation.navigate("Search")}>
               <Text style={styles.button}>Tìm kiếm dịch vụ</Text>
             </TouchableOpacity>
-            <Text style={styles.emptyText2}>
-              ---------------Đã sử dụng HairHub---------------
-            </Text>
-            <TouchableOpacity onPress={() => navigation.navigate("Profile")}>
-              <Text style={styles.button}>Đăng Nhập</Text>
-            </TouchableOpacity>
+            {accountId && (
+              <>
+                <Text style={styles.emptyText2}>
+                  ---------------Đã sử dụng HairHub---------------
+                </Text>
+                <TouchableOpacity
+                  onPress={() => navigation.navigate("Profile")}
+                >
+                  <Text style={styles.button}>Đăng Nhập</Text>
+                </TouchableOpacity>
+              </>
+            )}
           </View>
         </View>
       ) : (

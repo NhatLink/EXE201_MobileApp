@@ -161,9 +161,9 @@ export const fetchUser = (accessToken) => async (dispatch) => {
   }
 };
 
-export const fetchUser2 = () => async (dispatch, getState) => {
+export const fetchUser2 = (accessToken) => async (dispatch, getState) => {
   try {
-    const { accessToken } = getState().USER;
+    // const { accessToken } = getState().USER;
     const response = await UserServices.fetchUser(accessToken);
     SecureStore.setItemAsync("accountId", response.data.accountId);
     SecureStore.setItemAsync(
@@ -171,8 +171,10 @@ export const fetchUser2 = () => async (dispatch, getState) => {
       JSON.stringify(response.data.customerResponse)
     );
     dispatch({ type: FETCH_USER_SUCCESS, payload: response.data });
+    ToastAndroid.show("Chào mừng trở lại", ToastAndroid.SHORT);
   } catch (error) {
     if (error.response.status === 401) {
+      console.log("Access token expired");
       const refreshToken = await SecureStore.getItemAsync("refreshToken");
       await dispatch(fetchToken(refreshToken));
       const { accessToken } = getState().USER;

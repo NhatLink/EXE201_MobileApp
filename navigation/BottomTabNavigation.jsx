@@ -1,10 +1,12 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Ionicons } from "@expo/vector-icons";
 import { COLORS } from "../constants";
 const Tab = createBottomTabNavigator();
 import { Cart, Home, Profile, Search, Schedule } from "../screens";
-
+import { useDispatch } from "react-redux";
+import * as SecureStore from "expo-secure-store";
+import { fetchUser2 } from "../store/user/action";
 const screenOptions = {
   tabBarShowLabel: false,
   headerShown: false,
@@ -20,6 +22,22 @@ const screenOptions = {
 };
 
 const BottomTabNavigation = () => {
+  // const dispatch = useDispatch();
+  // useEffect(() => {
+  //   const handleUserFetch = async () => {
+  //     try {
+  //       console.log("fetchUser2");
+  //       const accessToken = await SecureStore.getItemAsync("accessToken");
+  //       if (accessToken) {
+  //         await dispatch(fetchUser2(accessToken));
+  //       }
+  //     } catch (error) {
+  //       console.error("Lỗi khi lấy accessToken", error);
+  //     }
+  //   };
+
+  //   handleUserFetch();
+  // }, [dispatch]);
   return (
     <Tab.Navigator screenOptions={screenOptions}>
       <Tab.Screen

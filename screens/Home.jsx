@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   ScrollView,
   Alert,
+  AppState,
 } from "react-native";
 import { COLORS, SIZES } from "../constants";
 import { Ionicons, Fontisto } from "@expo/vector-icons";
@@ -15,6 +16,9 @@ import ProductsRow from "../components/product/ProductsRow";
 import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { fetchUser2 } from "../store/user/action";
+import * as SecureStore from "expo-secure-store";
+import { useDispatch } from "react-redux";
 
 const Home = () => {
   const navigation = useNavigation();
@@ -28,31 +32,22 @@ const Home = () => {
     getLocation();
   }, []);
 
-  // const checkUserExistence = async () => {
-  //   const id = await AsyncStorage.getItem("id");
-  //   const userID = `user${JSON.parse(id)}`;
-  //   try {
-  //     const userData = await AsyncStorage.getItem(userID);
-  //     if (userData !== null) {
-  //       const parsedData = JSON.parse(userData);
-  //       setUserLoggedIn(true);
-  //       setUserData(parsedData);
+  const dispatch = useDispatch();
+  useEffect(() => {
+    const handleUserFetch = async () => {
+      try {
+        console.log("fetchUser2");
+        const accessToken = await SecureStore.getItemAsync("accessToken");
+        if (accessToken) {
+          await dispatch(fetchUser2(accessToken));
+        }
+      } catch (error) {
+        console.error("Lỗi khi lấy accessToken", error);
+      }
+    };
 
-  //       const count = await AsyncStorage.getItem("cartCount");
-  //       if (count !== null) {
-  //         const parsedCart = JSON.parse(count);
-  //         setCartCount(parsedCart);
-  //         console.log("cart count:", parsedCart);
-  //       } else {
-  //         return;
-  //       }
-  //     } else {
-  //       return;
-  //     }
-  //   } catch (error) {
-  //     console.error("Error retrieving user data:", error);
-  //   }
-  // };
+    handleUserFetch();
+  }, []);
 
   const handlePress = () => {
     if (userLoggedIn) {

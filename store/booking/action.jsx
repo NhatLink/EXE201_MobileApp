@@ -1,5 +1,6 @@
 import { BookingService } from "../../services/bookingService";
 import { ToastAndroid } from "react-native";
+import { GetAppointmentByAccountId } from "../appointment/action";
 
 export const GET_AVAILABLE_TIME_REQUEST = "GET_AVAILABLE_TIME_REQUEST";
 export const GET_AVAILABLE_TIME_SUCCESS = "GET_AVAILABLE_TIME_SUCCESS";
@@ -12,6 +13,10 @@ export const BOOK_APPOINMENT_FAILURE = "BOOK_APPOINMENT_FAILURE";
 export const CACULATE_PRICE_REQUEST = "CACULATE_PRICE_REQUEST";
 export const CACULATE_PRICE_SUCCESS = "CACULATE_PRICE_SUCCESS";
 export const CACULATE_PRICE_FAILURE = "CACULATE_PRICE_FAILURE";
+
+export const CREATE_APPOINTMENT_REQUEST = "CREATE_APPOINTMENT_REQUEST";
+export const CREATE_APPOINTMENT_SUCCESS = "CREATE_APPOINTMENT_SUCCESS";
+export const CREATE_APPOINTMENT_FAILURE = "CREATE_APPOINTMENT_FAILURE";
 
 export const RESET_AVAILABLE = "RESET_AVAILABLE";
 // Gửi OTP email action
@@ -63,3 +68,23 @@ export const CalculatePrice = (data) => async (dispatch) => {
     console.log("error CalculatePrice", error);
   }
 };
+
+export const CreateAppointment =
+  (data, navigation, currentPage, itemsPerPage, accountId) =>
+  async (dispatch) => {
+    dispatch({ type: CREATE_APPOINTMENT_REQUEST });
+    console.log("CreateAppointment data:", data);
+    console.log("CreateAppointment data:", accountId);
+    try {
+      const response = await BookingService.CreateAppointment(data);
+      ToastAndroid.show(response.data, ToastAndroid.SHORT);
+      dispatch({ type: CREATE_APPOINTMENT_SUCCESS, payload: response.data });
+      dispatch(GetAppointmentByAccountId(currentPage, itemsPerPage, accountId));
+      navigation.navigate("Appointment schedule");
+    } catch (error) {
+      const errorMessage = error.response?.data?.message || error.message;
+      dispatch({ type: CREATE_APPOINTMENT_FAILURE, payload: errorMessage });
+      ToastAndroid.show("Tạo lịch hẹn thất bại", ToastAndroid.SHORT);
+      console.log("error CreateAppointment", error);
+    }
+  };

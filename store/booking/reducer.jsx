@@ -9,6 +9,9 @@ import {
   CACULATE_PRICE_REQUEST,
   CACULATE_PRICE_FAILURE,
   CACULATE_PRICE_SUCCESS,
+  CREATE_APPOINTMENT_FAILURE,
+  CREATE_APPOINTMENT_REQUEST,
+  CREATE_APPOINTMENT_SUCCESS,
 } from "./action";
 
 const initialState = {
@@ -16,6 +19,7 @@ const initialState = {
   availableTime: [],
   bookAppoinment: [],
   totalPrice: null,
+  createAppointment: null,
   error: null,
   error2: null,
 };
@@ -25,6 +29,7 @@ const bookingServiceReducer = (state = initialState, action) => {
     case GET_AVAILABLE_TIME_REQUEST:
     case BOOK_APPOINMENT_REQUEST:
     case CACULATE_PRICE_REQUEST:
+    case CREATE_APPOINTMENT_REQUEST:
       return {
         ...state,
         loading: true,
@@ -70,6 +75,20 @@ const bookingServiceReducer = (state = initialState, action) => {
         loading: false,
         error2: action.payload,
         totalPrice: null,
+      };
+    case CREATE_APPOINTMENT_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+        createAppointment: action.payload,
+        error: null,
+      };
+    case CREATE_APPOINTMENT_FAILURE:
+      return {
+        ...state,
+        loading: false,
+        error: action.payload,
+        createAppointment: null,
       };
     case RESET_AVAILABLE:
       return initialState;
