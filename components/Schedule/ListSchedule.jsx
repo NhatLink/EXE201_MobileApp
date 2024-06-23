@@ -19,16 +19,51 @@ import formatDate from "../../utils/helper";
 import OrderTile from "../../components/orders/OrderTile";
 import { SliderBox } from "react-native-image-slider-box";
 import { Ionicons, Feather } from "@expo/vector-icons";
+import { useDispatch } from "react-redux";
+import * as SecureStore from "expo-secure-store";
+import { CancelAppointmentByCustomer } from "../../store/appointment/action";
 const ListSchedule = ({ item }) => {
+  const dispatch = useDispatch();
   const navigation = useNavigation();
   const [modalVisible, setModalVisible] = useState(false);
-  const [selectedService, setSelectedService] = useState(null);
-  const [searchKey, setSearchKey] = useState("");
-  const [favorites, setFavorites] = useState(false);
-  // console.log("item schedule: ", item);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+
+  const OnCancel = async (item) => {
+    async function fetchData() {
+      const accountId = await SecureStore.getItemAsync("accountId");
+      const userInfoJson = await SecureStore.getItemAsync("userInfo");
+      console.log("salon item", item.id);
+      let userInfo = null;
+      if (userInfoJson) {
+        try {
+          userInfo = JSON.parse(userInfoJson);
+        } catch (error) {
+          console.error("Error parsing userInfo", error);
+        }
+      }
+      const data = {
+        customerId: userInfo?.id,
+        status: "CANCEL_BY_CUSTOMER",
+      };
+      if (item?.id && accountId && userInfo && userInfo?.id) {
+        dispatch(
+          CancelAppointmentByCustomer(
+            item?.id,
+            data,
+            currentPage,
+            itemsPerPage,
+            accountId
+          )
+        );
+      }
+    }
+    fetchData();
+    setModalVisible(false); // Close modal after action
+  };
+
   return (
     <>
-      {/* {item.startDate ? ( */}
       <View style={styles.container}>
         <View style={styles.containerDate}>
           <View style={styles.line1} />
@@ -42,7 +77,7 @@ const ListSchedule = ({ item }) => {
           <View style={styles.descriptionWrapper}>
             <TouchableOpacity style={styles.imageContainer}>
               <Image
-                source={{ uri: item?.store?.image }}
+                source={{ uri: item?.salonInformation?.img }}
                 resizeMode="cover"
                 style={styles.productImg}
               />
@@ -51,57 +86,48 @@ const ListSchedule = ({ item }) => {
               style={styles.Storedescription}
               onPress={() =>
                 navigation.navigate("Details", {
-                  product:
-                    item.appointmentDetails[0]?.salonEmployee
-                      ?.salonInformationId,
+                  product: item.salonInformation?.id,
                 })
               }
             >
-              <Text style={styles.description}>{item?.store?.name}</Text>
-              <Text style={styles.descriptionText}>{item?.store?.address}</Text>
+              <Text style={styles.description}>
+                {item?.salonInformation?.name}
+              </Text>
+              <Text style={styles.descriptionText}>
+                {item?.salonInformation?.description}
+              </Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.bookButton} onPress={() => {}}>
+            <TouchableOpacity
+              style={styles.bookButton}
+              onPress={() => setModalVisible(true)}
+            >
               <Text style={styles.button}>Hủy</Text>
             </TouchableOpacity>
           </View>
-          {item?.appointmentDetails?.map((item) => (
-            <View
-              key={item?.id}
-              style={styles.serviceItem}
-              onPress={() => {
-                // Handle navigation or other actions
-              }}
-            >
+          {item?.appointmentDetails?.map((itemDetail) => (
+            <View key={itemDetail?.id} style={styles.serviceItem}>
               <View style={styles.serviceInfo}>
                 <Text style={styles.serviceName} numberOfLines={1}>
-                  {item?.serviceHair?.serviceName}{" "}
-                  {`(${item?.serviceHair?.time * 60} Phút)`}
+                  {itemDetail?.serviceHair?.serviceName}{" "}
+                  {`(${itemDetail?.serviceHair?.time * 60} Phút)`}
                 </Text>
-                {/* <Text style={styles.serviceDescription} numberOfLines={1}>
-                {item.description}
-              </Text> */}
-                {/* <Text style={styles.serviceDescription} numberOfLines={1}>{`${
-                  item?.serviceHair?.time * 60
-                } Phút`}</Text> */}
                 <Text style={styles.serviceDescription} numberOfLines={1}>{`${
-                  item?.startTime?.split("T")[1]
-                } đến ${item?.endTime?.split("T")[1]} `}</Text>
+                  itemDetail?.startTime?.split("T")[1]
+                } đến ${itemDetail?.endTime?.split("T")[1]} `}</Text>
               </View>
               <View style={styles.pricingInfo}>
                 <Text
                   style={styles.servicePrice}
                   numberOfLines={1}
-                >{`${item?.serviceHair?.price?.toLocaleString()} VND`}</Text>
+                >{`${itemDetail?.serviceHair?.price?.toLocaleString()} VND`}</Text>
                 <View style={styles.containerInfo}>
                   <View>
                     <Text style={styles.title}>
-                      {item?.salonEmployee?.fullName}
+                      {itemDetail?.salonEmployee?.fullName}
                     </Text>
                   </View>
                   <Image
-                    source={{
-                      uri: item?.salonEmployee?.img,
-                    }}
+                    source={{ uri: itemDetail?.salonEmployee?.img }}
                     resizeMode="cover"
                     style={styles.avatar}
                   />
@@ -112,12 +138,8 @@ const ListSchedule = ({ item }) => {
           <View style={styles.descriptionWrapper2}>
             <View style={styles.Storedescription}>
               <Text style={styles.description2}>Tổng tiền:</Text>
-              {/* <Text style={styles.descriptionText2}>Tổng thời gian:</Text> */}
             </View>
-            <TouchableOpacity style={styles.priceTime} onPress={() => {}}>
-              {/* <Text
-                style={styles.descriptionPrice}
-              >{`${item?.totalPrice?.toLocaleString()} VND`}</Text> */}
+            <TouchableOpacity style={styles.priceTime}>
               {item?.discountedPrice > 0 ? (
                 <>
                   <Text
@@ -130,25 +152,43 @@ const ListSchedule = ({ item }) => {
                   >{`${item?.originalPrice?.toLocaleString()} VND`}</Text>
                 </>
               ) : (
-                <>
-                  <Text
-                    style={styles.descriptionPrice}
-                    numberOfLines={1}
-                  >{`${item?.totalPrice?.toLocaleString()} VND`}</Text>
-                </>
+                <Text
+                  style={styles.descriptionPrice}
+                  numberOfLines={1}
+                >{`${item?.totalPrice?.toLocaleString()} VND`}</Text>
               )}
-              {/* <Text style={styles.descriptionTextTime}>{item?.startDate}</Text> */}
             </TouchableOpacity>
           </View>
         </View>
       </View>
-      {/* ) : (
-        <View style={styles.container2}>
-          <Text>
-            {item.name} {item.day}
-          </Text>
+
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => {
+          setModalVisible(!modalVisible);
+        }}
+      >
+        <View style={styles.fullScreenModal}>
+          <View style={styles.modalContainer}>
+            <Text style={styles.modalTextTitle}>
+              Bạn muốn hủy lịch hẹn vào {item?.startDate?.split("T")[0]} /{" "}
+              {item?.appointmentDetails[0]?.startTime?.split("T")[1]}
+            </Text>
+            <View style={styles.containerInfo}>
+              {/* <Button title="Hủy" onPress={() => setModalVisible(false)} />
+              <Button title="Tiếp tục" onPress={() => OnCancel(item)} /> */}
+              <TouchableOpacity onPress={() => setModalVisible(false)}>
+                <Text style={styles.button1}>Hủy</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => OnCancel(item)}>
+                <Text style={styles.button1}>Tiếp tục</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
         </View>
-      )} */}
+      </Modal>
     </>
   );
 };
@@ -187,11 +227,11 @@ const styles = StyleSheet.create({
     // marginHorizontal: SIZES.xSmall,
   },
   serviceInfo: {
-    flex: 6, // 7 parts
+    flex: 5, // 7 parts
     flexDirection: "column",
   },
   pricingInfo: {
-    flex: 2, // 2 parts
+    flex: 5, // 2 parts
     flexDirection: "column",
     alignItems: "flex-end", // Align text to right if needed
   },
@@ -338,5 +378,39 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: SIZES.small,
     marginHorizontal: 5,
+  },
+  fullScreenModal: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  modalContainer: {
+    width: "80%",
+    padding: 20,
+    backgroundColor: COLORS.secondary,
+    borderRadius: 10,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.8,
+    shadowRadius: 2,
+    elevation: 5,
+  },
+  modalTextTitle: {
+    fontWeight: "bold",
+    textAlign: "center",
+    justifyContent: "center",
+    alignItems: "center",
+    fontSize: SIZES.medium,
+    marginLeft: 10,
+  },
+  button1: {
+    backgroundColor: COLORS.primary,
+    textAlign: "center",
+    padding: 10,
+    borderRadius: 10,
+    marginHorizontal: 20,
+    marginVertical: 10,
+    fontWeight: "bold",
+    color: COLORS.lightWhite,
   },
 });

@@ -156,7 +156,25 @@ import * as SecureStore from "expo-secure-store";
 import { AppState } from "react-native";
 
 const Stack = createNativeStackNavigator();
+function RouterContent() {
+  const dispatch = useDispatch();
+  useEffect(() => {
+    const handleUserFetch = async () => {
+      console.log("fetch");
+      try {
+        const accessToken = await SecureStore.getItemAsync("accessToken");
 
+        if (accessToken) {
+          await dispatch(fetchUser2(accessToken));
+        }
+      } catch (error) {
+        console.error("Lỗi khi lấy accessToken", error);
+      }
+    };
+
+    handleUserFetch();
+  }, [dispatch]);
+}
 export default function App() {
   // useEffect(() => {
   //   const handleUserFetch = async () => {
@@ -226,6 +244,7 @@ export default function App() {
   return (
     <Provider store={store}>
       <PaymentProvider>
+        <RouterContent />
         <NavigationContainer onReady={onLayoutRootView}>
           <Stack.Navigator>
             <Stack.Screen

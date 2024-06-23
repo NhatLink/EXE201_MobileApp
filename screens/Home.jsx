@@ -92,21 +92,21 @@ const Home = () => {
           <Ionicons name="location-outline" size={28} color="black" />
           <Text style={styles.location}>{location}</Text>
 
-          <View style={{ alignItems: "flex-end" }}>
+          {/* <View style={{ alignItems: "flex-end" }}>
             <View style={styles.cartCounter}>
               <Text style={styles.cartNumber}>{cartCount ? cartCount : 0}</Text>
             </View>
             <TouchableOpacity onPress={() => handlePress()}>
               <Fontisto name="shopping-bag" size={24} color="black" />
             </TouchableOpacity>
-          </View>
+          </View> */}
         </View>
       </View>
       <ScrollView>
         <View style={{ marginHorizontal: 10 }}>
           <Welcome />
           <Carousel />
-          <Headings />
+          {/* <Headings /> */}
           <ProductsRow />
         </View>
       </ScrollView>
@@ -123,7 +123,7 @@ const styles = StyleSheet.create({
   },
   appBar: {
     flexDirection: "row",
-    justifyContent: "space-between",
+    justifyContent: "center",
     alignItems: "center",
   },
   appBarWrapper: {

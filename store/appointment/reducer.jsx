@@ -5,6 +5,9 @@ import {
   HISTORY_APPOINTMENT_REQUEST,
   HISTORY_APPOINTMENT_SUCCESS,
   HISTORY_APPOINTMENT_FAILURE,
+  CANCEL_APPOINTMENT_FAILURE,
+  CANCEL_APPOINTMENT_REQUEST,
+  CANCEL_APPOINTMENT_SUCCESS,
 } from "./action";
 
 const initialState = {
@@ -18,6 +21,7 @@ const appointmentReducer = (state = initialState, action) => {
   switch (action.type) {
     case APPOINTMENT_REQUEST:
     case HISTORY_APPOINTMENT_REQUEST:
+    case CANCEL_APPOINTMENT_REQUEST:
       return {
         ...state,
         loading: true,
@@ -39,6 +43,17 @@ const appointmentReducer = (state = initialState, action) => {
         ...state,
         loading: false,
         historyAppointment: action.payload.items,
+      };
+    case HISTORY_APPOINTMENT_FAILURE:
+      return {
+        ...state,
+        loading: false,
+        error: action.payload,
+      };
+    case CANCEL_APPOINTMENT_SUCCESS:
+      return {
+        ...state,
+        loading: false,
       };
     case HISTORY_APPOINTMENT_FAILURE:
       return {

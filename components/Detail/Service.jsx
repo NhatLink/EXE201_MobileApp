@@ -25,6 +25,7 @@ import {
   setStoreId,
   resetBooking,
 } from "../../store/bookingStore/action";
+import * as SecureStore from "expo-secure-store";
 import { ToastAndroid } from "react-native";
 import { resetAvailable } from "../../store/booking/action";
 const Service = (storeId) => {
@@ -225,7 +226,7 @@ const Service = (storeId) => {
   const handleBook = async (storeId, item) => {
     try {
       const accessToken = await SecureStore.getItemAsync("accessToken");
-
+      console.log("accessToken", accessToken);
       if (accessToken) {
         dispatch(resetBooking());
         dispatch(resetAvailable());

@@ -29,7 +29,7 @@ const ProductRow = () => {
 
   useEffect(() => {
     dispatch(fetchSalonInformation(currentPage, itemsPerPage));
-  }, [currentPage, itemsPerPage]);
+  }, [currentPage, dispatch, itemsPerPage]);
 
   const hasItems =
     salonInformation &&
