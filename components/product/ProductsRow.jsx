@@ -49,7 +49,7 @@ const ProductRow = () => {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>Recommended</Text>
+        <Text style={styles.headerTitle}>Đề cử</Text>
       </View>
       <View style={styles.cardsContainer}>
         {salonInformation &&

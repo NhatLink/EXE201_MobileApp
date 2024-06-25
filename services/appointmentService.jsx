@@ -12,6 +12,9 @@ export const AppointmentService = {
       }
     );
   },
+  getAppointmentById(id) {
+    return API.get(`/api/v1/appointments/GetAppointmentById/${id}`);
+  },
   HistoryAppointmentByCustomerId(page, size, customerId) {
     return API.get(
       `/api/v1/appointments/GetHistoryAppointmentByCustomterId/${customerId}`,

@@ -63,7 +63,7 @@ const CartTile = ({ item }) => {
       totalPrice: item.order?.totalPrice,
     };
 
-    console.log("body", body);
+    // console.log("body", body);
     try {
       const response = await fetch(`${baseUrl}/order/payOrder`, {
         method: "POST",
@@ -79,7 +79,7 @@ const CartTile = ({ item }) => {
       if (data.url) {
         // Lưu URL thanh toán vào state và mở WebView
         setPaymentUrl(data.url);
-        console.log("urlPay:", data.url);
+        // console.log("urlPay:", data.url);
         navigation.navigate("PaymentPage");
       } else {
         Alert.alert("Error", "Payment URL not found");

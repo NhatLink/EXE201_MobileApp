@@ -15,8 +15,6 @@ const SearchTile = ({ item }) => {
     dispatch(resetBooking());
     dispatch(setStoreId(storeId?.storeId));
     dispatch(addService(item));
-    console.log("store", storeId);
-    console.log("item", item);
     // Navigation or additional logic
     navigation.navigate("Booking");
   };

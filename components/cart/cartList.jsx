@@ -20,7 +20,7 @@ const CartList = () => {
   const [selectedItem, setSelectedItem] = useState(null);
   const [dataCart, setdataCart] = useState(data);
   useEffect(() => {
-    console.log("responsedata", data);
+    // console.log("responsedata", data);
     setdataCart(data);
   }, [data]);
   useEffect(() => {

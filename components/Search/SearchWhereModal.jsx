@@ -23,7 +23,6 @@ const SearchWhereModal = ({
 }) => {
   const [searchKey, setSearchKey] = useState("");
   // const [location, setLocation] = useState("Ho Chi Minh, Vietnam");
-  console.log("searchKeyWhere", searchKey);
   const { width, height } = useWindowDimensions();
   const handleSearch = async (data, details) => {
     Keyboard.dismiss();
@@ -65,7 +64,6 @@ const SearchWhereModal = ({
           latitude: coords.latitude,
           longitude: coords.longitude,
         });
-        console.log(address);
         if (address.length > 0) {
           // setLocation(address[0].subregion + ", " + address[0].region);
           try {
@@ -110,7 +108,6 @@ const SearchWhereModal = ({
             textInputProps={{
               value: searchKey,
               onChangeText: (text) => {
-                console.log("onChangeText called with:", text);
                 setSearchKey(text);
               },
             }}

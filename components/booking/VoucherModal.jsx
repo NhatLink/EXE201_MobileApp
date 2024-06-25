@@ -21,7 +21,7 @@ const VoucherModal = ({ isVisible, onClose }) => {
   //   console.log("voucherBySalonId", voucherBySalonId);
   const handleBook = (item) => {
     dispatch(addVoucher(item));
-    console.log("item", item);
+    // console.log("item", item);
     onClose();
   };
   //   const [uniqueServices, setUniqueServices] = useState([]);

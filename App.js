@@ -145,6 +145,8 @@ import {
   Booking,
   DetailProfile,
   CheckEmail,
+  DetailAppointmennt,
+  QRScanner,
 } from "./screens";
 import Orders from "./screens/Orders";
 import { PaymentProvider } from "./hook/PaymentContext";
@@ -154,13 +156,29 @@ import Toast from "react-native-toast-message";
 import { fetchUser2 } from "./store/user/action";
 import * as SecureStore from "expo-secure-store";
 import { AppState } from "react-native";
-
+import NetworkProvider from "./hook/NetworkProvider";
 const Stack = createNativeStackNavigator();
 function RouterContent() {
   const dispatch = useDispatch();
+  // useEffect(() => {
+  //   const handleUserFetch = async () => {
+  //     console.log("fetch");
+  //     try {
+  //       const accessToken = await SecureStore.getItemAsync("accessToken");
+
+  //       if (accessToken) {
+  //         await dispatch(fetchUser2(accessToken));
+  //       }
+  //     } catch (error) {
+  //       console.error("Lỗi khi lấy accessToken", error);
+  //     }
+  //   };
+
+  //   handleUserFetch();
+  // }, []);
+
   useEffect(() => {
     const handleUserFetch = async () => {
-      console.log("fetch");
       try {
         const accessToken = await SecureStore.getItemAsync("accessToken");
 
@@ -168,12 +186,25 @@ function RouterContent() {
           await dispatch(fetchUser2(accessToken));
         }
       } catch (error) {
-        console.error("Lỗi khi lấy accessToken", error);
+        console.error("Failed to fetch accessToken", error);
       }
     };
 
-    handleUserFetch();
-  }, [dispatch]);
+    const appStateSubscription = AppState.addEventListener(
+      "change",
+      (nextAppState) => {
+        if (nextAppState === "active") {
+          handleUserFetch();
+        }
+      }
+    );
+
+    handleUserFetch(); // Fetch user data when the app starts
+
+    return () => {
+      appStateSubscription.remove();
+    };
+  }, []);
 }
 export default function App() {
   // useEffect(() => {
@@ -243,96 +274,109 @@ export default function App() {
 
   return (
     <Provider store={store}>
-      <PaymentProvider>
-        <RouterContent />
-        <NavigationContainer onReady={onLayoutRootView}>
-          <Stack.Navigator>
-            <Stack.Screen
-              name="Bottom Navigation"
-              component={BottomTabNavigation}
-              options={{ headerShown: false }}
-            />
-            <Stack.Screen
-              name="Details"
-              component={Details}
-              options={{ headerShown: false }}
-            />
-            <Stack.Screen
-              name="Details-Order"
-              component={DetailOrder}
-              options={{ headerShown: false }}
-            />
+      <NetworkProvider>
+        <PaymentProvider>
+          <RouterContent />
+          <NavigationContainer onReady={onLayoutRootView}>
+            <Stack.Navigator>
+              <Stack.Screen
+                name="Bottom Navigation"
+                component={BottomTabNavigation}
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name="Details"
+                component={Details}
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name="Details-Order"
+                component={DetailOrder}
+                options={{ headerShown: false }}
+              />
 
-            <Stack.Screen
-              name="Cart"
-              component={Cart}
-              options={{ headerShown: false }}
-            />
+              <Stack.Screen
+                name="Cart"
+                component={Cart}
+                options={{ headerShown: false }}
+              />
 
-            <Stack.Screen
-              name="Orders"
-              component={Orders}
-              options={{ headerShown: false }}
-            />
+              <Stack.Screen
+                name="Orders"
+                component={Orders}
+                options={{ headerShown: false }}
+              />
 
-            <Stack.Screen
-              name="Login"
-              component={LoginPage}
-              options={{ headerShown: false }}
-            />
+              <Stack.Screen
+                name="Login"
+                component={LoginPage}
+                options={{ headerShown: false }}
+              />
 
-            <Stack.Screen
-              name="Signup"
-              component={Signup}
-              options={{ headerShown: false }}
-            />
+              <Stack.Screen
+                name="Signup"
+                component={Signup}
+                options={{ headerShown: false }}
+              />
 
-            <Stack.Screen
-              name="New-Rivals"
-              component={Products}
-              options={{ headerShown: false }}
-            />
+              <Stack.Screen
+                name="New-Rivals"
+                component={Products}
+                options={{ headerShown: false }}
+              />
 
-            <Stack.Screen
-              name="Favorites"
-              component={Favorites}
-              options={{ headerShown: false }}
-            />
-            <Stack.Screen
-              name="History"
-              component={History}
-              options={{ headerShown: false }}
-            />
+              <Stack.Screen
+                name="Favorites"
+                component={Favorites}
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name="History"
+                component={History}
+                options={{ headerShown: false }}
+              />
 
-            {/* <Stack.Screen
+              {/* <Stack.Screen
               name="Profile"
               component={Profile}
               options={{ headerShown: false }}
             /> */}
-            <Stack.Screen
-              name="PaymentPage"
-              component={PaymentPage}
-              options={{ headerShown: false }}
-            />
-            <Stack.Screen
-              name="Booking"
-              component={Booking}
-              options={{ headerShown: false }}
-            />
-            <Stack.Screen
-              name="DetailProfile"
-              component={DetailProfile}
-              options={{ headerShown: false }}
-            />
-            <Stack.Screen
-              name="CheckEmail"
-              component={CheckEmail}
-              options={{ headerShown: false }}
-            />
-          </Stack.Navigator>
-          <Toast />
-        </NavigationContainer>
-      </PaymentProvider>
+              <Stack.Screen
+                name="PaymentPage"
+                component={PaymentPage}
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name="Booking"
+                component={Booking}
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name="DetailProfile"
+                component={DetailProfile}
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name="CheckEmail"
+                component={CheckEmail}
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name="DetailAppointment"
+                component={DetailAppointmennt}
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name="QRScanner"
+                component={QRScanner}
+                options={{ headerShown: false }}
+              />
+            </Stack.Navigator>
+            <Toast />
+          </NavigationContainer>
+          {/* </RouterContent> */}
+        </PaymentProvider>
+      </NetworkProvider>
     </Provider>
   );
 }

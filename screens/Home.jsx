@@ -106,7 +106,7 @@ const Home = () => {
         <View style={{ marginHorizontal: 10 }}>
           <Welcome />
           <Carousel />
-          {/* <Headings /> */}
+          <Headings />
           <ProductsRow />
         </View>
       </ScrollView>

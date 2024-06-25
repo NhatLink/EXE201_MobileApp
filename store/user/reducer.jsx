@@ -86,7 +86,7 @@ const userReducer = (state = initialState, action) => {
     case UPDATE_USER_BY_ID:
       return {
         ...state,
-        user: action.payload,
+        // user: action.payload,
       };
     default:
       return state;

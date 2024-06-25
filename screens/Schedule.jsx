@@ -24,6 +24,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { GetAppointmentByAccountId } from "../store/appointment/action";
 import Loader from "../components/auth/Loader";
 import * as SecureStore from "expo-secure-store";
+import { fetchToken } from "../store/user/action";
 const timeToString = (time) => {
   const date = new Date(time);
   return date.toISOString().split("T")[0];
@@ -32,19 +33,35 @@ const Schedule = () => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [itemsPerPage, setItemsPerPage] = useState(100);
   const { appointment, loading } = useSelector((state) => state.APPOINTMENT);
-  // console.log("appointment:", appointment);
+  const { user, accessToken, refreshToken, isAuthenticated } = useSelector(
+    (state) => state.USER
+  );
+  // useEffect(() => {
+  //   async function fetchDataTokenAndThenData() {
+  //     const refreshToken = await SecureStore.getItemAsync("refreshToken");
+  //     if (refreshToken) {
+  //       await dispatch(
+  //         fetchToken({
+  //           refreshToken: refreshToken,
+  //         })
+  //       );
+  //       fetchData();
+  //     }
+  //   }
+  //   fetchDataTokenAndThenData();
+  // }, [isAuthenticated]);
   const accountId = SecureStore.getItemAsync("accountId");
   useEffect(() => {
     async function fetchData() {
       const accountId = await SecureStore.getItemAsync("accountId");
+      console.log(accountId);
       if (accountId) {
         dispatch(
           GetAppointmentByAccountId(currentPage, itemsPerPage, accountId)
         );
       }
-      console.log("accountId", accountId);
     }
     fetchData();
   }, []);
@@ -110,7 +127,7 @@ const Schedule = () => {
             <TouchableOpacity onPress={() => navigation.navigate("Search")}>
               <Text style={styles.button}>Tìm kiếm dịch vụ</Text>
             </TouchableOpacity>
-            {accountId && (
+            {!isAuthenticated && (
               <>
                 <Text style={styles.emptyText2}>
                   ---------------Đã sử dụng HairHub---------------

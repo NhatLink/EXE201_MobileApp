@@ -214,10 +214,6 @@ const Search = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const { searchSalon } = useSelector((state) => state.SALON);
-  console.log("serviceName", searchKeyService);
-  console.log("salonAddress", searchKeyWhere);
-  console.log("salonName", searchKeyStore);
-  console.log("searchSalon", searchSalon);
   useEffect(() => {
     async function fetchData() {
       setLoader(true);

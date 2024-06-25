@@ -49,11 +49,19 @@ const LoginPage = () => {
   const validate = () => {
     Keyboard.dismiss();
     let valid = true;
+    // if (!inputs.username) {
+    //   handleError("Username is required", "username");
+    //   valid = false;
+    // } else if (inputs.username.length < 3) {
+    //   handleError("At least 3 characters are required", "username");
+    //   valid = false;
+    // }
+    console.log("login", inputs);
     if (!inputs.username) {
-      handleError("Username is required", "username");
+      handleError("Phone is required", "username");
       valid = false;
-    } else if (inputs.username.length < 3) {
-      handleError("At least 3 characters are required", "username");
+    } else if (!inputs.username.match(/^[0-9]{10,12}$/)) {
+      handleError("Provide a valid phone number", "username");
       valid = false;
     }
     if (!inputs.password) {
@@ -118,14 +126,15 @@ const LoginPage = () => {
             Điền thông tin để đăng nhập vào HairHub
           </Text>
           <Input
-            placeholder="Enter username"
-            icon="account-lock-outline"
-            label={"UserName"}
+            placeholder="Enter your phone"
+            icon="cellphone"
+            label={"Số điện thoại"}
             error={errors.username}
             onFocus={() => {
               handleError(null, "username");
             }}
             onChangeText={(text) => handleChanges(text, "username")}
+            keyboardType="numeric"
           />
 
           <Input
@@ -144,7 +153,8 @@ const LoginPage = () => {
           <Button title={"LOGIN"} onPress={validate} />
           <Text
             style={styles.registered}
-            onPress={() => navigation.navigate("CheckEmail")}
+            onPress={() => navigation.navigate("Signup")}
+            // onPress={() => navigation.navigate("CheckEmail")}
           >
             Don't have an account? Register
           </Text>

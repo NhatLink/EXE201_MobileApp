@@ -59,19 +59,19 @@ const About = (storeId) => {
     (state) => state.SALON
   );
 
-  const [destination, setDestination] = useState({
-    latitude: 10.875123789279687,
-    longitude: 106.79814847509016,
-  });
+  // const [destination, setDestination] = useState({
+  //   latitude: 10.875123789279687,
+  //   longitude: 106.79814847509016,
+  // });
   // const [origin, setOrigin] = useState({
   //   latitude: 10.762622, // Vị trí mặc định tại TP Hồ Chí Minh
   //   longitude: 106.660172,
   // });
-  // const [route, setRoute] = useState([]);
-  // const [distance, setDistance] = useState("");
-  // const [duration, setDuration] = useState("");
-  // const [startAddress, setStartAddress] = useState("");
-  // const [endAddress, setEndAddress] = useState("");
+  const [route, setRoute] = useState([]);
+  const [distance, setDistance] = useState("");
+  const [duration, setDuration] = useState("");
+  const [startAddress, setStartAddress] = useState("");
+  const [endAddress, setEndAddress] = useState("");
   // useEffect(() => {
   //   (async () => {
   //     let { status } = await Location.requestForegroundPermissionsAsync();
@@ -87,14 +87,14 @@ const About = (storeId) => {
   //     });
   //   })();
   // }, []);
-  useEffect(() => {
-    if (salonDetail) {
-      setDestination({
-        latitude: parseFloat(salonDetail?.latitude),
-        longitude: parseFloat(salonDetail?.longitude),
-      });
-    }
-  }, [salonDetail]);
+  // useEffect(() => {
+  //   if (salonDetail) {
+  //     setDestination({
+  //       latitude: parseFloat(salonDetail?.latitude),
+  //       longitude: parseFloat(salonDetail?.longitude),
+  //     });
+  //   }
+  // }, [salonDetail]);
 
   // const getDirections = async () => {
   //   if (!origin) return;
@@ -175,37 +175,37 @@ const About = (storeId) => {
         <Text style={styles.title}>Map</Text>
         <View style={styles.AboutUsContanner}>
           <View style={styles.mapContainer}>
-            {/* {salonDetail?.latitude && salonDetail?.longitude && (
+            {salonDetail && salonDetail?.latitude && salonDetail?.longitude && (
               <MapView
                 style={styles.map}
                 provider={MapView.PROVIDER_GOOGLE}
                 initialRegion={{
-                  latitude: destination?.latitude ?? 10.875123789279687,
-                  longitude: destination?.longitude ?? 106.79814847509016,
+                  latitude: parseFloat(salonDetail?.latitude),
+                  longitude: parseFloat(salonDetail?.longitude),
                   latitudeDelta: 0.0922,
                   longitudeDelta: 0.0421,
                 }}
               >
-                {route.length > 0 && origin && (
+                {/* {route.length > 0 && origin && (
                   <Marker coordinate={origin} title="Your Location" />
-                )}
+                )} */}
                 <Marker
                   coordinate={{
-                    latitude: destination?.latitude ?? 10.875123789279687,
-                    longitude: destination?.longitude ?? 106.79814847509016,
+                    latitude: parseFloat(salonDetail?.latitude),
+                    longitude: parseFloat(salonDetail?.longitude),
                   }}
                   title={salonDetail?.name}
                   description={salonDetail?.address}
                 />
-                {route.length > 0 && (
+                {/* {route.length > 0 && (
                   <Polyline
                     coordinates={route}
                     strokeWidth={5}
                     strokeColor="blue"
                   />
-                )}
+                )} */}
               </MapView>
-            )} */}
+            )}
           </View>
           {/* {route.length > 0 && (
             <View style={styles.distance}>
@@ -235,14 +235,14 @@ const About = (storeId) => {
               color={COLORS.primary}
             />
             <Text style={styles.conntactItem} numberOfLines={1}>
-              012345678
+              {salonDetail?.salonOwner?.phone}
             </Text>
           </View>
           <TouchableOpacity style={styles.bookButton} onPress={() => {}}>
             <Text style={styles.button}>Call</Text>
           </TouchableOpacity>
         </View>
-        <View style={styles.contactContanner}>
+        {/* <View style={styles.contactContanner}>
           <View style={styles.contactInfo}>
             <Ionicons name="logo-facebook" size={20} color={COLORS.primary} />
             <Text style={styles.conntactItem} numberOfLines={1}>
@@ -263,48 +263,38 @@ const About = (storeId) => {
           <TouchableOpacity style={styles.bookButton} onPress={() => {}}>
             <Text style={styles.button}>View</Text>
           </TouchableOpacity>
-        </View>
+        </View> */}
       </View>
       <View>
         <Text style={styles.title}>Giờ Làm Việc</Text>
-        {workingDays.map((item) => (
-          <View
-            key={item.dayOfWeek}
-            style={styles.serviceItem}
-            onPress={() => {
-              // Handle navigation or other actions
-            }}
-          >
-            <View style={styles.serviceInfo}>
-              <Text style={styles.serviceName} numberOfLines={1}>
-                {item.dayOfWeek}
-              </Text>
-            </View>
-            <View style={styles.pricingInfo}>
-              {item?.status === "Open" ? (
-                <>
-                  <Text style={styles.servicePrice} numberOfLines={1}>
-                    {item.openTime} - {item.closeTime}
+        {salonDetail &&
+          salonDetail?.schedules &&
+          salonDetail?.schedules?.map((item) => (
+            <View
+              key={item.dayOfWeek}
+              style={styles.serviceItem}
+              onPress={() => {
+                // Handle navigation or other actions
+              }}
+            >
+              <View style={styles.serviceInfo}>
+                <Text style={styles.serviceName} numberOfLines={1}>
+                  {item.dayOfWeek}
+                </Text>
+              </View>
+              <View style={styles.pricingInfo}>
+                {item?.isActive ? (
+                  <Text style={styles.servicePrice} numberOfLines={2}>
+                    {item.startTime} - {item.endTime}
                   </Text>
-                </>
-              ) : (
-                <>
+                ) : (
                   <Text style={styles.servicePrice} numberOfLines={1}>
-                    {item.status}
+                    Close
                   </Text>
-                </>
-              )}
-
-              {/* <Text
-                style={styles.serviceDescription}
-                numberOfLines={1}
-              >{`${item.serviceTime}`}</Text> */}
+                )}
+              </View>
             </View>
-            {/* <TouchableOpacity style={styles.bookButton} onPress={() => {}}>
-                <Text style={styles.button}>Book</Text>
-              </TouchableOpacity> */}
-          </View>
-        ))}
+          ))}
       </View>
     </SafeAreaView>
   );
@@ -350,7 +340,7 @@ const styles = StyleSheet.create({
     flexDirection: "column",
   },
   pricingInfo: {
-    flex: 2, // 2 parts
+    flex: 4, // 2 parts
     flexDirection: "column",
     alignItems: "flex-end", // Align text to right if needed
   },

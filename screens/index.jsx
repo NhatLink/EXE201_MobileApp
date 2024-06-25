@@ -15,6 +15,8 @@ import History from "./History";
 import Booking from "./Booking";
 import DetailProfile from "./DetailProfile";
 import CheckEmail from "./CheckEmail";
+import DetailAppointmennt from "./DetailAppointmennt";
+import QRScanner from "./QRScanner";
 export {
   Home,
   Cart,
@@ -33,4 +35,6 @@ export {
   Booking,
   DetailProfile,
   CheckEmail,
+  DetailAppointmennt,
+  QRScanner,
 };

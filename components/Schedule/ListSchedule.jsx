@@ -75,19 +75,23 @@ const ListSchedule = ({ item }) => {
         </View>
         <View>
           <View style={styles.descriptionWrapper}>
-            <TouchableOpacity style={styles.imageContainer}>
+            {/* <TouchableOpacity style={styles.imageContainer}>
               <Image
                 source={{ uri: item?.salonInformation?.img }}
                 resizeMode="cover"
                 style={styles.productImg}
               />
-            </TouchableOpacity>
+            </TouchableOpacity> */}
             <TouchableOpacity
               style={styles.Storedescription}
               onPress={() =>
-                navigation.navigate("Details", {
-                  product: item.salonInformation?.id,
-                })
+                // navigation.navigate("Details", {
+                //   product: item.salonInformation?.id,
+                // })
+                // navigation.navigate("DetailAppointment", {
+                //   appointmentId: item?.id,
+                // })
+                {}
               }
             >
               <Text style={styles.description}>
@@ -99,9 +103,14 @@ const ListSchedule = ({ item }) => {
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.bookButton}
-              onPress={() => setModalVisible(true)}
+              onPress={() =>
+                // setModalVisible(true)
+                navigation.navigate("DetailAppointment", {
+                  appointmentId: item?.id,
+                })
+              }
             >
-              <Text style={styles.button}>Hủy</Text>
+              <Text style={styles.button}>Chi tiết</Text>
             </TouchableOpacity>
           </View>
           {item?.appointmentDetails?.map((itemDetail) => (

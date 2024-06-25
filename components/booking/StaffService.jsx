@@ -75,8 +75,8 @@ const StaffService = ({ isVisible, onClose, Service }) => {
 
   const handleBook = (item) => {
     dispatch(updateServiceStaff(Service, item));
-    console.log("item", item);
-    console.log("Service", Service);
+    // console.log("item", item);
+    // console.log("Service", Service);
     onClose();
   };
   const handleBookAnyone = () => {

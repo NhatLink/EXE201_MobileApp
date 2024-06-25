@@ -104,9 +104,9 @@ export const getUserById = (id) => async (dispatch) => {
 export const updateUserById = (id, data) => async (dispatch) => {
   try {
     const response = await UserServices.updateUserById(id, data);
-    dispatch({ type: UPDATE_USER_BY_ID, payload: response.data });
-    SecureStore.setItemAsync("userInfo", JSON.stringify(response.data));
-    ToastAndroid.show("Cập nhật thông tin thành công", ToastAndroid.SHORT);
+    dispatch(getUserById(id));
+    // SecureStore.setItemAsync("userInfo", JSON.stringify(response.data));
+    ToastAndroid.show(response.data, ToastAndroid.SHORT);
   } catch (error) {
     console.error("Update user by id error:", error);
   }

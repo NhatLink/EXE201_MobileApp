@@ -28,7 +28,7 @@ const bookingServiceReducer = (state = initialState, action) => {
   switch (action.type) {
     case GET_AVAILABLE_TIME_REQUEST:
     case BOOK_APPOINMENT_REQUEST:
-    case CACULATE_PRICE_REQUEST:
+    // case CACULATE_PRICE_REQUEST:
     case CREATE_APPOINTMENT_REQUEST:
       return {
         ...state,
@@ -65,14 +65,14 @@ const bookingServiceReducer = (state = initialState, action) => {
     case CACULATE_PRICE_SUCCESS:
       return {
         ...state,
-        loading: false,
+        // loading: false,
         totalPrice: action.payload,
         error2: null,
       };
     case CACULATE_PRICE_FAILURE:
       return {
         ...state,
-        loading: false,
+        // loading: false,
         error2: action.payload,
         totalPrice: null,
       };

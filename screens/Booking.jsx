@@ -117,7 +117,7 @@ const Booking = ({ navigation }) => {
       };
 
       const appointmentObject = createAppointmentObject();
-      // console.log(JSON.stringify(appointmentObject, null, 2));
+      console.log(JSON.stringify(appointmentObject));
       dispatch(
         CreateAppointment(
           appointmentObject,
@@ -166,7 +166,7 @@ const Booking = ({ navigation }) => {
   const [selectedDate, setSelectedDate] = useState(formatDate(new Date()));
   const [loadingTime, setSelectedDateTime] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [itemsPerPage, setItemsPerPage] = useState(100);
   const [minDate, setMinDate] = useState(new Date());
   const [maxDate, setMaxDate] = useState(() => {
     const date = new Date();
@@ -174,9 +174,9 @@ const Booking = ({ navigation }) => {
     return date;
   });
 
-  // useEffect(() => {
-  //   dispatch(GetVoucherBySalonId(storeId, currentPage, itemsPerPage));
-  // }, []);
+  useEffect(() => {
+    dispatch(GetVoucherBySalonId(storeId, currentPage, itemsPerPage));
+  }, []);
 
   useEffect(() => {
     dispatch(setDateBooking(selectedDate));
@@ -184,7 +184,7 @@ const Booking = ({ navigation }) => {
       const firstTimeSlot = availableTime[0].timeSlot;
       dispatch(setHourBooking(firstTimeSlot));
     }
-    dispatch(GetVoucherBySalonId(storeId, currentPage, itemsPerPage));
+    // dispatch(GetVoucherBySalonId(storeId, currentPage, itemsPerPage));
   }, [selectedDate, availableTime]);
 
   useEffect(() => {
@@ -406,57 +406,63 @@ const Booking = ({ navigation }) => {
         >
           <Text style={styles.buttonVoucher}>Thêm Voucher</Text>
         </TouchableOpacity> */}
-        {voucher === null ? (
-          <TouchableOpacity
-            style={styles.voucherButton}
-            onPress={() => openVoucherModal()}
-          >
-            <Text style={styles.buttonVoucher}>Thêm Voucher</Text>
-          </TouchableOpacity>
-        ) : (
-          <View key={voucher?.id} style={styles.serviceItem}>
-            <View style={styles.serviceInfo}>
-              <TouchableOpacity style={styles.imageContainer}>
-                <Image
-                  source={{
-                    uri: "https://cdn-icons-png.flaticon.com/128/8074/8074470.png",
-                  }}
-                  resizeMode="cover"
-                  style={styles.productImg}
-                />
+        {availableTime &&
+          availableTime.length > 0 &&
+          (voucher === null ? (
+            <TouchableOpacity
+              style={styles.voucherButton}
+              onPress={() => openVoucherModal()}
+            >
+              <Text style={styles.buttonVoucher}>Thêm Voucher</Text>
+            </TouchableOpacity>
+          ) : (
+            <View key={voucher?.id} style={styles.serviceItem}>
+              <View style={styles.serviceInfo}>
+                <TouchableOpacity style={styles.imageContainer}>
+                  <Image
+                    source={{
+                      uri: "https://cdn-icons-png.flaticon.com/128/8074/8074470.png",
+                    }}
+                    resizeMode="cover"
+                    style={styles.productImg}
+                  />
+                </TouchableOpacity>
+              </View>
+              <View style={styles.voucherInfo}>
+                <Text style={styles.serviceName} numberOfLines={1}>
+                  {voucher?.code}{" "}
+                  {`(Giảm ${voucher?.discountPercentage * 100}%)`}
+                </Text>
+                <Text style={styles.serviceDescription} numberOfLines={1}>
+                  {voucher?.description}
+                </Text>
+                <Text
+                  style={styles.serviceDescription}
+                  numberOfLines={1}
+                >{`Ngày hết hạn: ${voucher?.expiryDate?.split("T")[0]} `}</Text>
+                {voucher?.isSystemCreated ? (
+                  <Text style={styles.serviceDescription} numberOfLines={3}>
+                    Được tặng bởi HairHub
+                  </Text>
+                ) : (
+                  <Text style={styles.serviceDescription} numberOfLines={3}>
+                    Được tặng bởi Salon
+                  </Text>
+                )}
+              </View>
+              <TouchableOpacity
+                style={styles.bookButton}
+                onPress={() => dispatch(removeVoucher())}
+              >
+                <Text style={styles.button}>Xóa</Text>
               </TouchableOpacity>
             </View>
-            <View style={styles.voucherInfo}>
-              <Text style={styles.serviceName} numberOfLines={1}>
-                {voucher?.code} {`(Giảm ${voucher?.discountPercentage * 100}%)`}
-              </Text>
-              <Text style={styles.serviceDescription} numberOfLines={1}>
-                {voucher?.description}
-              </Text>
-              <Text
-                style={styles.serviceDescription}
-                numberOfLines={1}
-              >{`Ngày hết hạn: ${voucher?.expiryDate?.split("T")[0]} `}</Text>
-              {voucher?.isSystemCreated ? (
-                <Text style={styles.serviceDescription} numberOfLines={3}>
-                  Được tặng bởi HairHub
-                </Text>
-              ) : (
-                <Text style={styles.serviceDescription} numberOfLines={3}>
-                  Được tặng bởi Salon
-                </Text>
-              )}
-            </View>
-            <TouchableOpacity
-              style={styles.bookButton}
-              onPress={() => dispatch(removeVoucher())}
-            >
-              <Text style={styles.button}>Xóa</Text>
-            </TouchableOpacity>
-          </View>
-        )}
-
-        <Button title="Đặt Lịch" onPress={confirmBooking} />
+          ))}
+        <Button
+          title="Đặt Lịch"
+          // onPress={confirmBooking}
+          onPress={canPressButton ? confirmBooking : null}
+        />
       </View>
     </>
   );

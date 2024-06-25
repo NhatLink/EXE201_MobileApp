@@ -226,14 +226,11 @@ const Service = (storeId) => {
   const handleBook = async (storeId, item) => {
     try {
       const accessToken = await SecureStore.getItemAsync("accessToken");
-      console.log("accessToken", accessToken);
       if (accessToken) {
         dispatch(resetBooking());
         dispatch(resetAvailable());
         dispatch(setStoreId(storeId?.storeId));
         dispatch(addService(item));
-        console.log("store", storeId);
-        console.log("item", item);
         // Điều hướng hoặc logic bổ sung
         navigation.navigate("Booking");
       } else {

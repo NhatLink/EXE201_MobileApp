@@ -16,68 +16,68 @@ import { COLORS, SIZES } from "../constants";
 import ProductSpecialViewCard from "./ProductSpecialViewCard";
 const Headings = () => {
   const navigation = useNavigation();
-  const products = [
-    {
-      _id: "1",
-      image: [
-        "https://images.squarespace-cdn.com/content/v1/5fd787d32a8a4a2604b22b5d/a1a982a2-8886-4017-a735-3fde5aeab145/msbs-barbershop-perspective-22000.jpg",
-      ],
-      productName: "Haircut Classic",
-      description:
-        "QL51/KM47 Đ. Hùng Vương, Tân Phước, Tân Thành, Bà Rịa - Vũng Tàu 790000, Việt Nam",
-      price: 15,
-      avgRating: 4.2,
-      reviewCount: 25,
-    },
-    {
-      _id: "2",
-      image: [
-        "https://images.squarespace-cdn.com/content/v1/5fd787d32a8a4a2604b22b5d/a1a982a2-8886-4017-a735-3fde5aeab145/msbs-barbershop-perspective-22000.jpg",
-      ],
-      productName: "Beard Trim",
-      description:
-        "QL51/KM47 Đ. Hùng Vương, Tân Phước, Tân Thành, Bà Rịa - Vũng Tàu 790000, Việt Nam",
-      price: 10,
-      avgRating: 4.5,
-      reviewCount: 18,
-    },
-    {
-      _id: "3",
-      image: [
-        "https://images.squarespace-cdn.com/content/v1/5fd787d32a8a4a2604b22b5d/a1a982a2-8886-4017-a735-3fde5aeab145/msbs-barbershop-perspective-22000.jpg",
-      ],
-      productName: "Hair Coloring",
-      description:
-        "QL51/KM47 Đ. Hùng Vương, Tân Phước, Tân Thành, Bà Rịa - Vũng Tàu 790000, Việt Nam",
-      price: 50,
-      avgRating: 4.8,
-      reviewCount: 10,
-    },
-    {
-      _id: "4",
-      image: [
-        "https://images.squarespace-cdn.com/content/v1/5fd787d32a8a4a2604b22b5d/a1a982a2-8886-4017-a735-3fde5aeab145/msbs-barbershop-perspective-22000.jpg",
-      ],
-      productName: "Hair Wash",
-      description:
-        "QL51/KM47 Đ. Hùng Vương, Tân Phước, Tân Thành, Bà Rịa - Vũng Tàu 790000, Việt Nam",
-      price: 8,
-      avgRating: 4.0,
-      reviewCount: 30,
-    },
-    {
-      _id: "5",
-      image: [
-        "https://images.squarespace-cdn.com/content/v1/5fd787d32a8a4a2604b22b5d/a1a982a2-8886-4017-a735-3fde5aeab145/msbs-barbershop-perspective-22000.jpg",
-      ],
-      productName: "Complete Grooming",
-      description:
-        "QL51/KM47 Đ. Hùng Vương, Tân Phước, Tân Thành, Bà Rịa - Vũng Tàu 790000, Việt Nam",
-      price: 70,
-      avgRating: 4.9,
-      reviewCount: 20,
-    },
-  ];
+  // const products = [
+  //   {
+  //     _id: "1",
+  //     image: [
+  //       "https://images.squarespace-cdn.com/content/v1/5fd787d32a8a4a2604b22b5d/a1a982a2-8886-4017-a735-3fde5aeab145/msbs-barbershop-perspective-22000.jpg",
+  //     ],
+  //     productName: "Haircut Classic",
+  //     description:
+  //       "QL51/KM47 Đ. Hùng Vương, Tân Phước, Tân Thành, Bà Rịa - Vũng Tàu 790000, Việt Nam",
+  //     price: 15,
+  //     avgRating: 4.2,
+  //     reviewCount: 25,
+  //   },
+  //   {
+  //     _id: "2",
+  //     image: [
+  //       "https://images.squarespace-cdn.com/content/v1/5fd787d32a8a4a2604b22b5d/a1a982a2-8886-4017-a735-3fde5aeab145/msbs-barbershop-perspective-22000.jpg",
+  //     ],
+  //     productName: "Beard Trim",
+  //     description:
+  //       "QL51/KM47 Đ. Hùng Vương, Tân Phước, Tân Thành, Bà Rịa - Vũng Tàu 790000, Việt Nam",
+  //     price: 10,
+  //     avgRating: 4.5,
+  //     reviewCount: 18,
+  //   },
+  //   {
+  //     _id: "3",
+  //     image: [
+  //       "https://images.squarespace-cdn.com/content/v1/5fd787d32a8a4a2604b22b5d/a1a982a2-8886-4017-a735-3fde5aeab145/msbs-barbershop-perspective-22000.jpg",
+  //     ],
+  //     productName: "Hair Coloring",
+  //     description:
+  //       "QL51/KM47 Đ. Hùng Vương, Tân Phước, Tân Thành, Bà Rịa - Vũng Tàu 790000, Việt Nam",
+  //     price: 50,
+  //     avgRating: 4.8,
+  //     reviewCount: 10,
+  //   },
+  //   {
+  //     _id: "4",
+  //     image: [
+  //       "https://images.squarespace-cdn.com/content/v1/5fd787d32a8a4a2604b22b5d/a1a982a2-8886-4017-a735-3fde5aeab145/msbs-barbershop-perspective-22000.jpg",
+  //     ],
+  //     productName: "Hair Wash",
+  //     description:
+  //       "QL51/KM47 Đ. Hùng Vương, Tân Phước, Tân Thành, Bà Rịa - Vũng Tàu 790000, Việt Nam",
+  //     price: 8,
+  //     avgRating: 4.0,
+  //     reviewCount: 30,
+  //   },
+  //   {
+  //     _id: "5",
+  //     image: [
+  //       "https://images.squarespace-cdn.com/content/v1/5fd787d32a8a4a2604b22b5d/a1a982a2-8886-4017-a735-3fde5aeab145/msbs-barbershop-perspective-22000.jpg",
+  //     ],
+  //     productName: "Complete Grooming",
+  //     description:
+  //       "QL51/KM47 Đ. Hùng Vương, Tân Phước, Tân Thành, Bà Rịa - Vũng Tàu 790000, Việt Nam",
+  //     price: 70,
+  //     avgRating: 4.9,
+  //     reviewCount: 20,
+  //   },
+  // ];
 
   const datajson = [
     {
@@ -129,6 +129,7 @@ const Headings = () => {
   return (
     <View style={styles.container}>
       <View style={styles.filtersContainer}>
+        <Text style={styles.headerTitle}>Dịch vụ nổi bật</Text>
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
@@ -146,29 +147,29 @@ const Headings = () => {
           ))}
         </ScrollView>
       </View>
-      <View style={styles.header}>
+      {/* <View style={styles.header}>
         <Text style={styles.headerTitle}>Special offer</Text>
-        {/* <TouchableOpacity onPress={() => navigation.navigate("New-Rivals")}>
+        <TouchableOpacity onPress={() => navigation.navigate("New-Rivals")}>
           <Ionicons
             name="chevron-forward-circle-outline"
             size={24}
             color={COLORS.primary}
           />
-        </TouchableOpacity> */}
-      </View>
+        </TouchableOpacity>
+      </View> */}
       <View style={styles.cardsContainer}>
         {/* {isLoading ? (
           <ActivityIndicator size="large" colors={COLORS.primary} />
         ) : error ? (
           <Text>Something went south</Text>
         ) : ( */}
-        <FlatList
+        {/* <FlatList
           data={products}
           renderItem={({ item }) => <ProductSpecialViewCard item={item} />}
           keyExtractor={(item) => item._id}
           contentContainerStyle={{ columnGap: SIZES.medium }}
           horizontal
-        />
+        /> */}
         {/* )} */}
       </View>
     </View>

@@ -41,9 +41,6 @@ const CheckEmail = () => {
   const { loading, error, emailExists, CheckOtp } = useSelector(
     (state) => state.OTP
   );
-  console.log("emailExists", emailExists);
-  console.log("CheckOtp", CheckOtp);
-  console.log("lloading", loading);
   useEffect(() => {
     let timer;
     if (modalOtp) {

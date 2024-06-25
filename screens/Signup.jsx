@@ -33,28 +33,28 @@ const Signup = () => {
   const [loader, setLoader] = useState(false);
   const [responseData, setResponseData] = useState(null);
   const [inputs, setInputs] = useState({
-    username: "",
-    email: "",
+    // username: "",
+    // email: "",
     password: "",
     // confirmPassword: "",
-    gender: "Male",
+    // gender: "Male",
     fullName: "",
     phone: "",
     roleName: "Customer",
-    dayOfBirth: new Date(),
+    // dayOfBirth: new Date(),
   });
   const [errors, setErrors] = useState({});
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [confirmPassword, setConfirmpassword] = useState(null);
   const navigation = useNavigation();
   const route = useRoute();
-  const { email } = route.params;
+  // const { email } = route.params;
 
-  useEffect(() => {
-    if (email) {
-      setInputs((prevState) => ({ ...prevState, email }));
-    }
-  }, [email]);
+  // useEffect(() => {
+  //   if (email) {
+  //     setInputs((prevState) => ({ ...prevState, email }));
+  //   }
+  // }, [email]);
 
   const handleError = (errorMessage, input) => {
     setErrors((prevState) => ({ ...prevState, [input]: errorMessage }));
@@ -63,31 +63,34 @@ const Signup = () => {
   const validate = () => {
     let valid = true;
     const {
-      email,
+      // email,
       password,
       // confirmPassword,
-      username,
-      address,
+      // username,
+      // address,
       fullName,
       phone,
-      gender,
-      dayOfBirth,
+      // gender,
+      // dayOfBirth,
       // avatar,
     } = inputs;
 
-    if (!email) {
-      handleError("Email is required", "email");
-      valid = false;
-    } else if (!/\S+@\S+\.\S+/.test(email)) {
-      handleError("Provide a valid email", "email");
-      valid = false;
-    }
+    // if (!email) {
+    //   handleError("Email is required", "email");
+    //   valid = false;
+    // } else if (!/\S+@\S+\.\S+/.test(email)) {
+    //   handleError("Provide a valid email", "email");
+    //   valid = false;
+    // }
 
     if (!password) {
       handleError("Password is required", "password");
       valid = false;
     } else if (password.length < 8) {
       handleError("At least 8 characters are required", "password");
+      valid = false;
+    } else if (password.length > 30) {
+      handleError("No more 30 characters", "password");
       valid = false;
     }
     if (!confirmPassword) {
@@ -98,13 +101,13 @@ const Signup = () => {
       valid = false;
     }
 
-    if (!username) {
-      handleError("Username is required", "username");
-      valid = false;
-    } else if (username.length < 3) {
-      handleError("At least 3 characters are required", "username");
-      valid = false;
-    }
+    // if (!username) {
+    //   handleError("Username is required", "username");
+    //   valid = false;
+    // } else if (username.length < 3) {
+    //   handleError("At least 3 characters are required", "username");
+    //   valid = false;
+    // }
 
     if (!fullName) {
       handleError("Full name is required", "fullName");
@@ -127,15 +130,15 @@ const Signup = () => {
       valid = false;
     }
 
-    if (!gender) {
-      handleError("Gender is required", "gender");
-      valid = false;
-    }
+    // if (!gender) {
+    //   handleError("Gender is required", "gender");
+    //   valid = false;
+    // }
 
-    if (!dayOfBirth) {
-      handleError("Birthdate is required", "dayOfBirth");
-      valid = false;
-    }
+    // if (!dayOfBirth) {
+    //   handleError("Birthdate is required", "dayOfBirth");
+    //   valid = false;
+    // }
 
     // if (!avatar) {
     //   handleError("Avatar is required", "avatar");
@@ -151,7 +154,7 @@ const Signup = () => {
     setLoader(true);
     try {
       await dispatch(registerUser(inputs));
-      navigation.navigate("Login");
+      navigation.navigate("Profile");
     } catch (error) {
       console.log(error);
     }
@@ -213,8 +216,8 @@ const Signup = () => {
 
   return (
     <ScrollView>
+      <Loader visible={loader} />
       <SafeAreaView style={{ marginHorizontal: 20 }}>
-        <Loader visible={loader} />
         <KeyboardAvoidingView>
           <View>
             <TouchableOpacity
@@ -229,10 +232,10 @@ const Signup = () => {
               />
             </TouchableOpacity>
             <Text style={styles.motto}>Tạo mới một tài khoản </Text>
-            <Text style={styles.submotto}>
-              {`Điền thông tin đầy đủ để tham gia vào HairHub với tư cách là ${email}`}
-            </Text>
-            <Input
+            {/* <Text style={styles.submotto}>
+                {`Điền thông tin đầy đủ để tham gia vào HairHub với tư cách là ${email}`}
+              </Text> */}
+            {/* <Input
               placeholder="Enter email"
               icon="email-outline"
               label="Email"
@@ -241,14 +244,23 @@ const Signup = () => {
               onFocus={() => handleError(null, "email")}
               onChangeText={(text) => handleChanges(text, "email")}
               editable={false}
-            />
-            <Input
+            /> */}
+            {/* <Input
               placeholder="Username"
               label="Username"
               icon="account-lock-outline"
               error={errors.username}
               onFocus={() => handleError(null, "username")}
               onChangeText={(text) => handleChanges(text, "username")}
+            /> */}
+            <Input
+              placeholder="Phone"
+              label="Phone"
+              icon="phone"
+              error={errors.phone}
+              onFocus={() => handleError(null, "phone")}
+              onChangeText={(text) => handleChanges(text, "phone")}
+              keyboardType="numeric"
             />
 
             <Input
@@ -260,7 +272,7 @@ const Signup = () => {
               onChangeText={(text) => handleChanges(text, "fullName")}
             />
 
-            <Picker
+            {/* <Picker
               selectedValue={inputs.gender}
               onValueChange={(itemValue, itemIndex) =>
                 handleChanges(itemValue, "gender")
@@ -268,18 +280,9 @@ const Signup = () => {
               items={["Male", "Female", "Other"]}
               label="Gender"
               error={errors.gender}
-            />
+            /> */}
 
-            <Input
-              placeholder="Phone"
-              label="Phone"
-              icon="phone"
-              error={errors.phone}
-              onFocus={() => handleError(null, "phone")}
-              onChangeText={(text) => handleChanges(text, "phone")}
-            />
-
-            <View>
+            {/* <View>
               <TouchableOpacity
                 onPress={() => {
                   setShowDatePicker(true);
@@ -298,9 +301,9 @@ const Signup = () => {
                   }}
                 />
               </TouchableOpacity>
-            </View>
+            </View> */}
 
-            {showDatePicker && (
+            {/* {showDatePicker && (
               <DateTimePicker
                 value={inputs.dayOfBirth}
                 mode="date"
@@ -308,7 +311,7 @@ const Signup = () => {
                 onChange={onChangeDate}
                 maximumDate={new Date()}
               />
-            )}
+            )} */}
 
             <Input
               placeholder="Password"

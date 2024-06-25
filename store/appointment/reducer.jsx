@@ -8,10 +8,14 @@ import {
   CANCEL_APPOINTMENT_FAILURE,
   CANCEL_APPOINTMENT_REQUEST,
   CANCEL_APPOINTMENT_SUCCESS,
+  APPOINTMENT_ID_FAILURE,
+  APPOINTMENT_ID_REQUEST,
+  APPOINTMENT_ID_SUCCESS,
 } from "./action";
 
 const initialState = {
   appointment: [],
+  appointmentDetail: null,
   historyAppointment: [],
   loading: false,
   error: null,
@@ -20,6 +24,7 @@ const initialState = {
 const appointmentReducer = (state = initialState, action) => {
   switch (action.type) {
     case APPOINTMENT_REQUEST:
+    case APPOINTMENT_ID_REQUEST:
     case HISTORY_APPOINTMENT_REQUEST:
     case CANCEL_APPOINTMENT_REQUEST:
       return {
@@ -33,6 +38,18 @@ const appointmentReducer = (state = initialState, action) => {
         appointment: action.payload.items,
       };
     case APPOINTMENT_FAILURE:
+      return {
+        ...state,
+        loading: false,
+        error: action.payload,
+      };
+    case APPOINTMENT_ID_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+        appointmentDetail: action.payload,
+      };
+    case APPOINTMENT_ID_FAILURE:
       return {
         ...state,
         loading: false,

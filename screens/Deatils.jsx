@@ -42,106 +42,6 @@ import {
 import * as SecureStore from "expo-secure-store";
 import Loader from "../components/auth/Loader";
 const Details = ({ navigation }) => {
-  const StoreDetail = {
-    storeId: 123,
-    storeName: "Barber's Haven",
-    location: "123 Phố Đông, Quận 1, Hà Nội",
-    averageRating: 4.5,
-    totalReviews: 120,
-    phoneNumber: "0123456789",
-    saleUp: true,
-    services: [
-      {
-        serviceName: "Basic Haircut",
-        description: "Quick and suitable haircut for all ages.",
-        price: 150000,
-        serviceTime: "30 minutes",
-      },
-      {
-        serviceName: "Shaving",
-        description: "Facial shave with a special razor, includes skin care.",
-        price: 100000,
-        serviceTime: "15 minutes",
-      },
-      {
-        serviceName: "Hair Coloring",
-        description:
-          "Hair dyeing with fashionable colors, protects hair and scalp.",
-        price: 500000,
-        serviceTime: "90 minutes",
-      },
-      {
-        serviceName: "Hair Care",
-        description:
-          "Thorough hair care service, includes wash, rinse, and head massage.",
-        price: 200000,
-        serviceTime: "45 minutes",
-      },
-    ],
-    reviews: [
-      {
-        reviewerName: "Nguyễn Văn A",
-        reviewerAvatar: "avatar1.png",
-        reviewDate: "2024-05-01",
-        stars: 5,
-        serviceUsed: "Shaving",
-        review: "Very satisfied with the service, friendly staff.",
-      },
-      {
-        reviewerName: "Trần Thị B",
-        reviewerAvatar: "avatar2.png",
-        reviewDate: "2024-04-20",
-        stars: 4,
-        serviceUsed: "Hair Care",
-        review: "Good service but a bit of a wait.",
-      },
-    ],
-    images: [
-      "https://cdn.myspa.vn/file/myspa-cdn/myspa_blog/uploads/2021/08/Goi-tao-kieu-toc-1024x642.jpg",
-
-      "https://cdn.myspa.vn/file/myspa-cdn/myspa_blog/uploads/2021/08/Goi-cat-toc-1024x642.jpg",
-
-      "https://cdn.myspa.vn/file/myspa-cdn/myspa_blog/uploads/2021/08/Goi-duoi-toc-1024x642.jpg",
-    ],
-    workingDays: [
-      {
-        dayOfWeek: "Monday",
-        status: "Open",
-        openTime: "9:00",
-        closeTime: "19:00",
-      },
-      {
-        dayOfWeek: "Tuesday",
-        status: "Open",
-        openTime: "9:00",
-        closeTime: "19:00",
-      },
-      {
-        dayOfWeek: "Wednesday",
-        status: "Closed",
-        openTime: "-",
-        closeTime: "-",
-      },
-      {
-        dayOfWeek: "Thursday",
-        status: "Open",
-        openTime: "9:00",
-        closeTime: "19:00",
-      },
-      {
-        dayOfWeek: "Friday",
-        status: "Open",
-        openTime: "9:00",
-        closeTime: "21:00",
-      },
-    ],
-    amenities: {
-      freeParking: true,
-      parkingAvailable: true,
-      security: true,
-    },
-  };
-
   const route = useRoute();
   const { product } = route.params;
   const [favorites, setFavorites] = useState(false);
@@ -149,7 +49,6 @@ const Details = ({ navigation }) => {
   const [loader, setLoader] = useState(false);
   const userLogin = useUser(navigation);
   const { setPaymentUrl } = usePayment();
-  console.log("idUser", idUser);
   const dispatch = useDispatch();
   const { salonService, salonDetail, salonEmployee } = useSelector(
     (state) => state.SALON
@@ -173,7 +72,7 @@ const Details = ({ navigation }) => {
 
     fetchData();
   }, []);
-  console.log("salonDetail:", salonDetail);
+  // console.log("salonDetail:", salonDetail);
   // console.log("salonService:", salonService);
   // console.log("salonEmployee:", salonEmployee);
   const checkFavorites = async () => {
@@ -211,7 +110,7 @@ const Details = ({ navigation }) => {
         // Key already exists, so delete it
         delete favoritesObj[shopId];
 
-        console.log(`Deleted key: ${shopId}`);
+        // console.log(`Deleted key: ${shopId}`);
         setFavorites(false);
         Toast.show({
           type: "info",
@@ -277,23 +176,23 @@ const Details = ({ navigation }) => {
           </View>
         </View>
         <View style={styles.details}>
-          {StoreDetail?.images?.length > 0 ? (
-            // <Image source={{ uri: data.image[0] }} style={styles.image} />
-            <View style={styles.carouselContainer}>
-              <SliderBox
-                images={StoreDetail?.images}
-                dotColor={COLORS.primary}
-                inactiveDotColor={COLORS.secondary}
-                ImageComponentStyle={{
-                  borderRadius: 15,
-                  width: "93%",
-                  marginTop: 15,
-                }}
-                autoplay
-                circleLoop
-              />
-            </View>
+          {salonDetail?.img ? (
+            <Image source={{ uri: salonDetail?.img }} style={styles.image} />
           ) : (
+            // <View style={styles.carouselContainer}>
+            //   <SliderBox
+            //     images={salonDetail?.img}
+            //     dotColor={COLORS.primary}
+            //     inactiveDotColor={COLORS.secondary}
+            //     ImageComponentStyle={{
+            //       borderRadius: 15,
+            //       width: "93%",
+            //       marginTop: 15,
+            //     }}
+            //     autoplay
+            //     circleLoop
+            //   />
+            // </View>
             <Text>No image available</Text>
           )}
         </View>
@@ -423,6 +322,10 @@ const styles = StyleSheet.create({
     overflow: "hidden",
     maxWidth: 80,
     textAlign: "center",
+  },
+  image: {
+    aspectRatio: 1,
+    resizeMode: "cover",
   },
 });
 

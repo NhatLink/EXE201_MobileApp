@@ -229,7 +229,7 @@ const Profile = ({ navigation }) => {
                 />
                 <View>
                   <Text style={styles.title}>{userInfo?.fullName}</Text>
-                  <Text style={styles.subtitle}>{userInfo?.email}</Text>
+                  <Text style={styles.subtitle}>{userInfo?.phone}</Text>
                 </View>
               </TouchableOpacity>
             </View>
@@ -245,7 +245,7 @@ const Profile = ({ navigation }) => {
                 <Text style={styles.menuItemText}>Favorites</Text>
               </View>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => navigation.navigate("History")}>
+            {/* <TouchableOpacity onPress={() => navigation.navigate("History")}>
               <View style={styles.menuItem}>
                 <MaterialCommunityIcons
                   name="history"
@@ -254,22 +254,26 @@ const Profile = ({ navigation }) => {
                 />
                 <Text style={styles.menuItemText}>History</Text>
               </View>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
             <TouchableOpacity onPress={() => navigation.navigate("Orders")}>
               <View style={styles.menuItem}>
                 <MaterialCommunityIcons
-                  name="truck-delivery-outline"
+                  name="history"
                   size={24}
                   color={COLORS.primary}
                 />
-                <Text style={styles.menuItemText}>Orders</Text>
+                <Text style={styles.menuItemText}>History</Text>
               </View>
             </TouchableOpacity>
 
-            <TouchableOpacity onPress={() => navigation.navigate("Cart")}>
+            <TouchableOpacity onPress={() => navigation.navigate("QRScanner")}>
               <View style={styles.menuItem}>
-                <SimpleLineIcons name="bag" size={24} color={COLORS.primary} />
-                <Text style={styles.menuItemText}>Cart</Text>
+                <MaterialCommunityIcons
+                  name="qrcode-scan"
+                  size={24}
+                  color={COLORS.primary}
+                />
+                <Text style={styles.menuItemText}>Quét mã QR</Text>
               </View>
             </TouchableOpacity>
 

@@ -53,7 +53,7 @@ const DetailProfile = ({ navigation }) => {
   const [modalPhone, setModalPhone] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [fullname, setFullname] = useState(user?.fullName);
-  const [phone, setPhone] = useState(user?.phone);
+  const [phone, setPhone] = useState(user?.email);
   const [errors, setErrors] = useState({});
   const [loader, setLoader] = useState(false);
   const dispatch = useDispatch();
@@ -142,17 +142,22 @@ const DetailProfile = ({ navigation }) => {
       handleError(null, "fullname");
     }
   };
-  const handleChangePhone = () => {
+  const handleChangeEmail = () => {
     if (!phone) {
-      handleError("Phone is required", "phone");
-    } else if (!phone.match(/^[0-9]{10}$/)) {
-      handleError(
-        "Provide a valid phone number with exactly 10 digits",
-        "phone"
-      );
+      // handleError("Phone is required", "phone");
+      handleError("Email is required", "phone");
+    }
+    // else if (!phone.match(/^[0-9]{10}$/)) {
+    //   handleError(
+    //     "Provide a valid phone number with exactly 10 digits",
+    //     "phone"
+    //   );
+    // }
+    else if (!phone.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
+      handleError("Provide a valid email address", "phone");
     } else {
       setModalPhone(false);
-      handleChanges(phone, "phone");
+      handleChanges(phone, "email");
       handleError(null, "phone");
     }
   };
@@ -199,7 +204,7 @@ const DetailProfile = ({ navigation }) => {
       // Loop through each key in data object
       for (let key in userData) {
         if (key === "img") {
-          const uriParts = userData[key].split(".");
+          const uriParts = userData[key]?.split(".");
           const fileType = uriParts[uriParts.length - 1];
 
           formData.append(key, {
@@ -220,7 +225,7 @@ const DetailProfile = ({ navigation }) => {
       Alert.alert("Error", "Oops, something went wrong. Try again");
     } finally {
       setLoader(false);
-      navigation.replace("Bottom Navigation");
+      navigation.navigate("Profile");
     }
   };
 
@@ -249,7 +254,7 @@ const DetailProfile = ({ navigation }) => {
         <Text style={styles.subtitle}>Chạm để sửa</Text>
       </TouchableOpacity>
       <View style={styles.menuWrapper}>
-        <TouchableOpacity onPress={() => {}}>
+        {/* <TouchableOpacity onPress={() => {}}>
           <View style={styles.menuItem}>
             <View style={styles.menuItem2}>
               <MaterialCommunityIcons
@@ -259,9 +264,11 @@ const DetailProfile = ({ navigation }) => {
               />
               <Text style={styles.menuItemText}>Tên</Text>
             </View>
-            <Text style={styles.menuItemText}>{userData?.username}</Text>
+            <Text style={styles.menuItemText}>
+              {userData?.username ?? "trống"}
+            </Text>
           </View>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
         <TouchableOpacity
           onPress={() => {
             setModalFullname(true);
@@ -276,7 +283,9 @@ const DetailProfile = ({ navigation }) => {
               />
               <Text style={styles.menuItemText}>Họ Tên</Text>
             </View>
-            <Text style={styles.menuItemText}>{userData?.fullName}</Text>
+            <Text style={styles.menuItemText}>
+              {userData?.fullName ?? "trống"}
+            </Text>
           </View>
         </TouchableOpacity>
         <View>
@@ -290,7 +299,9 @@ const DetailProfile = ({ navigation }) => {
               <Text style={styles.menuItemText}>Giới tính</Text>
             </View>
             <View style={styles.menuItem2}>
-              <Text style={styles.menuItemText}>{userData?.gender}</Text>
+              <Text style={styles.menuItemText}>
+                {userData?.gender ?? "trống"}
+              </Text>
               <Picker
                 selectedValue={userData?.gender}
                 onValueChange={(itemValue, itemIndex) =>
@@ -320,13 +331,13 @@ const DetailProfile = ({ navigation }) => {
               <Text style={styles.menuItemText}>Ngày sinh</Text>
             </View>
             <Text style={styles.menuItemText}>
-              {userData?.dayOfBirth.split("T")[0]}
+              {userData?.dayOfBirth?.split("T")[0] ?? "trống"}
               {/* {userData?.dayOfBirth} */}
             </Text>
           </View>
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={() => setModalPhone(true)}>
+        <TouchableOpacity onPress={() => {}}>
           <View style={styles.menuItem}>
             <View style={styles.menuItem2}>
               <MaterialCommunityIcons
@@ -336,11 +347,13 @@ const DetailProfile = ({ navigation }) => {
               />
               <Text style={styles.menuItemText}>Số điện thoại</Text>
             </View>
-            <Text style={styles.menuItemText}>{userData?.phone}</Text>
+            <Text style={styles.menuItemText}>
+              {userData?.phone ?? "trống"}
+            </Text>
           </View>
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={() => {}}>
+        <TouchableOpacity onPress={() => setModalPhone(true)}>
           <View style={styles.menuItem}>
             <View style={styles.menuItem2}>
               <MaterialCommunityIcons
@@ -351,7 +364,7 @@ const DetailProfile = ({ navigation }) => {
               <Text style={styles.menuItemText}>Email</Text>
             </View>
             <Text style={styles.menuItemText} numberOfLines={1}>
-              {userData?.email}
+              {userData?.email ?? "trống"}
             </Text>
           </View>
         </TouchableOpacity>
@@ -480,7 +493,7 @@ const DetailProfile = ({ navigation }) => {
                   color="black"
                 />
               </TouchableOpacity>
-              <Text style={styles.modalTextTitle}>Chỉnh sửa số điện thoại</Text>
+              <Text style={styles.modalTextTitle}>Chỉnh sửa Email</Text>
             </View>
 
             <View style={styles.searchContainer}>
@@ -496,9 +509,9 @@ const DetailProfile = ({ navigation }) => {
                 <TextInput
                   style={styles.searchInput}
                   value={phone}
-                  keyboardType="number-pad"
+                  // keyboardType="number-pad"
                   onChangeText={(text) => setPhone(text)}
-                  placeholder="Số điện thoại"
+                  placeholder="Email"
                   onFocus={() => {
                     handleError(null, "phone");
                   }}
@@ -506,7 +519,7 @@ const DetailProfile = ({ navigation }) => {
               </View>
               <TouchableOpacity
                 style={styles.searchBtn}
-                onPress={handleChangePhone}
+                onPress={handleChangeEmail}
               >
                 {/* <Ionicons
                   name="search"
@@ -522,7 +535,7 @@ const DetailProfile = ({ navigation }) => {
         {showDatePicker && (
           <DateTimePicker
             // value={userData.dayOfBirth}
-            value={new Date(userData?.dayOfBirth)}
+            value={new Date(userData?.dayOfBirth ?? "trống")}
             mode="date"
             display="default"
             onChange={onChangeDate}

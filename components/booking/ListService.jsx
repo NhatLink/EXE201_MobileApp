@@ -27,9 +27,9 @@ const ListService = () => {
     (state) => state.BOOKING
   );
   const [load, setLoad] = useState(false);
-  const handleDelete = (id) => {
+  const handleDelete = async (id) => {
     setLoad(true);
-    dispatch(removeService(id));
+    await dispatch(removeService(id));
     if (bookAppoinment && bookAppoinment.bookingDetailResponses && services) {
       let timesArray = bookAppoinment.bookingDetailResponses.map((detail) => ({
         id: detail.serviceHair.id,
@@ -44,7 +44,7 @@ const ListService = () => {
       }));
 
       settotalService(combinedData);
-      console.log("data service", combinedData);
+      // console.log("data service", combinedData);
     }
     setLoad(false);
   };
@@ -75,7 +75,7 @@ const ListService = () => {
       }));
 
       settotalService(combinedData);
-      console.log("data service", combinedData);
+      // console.log("data service", combinedData);
     }
   }, [bookAppoinment]);
   return (

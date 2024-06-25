@@ -64,7 +64,7 @@ export const CalculatePrice = (data) => async (dispatch) => {
   } catch (error) {
     const errorMessage = error.response?.data?.message || error.message;
     dispatch({ type: CACULATE_PRICE_FAILURE, payload: errorMessage });
-    ToastAndroid.show(errorMessage, ToastAndroid.SHORT);
+    // ToastAndroid.show(errorMessage, ToastAndroid.SHORT);
     console.log("error CalculatePrice", error);
   }
 };
@@ -79,8 +79,8 @@ export const CreateAppointment =
       const response = await BookingService.CreateAppointment(data);
       ToastAndroid.show(response.data, ToastAndroid.SHORT);
       dispatch({ type: CREATE_APPOINTMENT_SUCCESS, payload: response.data });
-      dispatch(GetAppointmentByAccountId(currentPage, itemsPerPage, accountId));
       navigation.navigate("Appointment schedule");
+      dispatch(GetAppointmentByAccountId(currentPage, itemsPerPage, accountId));
     } catch (error) {
       const errorMessage = error.response?.data?.message || error.message;
       dispatch({ type: CREATE_APPOINTMENT_FAILURE, payload: errorMessage });
