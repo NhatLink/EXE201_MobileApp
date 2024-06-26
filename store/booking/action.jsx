@@ -85,6 +85,6 @@ export const CreateAppointment =
       const errorMessage = error.response?.data?.message || error.message;
       dispatch({ type: CREATE_APPOINTMENT_FAILURE, payload: errorMessage });
       ToastAndroid.show("Tạo lịch hẹn thất bại", ToastAndroid.SHORT);
-      console.log("error CreateAppointment", error);
+      console.log("error CreateAppointment", errorMessage);
     }
   };

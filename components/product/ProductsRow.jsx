@@ -92,7 +92,8 @@ export default ProductRow;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginBottom: 120,
+    marginTop: 60,
+    marginHorizontal: 10,
   },
   header: {
     flexDirection: "row",

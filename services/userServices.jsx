@@ -26,6 +26,9 @@ export const UserServices = {
       },
     });
   },
+  checkInByUser(data) {
+    return API.put(`/api/v1/customers/CheckInByCustomer`, data);
+  },
 };
 // updateUserById(id, data) {
 //   return API.put(`/api/v1/accounts/UpdateAccount/${id}`, data);

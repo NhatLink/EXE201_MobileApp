@@ -10,39 +10,42 @@ const ProductSpecialViewCard = ({ item }) => {
   const navigation = useNavigation();
   return (
     <TouchableOpacity
-      onPress={() => navigation.navigate("Details", { product: item._id })}
+      onPress={() => navigation.navigate("Details", { product: item?.id })}
     >
       <View style={styles.container}>
         <View style={styles.imageContainer}>
-          <Image source={{ uri: item.image[0] }} style={styles.image} />
+          <Image source={{ uri: item?.img }} style={styles.image} />
           <View style={styles.ratingContainer}>
             {/* <StarRating rating={item?.avgRating} /> */}
             <Text style={styles.averageRatingText}>
-              {item?.avgRating > 0
-                ? (item?.avgRating).toFixed(1) + "/5.0"
+              {item?.totalRating > 0
+                ? (item?.totalRating).toFixed(1) + "/5.0"
                 : "No ratings"}
             </Text>
             <Text style={styles.averageRatingText}>
-              {item?.reviewCount
-                ? item?.reviewCount + " reviews"
+              {item?.totalReviewer
+                ? item?.totalReviewer + " reviews"
                 : "(0 review)"}
             </Text>
           </View>
         </View>
         <View style={styles.detailsContainer}>
           <Text style={styles.name} numberOfLines={1}>
-            {item.productName}
+            {item?.name}
           </Text>
           <Text style={styles.supplier} numberOfLines={2}>
-            {item.description}
+            {item?.description}
           </Text>
-          <Text style={styles.price} numberOfLines={1}>
-            SALE UP TO {item.price}%
+          <Text style={styles.supplier} numberOfLines={2}>
+            {item?.address}
           </Text>
+          {/* <Text style={styles.price} numberOfLines={1}>
+            SALE UP TO {item?.price}%
+          </Text> */}
         </View>
         {/* <TouchableOpacity
           style={styles.addButton}
-          onPress={() => addToCart(item._id, 1)}
+          onPress={() => addToCart(item?._id, 1)}
         >
           <Ionicons name="add-circle" size={35} color={COLORS.primary} />
         </TouchableOpacity> */}

@@ -10,6 +10,10 @@ import {
   UPDATE_USER_BY_ID,
   FETCH_TOKEN_FAIL,
   FETCH_TOKEN_SUCCESS,
+  CHECK_IN_FAILURE,
+  CHECK_IN_SUCCESS,
+  CHECK_IN_REQUEST,
+  RESET_CHECK_IN_STATUS,
 } from "./action";
 
 const initialState = {
@@ -19,6 +23,8 @@ const initialState = {
   refreshToken: null,
   accountId: null,
   user: null,
+  checkInStatus: false,
+  checkInData: null,
 };
 
 const userReducer = (state = initialState, action) => {
@@ -87,6 +93,28 @@ const userReducer = (state = initialState, action) => {
       return {
         ...state,
         // user: action.payload,
+      };
+    case CHECK_IN_REQUEST:
+      return {
+        ...state,
+        checkInData: null,
+        checkInStatus: false,
+      };
+    case CHECK_IN_SUCCESS:
+      return {
+        ...state,
+        checkInData: action.payload,
+        checkInStatus: true,
+      };
+    case CHECK_IN_FAILURE:
+      return {
+        ...state,
+        checkInStatus: false,
+      };
+    case RESET_CHECK_IN_STATUS:
+      return {
+        ...state,
+        checkInStatus: false,
       };
     default:
       return state;

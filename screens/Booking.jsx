@@ -60,9 +60,10 @@ const Booking = ({ navigation }) => {
     totalPrice,
     createAppointment,
   } = useSelector((state) => state.BOOKING);
-  // console.log("availableTime", availableTime);
+  console.log("availableTime", availableTime);
   // console.log("bookAppoinment", bookAppoinment?.bookingDetailResponses);
   // console.log("voucher:", voucher);
+  console.log("dateBooking", dateBooking);
   const canPressButton = availableTime && availableTime.length > 0;
   const confirmBooking = async () => {
     const userInfoJson = await SecureStore.getItemAsync("userInfo");
@@ -435,6 +436,9 @@ const Booking = ({ navigation }) => {
                 </Text>
                 <Text style={styles.serviceDescription} numberOfLines={1}>
                   {voucher?.description}
+                </Text>
+                <Text style={styles.serviceDescription} numberOfLines={1}>
+                  {`Có giá trị ít nhất ${voucher?.minimumOrderAmount?.toLocaleString()} VND`}
                 </Text>
                 <Text
                   style={styles.serviceDescription}

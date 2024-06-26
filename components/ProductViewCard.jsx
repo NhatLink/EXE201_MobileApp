@@ -23,18 +23,18 @@ const ProductViewCard = ({ item }) => {
       <View style={styles.container}>
         <View style={[styles.imageContainer, { width: width * 0.46 }]}>
           <Image source={{ uri: item?.img }} style={styles.image} />
-          {/* <View style={styles.ratingContainer}>
+          <View style={styles.ratingContainer}>
             <Text style={styles.averageRatingText}>
-              {item?.avgRating > 0
-                ? (item?.avgRating).toFixed(1) + "/5.0"
+              {item?.totalRating > 0
+                ? (item?.totalRating).toFixed(1) + "/5.0"
                 : "No ratings"}
             </Text>
             <Text style={styles.averageRatingText}>
-              {item?.reviewCount
-                ? item?.reviewCount + " reviews"
+              {item?.totalReviewer
+                ? item?.totalReviewer + " reviews"
                 : "(0 review)"}
             </Text>
-          </View> */}
+          </View>
         </View>
         <View style={[styles.detailsContainer, { maxWidth: width * 0.46 }]}>
           <Text style={styles.name} numberOfLines={1}>
@@ -122,8 +122,8 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     backgroundColor: COLORS.banner,
     position: "absolute",
-    top: 0,
-    right: 0,
+    top: 5,
+    right: 5,
     borderTopEndRadius: 10,
     borderBottomStartRadius: 10,
     padding: 5,

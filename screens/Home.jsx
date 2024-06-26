@@ -19,6 +19,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { fetchUser2 } from "../store/user/action";
 import * as SecureStore from "expo-secure-store";
 import { useDispatch } from "react-redux";
+import { fetchSalonInformation } from "../store/salon/action";
 
 const Home = () => {
   const navigation = useNavigation();
@@ -26,7 +27,8 @@ const Home = () => {
   const [userLoggedIn, setUserLoggedIn] = useState(false);
   const [cartCount, setCartCount] = useState("0");
   const [location, setLocation] = useState("Ho Chi Minh, Vietnam");
-
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(4);
   useEffect(() => {
     // checkUserExistence();
     getLocation();
@@ -85,6 +87,9 @@ const Home = () => {
     }
   };
 
+  useEffect(() => {
+    dispatch(fetchSalonInformation(currentPage, itemsPerPage));
+  }, [currentPage, dispatch, itemsPerPage]);
   return (
     <SafeAreaView>
       <View style={styles.appBarWrapper}>
@@ -103,11 +108,11 @@ const Home = () => {
         </View>
       </View>
       <ScrollView>
-        <View style={{ marginHorizontal: 10 }}>
+        <View style={{ marginHorizontal: 10, marginBottom: 120 }}>
           <Welcome />
           <Carousel />
           <Headings />
-          <ProductsRow />
+          {/* <ProductsRow /> */}
         </View>
       </ScrollView>
     </SafeAreaView>

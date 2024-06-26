@@ -2,6 +2,10 @@ import { ToastAndroid } from "react-native";
 import { UserServices } from "../../services/userServices";
 import * as SecureStore from "expo-secure-store";
 import { useDispatch, useSelector } from "react-redux";
+import {
+  GetAppointmentByAccountId,
+  GetAppointmentByHistoryCustomerId,
+} from "../appointment/action";
 // import { useNavigation } from "@react-navigation/native";
 export const LOGIN_SUCCESS = "LOGIN_SUCCESS";
 export const LOGIN_FAIL = "LOGIN_FAIL";
@@ -14,6 +18,10 @@ export const GET_USER_BY_ID = "GET_USER_BY_ID";
 export const UPDATE_USER_BY_ID = "UPDATE_USER_BY_ID";
 export const FETCH_TOKEN_SUCCESS = "FETCH_TOKEN_SUCCESS";
 export const FETCH_TOKEN_FAIL = "FETCH_TOKEN_FAIL";
+export const CHECK_IN_REQUEST = "CHECK_IN_REQUEST";
+export const CHECK_IN_SUCCESS = "CHECK_IN_SUCCESS";
+export const CHECK_IN_FAILURE = "CHECK_IN_FAILURE";
+export const RESET_CHECK_IN_STATUS = "RESET_CHECK_IN_STATUS";
 // Login action
 export const loginUser = (credentials) => async (dispatch) => {
   try {
@@ -186,6 +194,7 @@ export const fetchUser2 = (accessToken) => async (dispatch, getState) => {
           JSON.stringify(response.data.customerResponse)
         );
         dispatch({ type: FETCH_USER_SUCCESS, payload: response.data });
+        ToastAndroid.show("Chào mừng trở lại !", ToastAndroid.SHORT);
       } else {
         dispatch({ type: FETCH_USER_FAIL, payload: error.response?.data });
       }
@@ -193,4 +202,26 @@ export const fetchUser2 = (accessToken) => async (dispatch, getState) => {
       dispatch({ type: FETCH_USER_FAIL, payload: error.response?.data });
     }
   }
+};
+
+export const checkInByUser = (accountId, data) => async (dispatch) => {
+  dispatch({ type: CHECK_IN_REQUEST });
+  try {
+    const response = await UserServices.checkInByUser(data);
+    dispatch(GetAppointmentByAccountId(1, 50, accountId));
+    dispatch(GetAppointmentByHistoryCustomerId(1, 50, accountId));
+    dispatch({ type: CHECK_IN_SUCCESS, payload: response.data });
+    ToastAndroid.show("Check in thành công", ToastAndroid.SHORT);
+  } catch (error) {
+    const errorMessage = error.response?.data?.message || error.message;
+    dispatch({ type: CHECK_IN_FAILURE, payload: errorMessage });
+    console.log("checkInByUser error:", errorMessage);
+    ToastAndroid.show(errorMessage, ToastAndroid.SHORT);
+  }
+};
+
+export const resetCheckInStatus = () => {
+  return {
+    type: RESET_CHECK_IN_STATUS,
+  };
 };

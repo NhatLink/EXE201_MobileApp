@@ -17,6 +17,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { addService, addVoucher } from "../../store/bookingStore/action";
 const VoucherModal = ({ isVisible, onClose }) => {
   const dispatch = useDispatch();
+  const { totalPrice } = useSelector((state) => state.BOOKING);
   const { voucherBySalonId } = useSelector((state) => state.VOUCHER);
   //   console.log("voucherBySalonId", voucherBySalonId);
   const handleBook = (item) => {
@@ -53,58 +54,71 @@ const VoucherModal = ({ isVisible, onClose }) => {
             />
           </TouchableOpacity>
           {voucherBySalonId && voucherBySalonId.length > 0 ? (
-            voucherBySalonId.map((item) => (
-              <View
-                key={item?.id}
-                style={styles.serviceItem}
-                onPress={() => {
-                  // Handle navigation or other actions
-                }}
-              >
-                <View style={styles.serviceInfo}>
-                  <TouchableOpacity style={styles.imageContainer}>
-                    <Image
-                      source={{
-                        uri: "https://cdn-icons-png.flaticon.com/128/8074/8074470.png",
-                      }}
-                      resizeMode="cover"
-                      style={styles.productImg}
-                    />
-                  </TouchableOpacity>
-                </View>
-                <View style={styles.pricingInfo}>
-                  <Text style={styles.serviceName} numberOfLines={1}>
-                    {item?.code} {`(Giảm ${item?.discountPercentage * 100}%)`}
-                  </Text>
-                  <Text style={styles.serviceDescription} numberOfLines={1}>
-                    {item?.description}
-                  </Text>
-                  {/* <Text
+            voucherBySalonId
+              // .filter(
+              //   (item) => totalPrice.originalPrice >= item.minimumOrderAmount
+              // )
+              .map((item) => (
+                <View
+                  key={item?.id}
+                  style={styles.serviceItem}
+                  onPress={() => {
+                    // Handle navigation or other actions
+                  }}
+                >
+                  <View style={styles.serviceInfo}>
+                    <TouchableOpacity style={styles.imageContainer}>
+                      <Image
+                        source={{
+                          uri: "https://cdn-icons-png.flaticon.com/128/8074/8074470.png",
+                        }}
+                        resizeMode="cover"
+                        style={styles.productImg}
+                      />
+                    </TouchableOpacity>
+                  </View>
+                  <View style={styles.pricingInfo}>
+                    <Text style={styles.serviceName} numberOfLines={1}>
+                      {item?.code} {`(Giảm ${item?.discountPercentage * 100}%)`}
+                    </Text>
+                    <Text style={styles.serviceDescription} numberOfLines={1}>
+                      {item?.description}
+                    </Text>
+                    <Text style={styles.serviceDescription} numberOfLines={1}>
+                      {`Với lịch hẹn có giá trị ít nhất ${item?.minimumOrderAmount?.toLocaleString()} VND`}
+                    </Text>
+                    {/* <Text
                     style={styles.servicePrice}
                     numberOfLines={1}
                   >{`Giảm giá ${item?.discountPercentage * 100}%`}</Text> */}
-                  <Text
-                    style={styles.serviceDescription}
-                    numberOfLines={1}
-                  >{`Ngày hết hạn: ${item?.expiryDate.split("T")[0]} `}</Text>
-                  {item?.isSystemCreated ? (
-                    <Text style={styles.serviceDescription} numberOfLines={3}>
-                      Được tặng bởi HairHub
-                    </Text>
+                    <Text
+                      style={styles.serviceDescription}
+                      numberOfLines={1}
+                    >{`Ngày hết hạn: ${item?.expiryDate.split("T")[0]} `}</Text>
+                    {item?.isSystemCreated ? (
+                      <Text style={styles.serviceDescription} numberOfLines={3}>
+                        Được tặng bởi HairHub
+                      </Text>
+                    ) : (
+                      <Text style={styles.serviceDescription} numberOfLines={3}>
+                        Được tặng bởi Salon
+                      </Text>
+                    )}
+                  </View>
+                  {totalPrice?.originalPrice >= item.minimumOrderAmount ? (
+                    <TouchableOpacity
+                      style={styles.bookButton}
+                      onPress={() => handleBook(item)}
+                    >
+                      <Text style={styles.button}>Chọn</Text>
+                    </TouchableOpacity>
                   ) : (
-                    <Text style={styles.serviceDescription} numberOfLines={3}>
-                      Được tặng bởi Salon
-                    </Text>
+                    <View style={styles.bookButton}>
+                      <Text style={styles.buttonNot}>Chọn</Text>
+                    </View>
                   )}
                 </View>
-                <TouchableOpacity
-                  style={styles.bookButton}
-                  onPress={() => handleBook(item)}
-                >
-                  <Text style={styles.button}>Chọn</Text>
-                </TouchableOpacity>
-              </View>
-            ))
+              ))
           ) : (
             <View
               style={{
@@ -183,6 +197,14 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginLeft: 5,
     fontWeight: "bold",
+  },
+
+  buttonNot: {
+    backgroundColor: COLORS.gray2,
+    textAlign: "center",
+    padding: 10,
+    borderRadius: 10,
+    marginLeft: 5,
   },
   serviceName: {
     fontSize: SIZES.small,

@@ -28,6 +28,7 @@ import {
   logoutUser,
   fetchUser,
   fetchToken,
+  resetCheckInStatus,
 } from "../store/user/action";
 import Loader from "../components/auth/Loader";
 
@@ -135,6 +136,11 @@ const Profile = ({ navigation }) => {
     }
     setLoader(false);
   }
+
+  const QRScaner = async () => {
+    dispatch(resetCheckInStatus());
+    navigation.navigate("QRScanner");
+  };
 
   const deleteAllKeys = async () => {
     try {
@@ -266,7 +272,7 @@ const Profile = ({ navigation }) => {
               </View>
             </TouchableOpacity>
 
-            <TouchableOpacity onPress={() => navigation.navigate("QRScanner")}>
+            <TouchableOpacity onPress={QRScaner}>
               <View style={styles.menuItem}>
                 <MaterialCommunityIcons
                   name="qrcode-scan"
