@@ -17,6 +17,7 @@ import ListHistory from "./History/ListHistory";
 import ListService from "./booking/ListService";
 import ListServiceModal from "./booking/ListServiceModal";
 import StaffService from "./booking/StaffService";
+import ReportAppointmentModal from "./DetailAppointment/ReportAppointmentModal";
 export {
   ProductCardView,
   Welcome,
@@ -37,4 +38,5 @@ export {
   ListService,
   ListServiceModal,
   StaffService,
+  ReportAppointmentModal,
 };

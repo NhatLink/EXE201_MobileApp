@@ -221,7 +221,7 @@ const DetailProfile = ({ navigation }) => {
       await dispatch(updateUserById(idUser, formData));
       // Handling post-login logic can be done within the loginUser action or here
     } catch (error) {
-      console.error("Login error:", error);
+      console.error("updateUserById error:", error);
       Alert.alert("Error", "Oops, something went wrong. Try again");
     } finally {
       setLoader(false);

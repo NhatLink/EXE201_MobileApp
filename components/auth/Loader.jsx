@@ -13,10 +13,10 @@ const Loader = ({ visible = false }) => {
   return (
     visible && (
       <View style={[style.container, { height, width }]}>
-        <View style={style.loader}>
-          <ActivityIndicator size="large" color={COLORS.primary} />
-          <Text style={{ marginLeft: 10, fontSize: 16 }}>Loading...</Text>
-        </View>
+        {/* <View style={style.loader}> */}
+        <ActivityIndicator size="large" color={COLORS.primary} />
+        {/* <Text style={{ marginLeft: 10, fontSize: 16 }}>Loading...</Text> */}
+        {/* </View> */}
       </View>
     )
   );
@@ -25,7 +25,7 @@ const Loader = ({ visible = false }) => {
 const style = StyleSheet.create({
   loader: {
     height: 70,
-    backgroundColor: COLORS.lightWhite,
+    // backgroundColor: COLORS.lightWhite,
     marginHorizontal: 50,
     borderRadius: 5,
     flexDirection: "row",

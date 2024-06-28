@@ -60,7 +60,8 @@ export const GetAppointmentByHistoryCustomerId =
   };
 
 export const CancelAppointmentByCustomer =
-  (id, data, currentPage, itemsPerPage, accountId) => async (dispatch) => {
+  (id, data, currentPage, itemsPerPage, accountId, navigation) =>
+  async (dispatch) => {
     dispatch({ type: CANCEL_APPOINTMENT_FAILURE });
     console.log("data CancelAppointment", data);
     try {
@@ -71,6 +72,7 @@ export const CancelAppointmentByCustomer =
       dispatch({ type: CANCEL_APPOINTMENT_SUCCESS, payload: response.data });
       dispatch(GetAppointmentByAccountId(currentPage, itemsPerPage, accountId));
       ToastAndroid.show(response.data, ToastAndroid.SHORT);
+      navigation.navigate("Appointment schedule");
     } catch (error) {
       dispatch({ type: CANCEL_APPOINTMENT_FAILURE, payload: error.message });
       console.error("Failed to CancelAppointmentByCustomer:", error);

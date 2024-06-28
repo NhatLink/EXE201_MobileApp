@@ -1,7 +1,7 @@
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons, Feather } from "@expo/vector-icons";
 import { SIZES, COLORS } from "../constants";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import ListSchedule from "../components/Schedule/ListSchedule";
 import {
   View,
@@ -15,6 +15,7 @@ import {
   Modal,
   ScrollView,
   Animated,
+  RefreshControl,
 } from "react-native";
 import axios from "axios";
 import { baseUrl } from "../utils/IP";
@@ -25,6 +26,7 @@ import { GetAppointmentByAccountId } from "../store/appointment/action";
 import Loader from "../components/auth/Loader";
 import * as SecureStore from "expo-secure-store";
 import { fetchToken } from "../store/user/action";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 const timeToString = (time) => {
   const date = new Date(time);
   return date.toISOString().split("T")[0];
@@ -38,35 +40,29 @@ const Schedule = () => {
   const { user, accessToken, refreshToken, isAuthenticated } = useSelector(
     (state) => state.USER
   );
-  // useEffect(() => {
-  //   async function fetchDataTokenAndThenData() {
-  //     const refreshToken = await SecureStore.getItemAsync("refreshToken");
-  //     if (refreshToken) {
-  //       await dispatch(
-  //         fetchToken({
-  //           refreshToken: refreshToken,
-  //         })
-  //       );
-  //       fetchData();
-  //     }
-  //   }
-  //   fetchDataTokenAndThenData();
-  // }, [isAuthenticated]);
-  const accountId = SecureStore.getItemAsync("accountId");
-  useEffect(() => {
-    async function fetchData() {
-      const accountId = await SecureStore.getItemAsync("accountId");
-      console.log(accountId);
-      if (accountId) {
-        dispatch(
-          GetAppointmentByAccountId(currentPage, itemsPerPage, accountId)
-        );
-      }
+
+  const [refreshing, setRefreshing] = useState(false);
+
+  const fetchData = async () => {
+    const accountId = await SecureStore.getItemAsync("accountId");
+    console.log(accountId);
+    if (accountId) {
+      dispatch(GetAppointmentByAccountId(currentPage, itemsPerPage, accountId));
     }
+  };
+
+  useEffect(() => {
     fetchData();
   }, []);
+
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    fetchData().then(() => setRefreshing(false));
+  }, []);
+
   const [items, setItems] = useState({});
-  const [selectedDate, setSelectedDate] = useState(null);
+  // const [selectedDate, setSelectedDate] = useState(null);
+
   useEffect(() => {
     const newItems = {};
     appointment.forEach((appointment) => {
@@ -83,6 +79,11 @@ const Schedule = () => {
     return <ListSchedule item={item} />;
   };
 
+  // const handleDayPress = (day) => {
+  //   setSelectedDate(day.dateString);
+  //   console.log('Selected date:', day.dateString);
+  // };
+
   const renderEmptyDate = () => {
     return (
       <View style={styles.Imgcontainer}>
@@ -91,38 +92,8 @@ const Schedule = () => {
           resizeMode="cover"
           style={styles.img}
         />
-        <Text>Không có lịch hẹn nào vào ngày này</Text>
-      </View>
-    );
-  };
-  return (
-    <SafeAreaView
-      style={{
-        flex: 1,
-        color: COLORS.lightWhite,
-        marginBottom: 70,
-        marginTop: 10,
-      }}
-    >
-      <Loader visible={loading} />
-      <Text style={styles.title}>Lịch hẹn của bạn</Text>
-      {appointment && appointment?.length === 0 ? (
-        <View
-          style={{
-            flex: 1,
-            alignItems: "center",
-            justifyContent: "space-between",
-          }}
-        >
-          <View>
-            <Image
-              source={require("../assets/images/error-in-calendar.png")}
-              style={styles.searchImage}
-            />
-            <Text style={styles.emptyText}>
-              Không có lịch hẹn nào được tìm thấy
-            </Text>
-          </View>
+        {!isAuthenticated && <Text>Không có lịch hẹn nào vào ngày này</Text>}
+        {appointment && appointment?.length === 0 && (
           <View>
             <TouchableOpacity onPress={() => navigation.navigate("Search")}>
               <Text style={styles.button}>Tìm kiếm dịch vụ</Text>
@@ -140,26 +111,76 @@ const Schedule = () => {
               </>
             )}
           </View>
-        </View>
-      ) : (
-        // <FlatList
-        //   data={appointments}
-        //   keyExtractor={(item) => item?.id}
-        //   renderItem={({ item }) => <ListSchedule item={item} />}
-        // />
+        )}
+      </View>
+    );
+  };
+  return (
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <SafeAreaView
+        style={{
+          flex: 1,
+          color: COLORS.lightWhite,
+          marginBottom: 70,
+          marginTop: 10,
+        }}
+      >
+        <Loader visible={loading} />
+        <Text style={styles.title}>Lịch hẹn của bạn</Text>
+        {/* {appointment && appointment?.length === 0 ? (
+          <View
+            style={{
+              flex: 1,
+              alignItems: "center",
+              justifyContent: "space-between",
+            }}
+          >
+            <View>
+              <Image
+                source={require("../assets/images/error-in-calendar.png")}
+                style={styles.searchImage}
+              />
+              <Text style={styles.emptyText}>
+                Không có lịch hẹn nào được tìm thấy
+              </Text>
+            </View>
+            <View>
+              <TouchableOpacity onPress={() => navigation.navigate("Search")}>
+                <Text style={styles.button}>Tìm kiếm dịch vụ</Text>
+              </TouchableOpacity>
+              {!isAuthenticated && (
+                <>
+                  <Text style={styles.emptyText2}>
+                    ---------------Đã sử dụng HairHub---------------
+                  </Text>
+                  <TouchableOpacity
+                    onPress={() => navigation.navigate("Profile")}
+                  >
+                    <Text style={styles.button}>Đăng Nhập</Text>
+                  </TouchableOpacity>
+                </>
+              )}
+            </View>
+          </View>
+        ) : ( */}
         <Agenda
           items={items}
           renderItem={renderItem}
           renderEmptyData={renderEmptyDate}
-          // loadItemsForMonth={loadItems}
-          // renderEmptyDate={renderEmptyDate}
-          // onDayPress={(day) => setSelectedDate(day)}
+          // onRefresh={() => onRefresh}
+          // refreshing={loading}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
+          // onDayPress={handleDayPress}
+
           theme={{
             agendaTodayColor: COLORS.red,
           }}
         />
-      )}
-    </SafeAreaView>
+        {/* )} */}
+      </SafeAreaView>
+    </GestureHandlerRootView>
   );
 };
 

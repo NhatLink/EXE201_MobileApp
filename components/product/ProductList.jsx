@@ -13,34 +13,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchSalonInformation } from "../../store/salon/action";
 
 const ProductList = () => {
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(4);
-  const dispatch = useDispatch();
+  // const [currentPage, setCurrentPage] = useState(1);
+  // const [itemsPerPage, setItemsPerPage] = useState(4);
+  // const dispatch = useDispatch();
   const salonInformation = useSelector((state) => state.SALON.allSalon);
-
-  useEffect(() => {
-    setCurrentPage(1);
-  }, []);
-
-  useEffect(() => {
-    dispatch(fetchSalonInformation(currentPage, itemsPerPage));
-  }, [currentPage, dispatch, itemsPerPage]);
-
-  const hasItems =
-    salonInformation &&
-    salonInformation?.items &&
-    salonInformation?.items?.length > 0;
-
-  const Decrease = () => {
-    if (currentPage > 1) {
-      setCurrentPage(currentPage - 1);
-    }
-  };
-  const Increase = () => {
-    if (currentPage < salonInformation?.totalPages) {
-      setCurrentPage(currentPage + 1);
-    }
-  };
 
   // if (isLoading) {
   //   return (
@@ -59,7 +35,7 @@ const ProductList = () => {
         contentContainerStyle={styles.container}
         ItemSeparatorComponent={() => <View style={styles.separator} />}
       />
-      <View style={styles.paging}>
+      {/* <View style={styles.paging}>
         {currentPage > 1 && (
           <TouchableOpacity style={styles.pagingArrow} onPress={Decrease}>
             <Ionicons
@@ -79,7 +55,7 @@ const ProductList = () => {
             />
           </TouchableOpacity>
         )}
-      </View>
+      </View> */}
     </View>
   );
 };
@@ -99,17 +75,17 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignContent: "center",
   },
-  paging: {
-    position: "absolute",
-    bottom: 0,
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  pagingArrow: {
-    marginVertical: 10,
-    padding: 10,
-  },
+  // paging: {
+  //   position: "absolute",
+  //   bottom: 0,
+  //   flexDirection: "row",
+  //   justifyContent: "center",
+  //   alignItems: "center",
+  // },
+  // pagingArrow: {
+  //   marginVertical: 10,
+  //   padding: 10,
+  // },
 });
 
 export default ProductList;

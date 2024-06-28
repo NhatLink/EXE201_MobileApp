@@ -37,6 +37,8 @@ import * as SecureStore from "expo-secure-store";
 import MapView, { Marker, Polyline } from "react-native-maps";
 import * as Location from "expo-location";
 import CustomMarker from "../components/CustomMarker";
+import { ReportAppointmentModal } from "../components";
+
 const GOOGLE_API_KEY = "AIzaSyCmAt2KHp7yJVDWMWlrd_uUMtvzhSExNaQ";
 const DetailAppointmennt = ({ navigation }) => {
   const route = useRoute();
@@ -49,6 +51,7 @@ const DetailAppointmennt = ({ navigation }) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [modalVisible1, setModalVisible1] = useState(false);
   const [modalVisible2, setModalVisible2] = useState(false);
+  const [modalVisible3, setModalVisible3] = useState(false);
   const [contentFeedback, setContentFeedback] = useState("");
   const [ratingFeedback, setRatingFeedback] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
@@ -71,6 +74,7 @@ const DetailAppointmennt = ({ navigation }) => {
 
   const OnCancel = async () => {
     async function fetchData() {
+      setLoad(true);
       const accountId = await SecureStore.getItemAsync("accountId");
       const userInfoJson = await SecureStore.getItemAsync("userInfo");
       let userInfo = null;
@@ -86,20 +90,21 @@ const DetailAppointmennt = ({ navigation }) => {
         status: "CANCEL_BY_CUSTOMER",
       };
       if (appointmentDetail?.id && accountId && userInfo && userInfo?.id) {
-        dispatch(
+        await dispatch(
           CancelAppointmentByCustomer(
             appointmentDetail?.id,
             data,
             currentPage,
             itemsPerPage,
-            accountId
+            accountId,
+            navigation
           )
         );
       }
+      setLoad(false);
     }
     fetchData();
     setModalVisible1(false);
-    navigation.navigate("Appointment schedule");
   };
 
   const AddFeedback = async () => {
@@ -274,7 +279,9 @@ const DetailAppointmennt = ({ navigation }) => {
       </SafeAreaView>
     );
   }
-
+  const toggleModal3 = () => {
+    setModalVisible3(!modalVisible3);
+  };
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.upperRow}>
@@ -350,12 +357,28 @@ const DetailAppointmennt = ({ navigation }) => {
               source={{ uri: appointmentDetail?.salonInformation?.img }}
               style={styles.ImageShop}
             />
-            <Text style={styles.contentHeader}>
-              Cửa hàng: {appointmentDetail?.salonInformation?.name}
-            </Text>
-            <Text style={styles.content}>
-              Địa chỉ: {appointmentDetail?.salonInformation?.address}
-            </Text>
+            <View style={styles.productRow}>
+              <View style={styles.productInfo2}>
+                <Text style={styles.contentHeader}>
+                  Cửa hàng: {appointmentDetail?.salonInformation?.name}
+                </Text>
+                <Text style={styles.content}>
+                  Địa chỉ: {appointmentDetail?.salonInformation?.address}
+                </Text>
+              </View>
+              <TouchableOpacity
+                style={styles.bookButton}
+                onPress={toggleModal3}
+              >
+                <Ionicons
+                  name="warning-outline"
+                  size={20}
+                  color={COLORS.tertiary}
+                  style={styles.buttonReport}
+                />
+              </TouchableOpacity>
+            </View>
+
             {/* <Button title="Get Directions" onPress={getDirections} /> */}
             <TouchableOpacity style={styles.button1} onPress={getDirections}>
               <Ionicons name="locate" size={30} color={COLORS.lightWhite} />
@@ -365,7 +388,7 @@ const DetailAppointmennt = ({ navigation }) => {
         </View>
 
         <View style={styles.section}>
-          <Text style={styles.header}>Thông tin dơn</Text>
+          <Text style={styles.header}>Thông tin đơn</Text>
           <View style={styles.line} />
           {appointmentDetail?.appointmentDetails?.map((itemDetail) => (
             <View key={itemDetail?.id} style={styles.serviceItem}>
@@ -511,7 +534,7 @@ const DetailAppointmennt = ({ navigation }) => {
         transparent={true}
         visible={modalVisible2}
         onRequestClose={() => {
-          setModalVisible1(!modalVisible2);
+          setModalVisible2(!modalVisible2);
         }}
       >
         <View style={styles.fullScreenModal}>
@@ -578,6 +601,16 @@ const DetailAppointmennt = ({ navigation }) => {
           </View>
         </View>
       </Modal>
+      <ReportAppointmentModal
+        isVisible={modalVisible3}
+        onClose={toggleModal3}
+        data={{
+          Salonid: appointmentDetail?.salonInformation?.id,
+          Customerid: user.id,
+          Appointmentid: appointmentDetail?.id,
+          RoleNameReport: "Customer",
+        }}
+      />
     </SafeAreaView>
   );
 };
@@ -664,13 +697,22 @@ const styles = StyleSheet.create({
     width: 60,
     height: 60,
     marginRight: 10,
+    borderRadius: 10,
   },
   ImageShop: {
     width: "100%",
     height: 160,
+    borderRadius: 10,
+    marginTop: 5,
   },
   productInfo: {
     flex: 1,
+    alignItems: "center",
+  },
+  productInfo2: {
+    flex: 8,
+    flexDirection: "column",
+    alignItems: "flex-start",
   },
   productName: {
     fontWeight: "bold",
@@ -803,6 +845,16 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginLeft: 5,
     fontWeight: "bold",
+  },
+  buttonReport: {
+    // backgroundColor: COLORS.tertiary,
+    textAlign: "center",
+    padding: 10,
+    borderRadius: 100,
+    marginLeft: 5,
+    fontWeight: "bold",
+    borderWidth: 2,
+    borderColor: COLORS.tertiary,
   },
   serviceName: {
     fontSize: SIZES.small,
