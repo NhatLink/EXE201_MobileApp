@@ -31,192 +31,6 @@ import { resetAvailable } from "../../store/booking/action";
 const Service = (storeId) => {
   const navigation = useNavigation();
   const { salonService, salonEmployee } = useSelector((state) => state.SALON);
-  const services = [
-    {
-      service_id: 1,
-      serviceName: "Basic Haircut",
-      description: "Quick and suitable haircut for all ages.",
-      price: 150000,
-      reducePrice: 120000,
-      serviceTime: 30,
-      images: [
-        {
-          id: 1,
-          src: "https://cdn.myspa.vn/file/myspa-cdn/myspa_blog/uploads/2021/08/Goi-tao-kieu-toc-1024x642.jpg",
-          uploadDate: "2024-05-01",
-        },
-        {
-          id: 2,
-          src: "https://cdn.myspa.vn/file/myspa-cdn/myspa_blog/uploads/2021/08/Goi-cat-toc-1024x642.jpg",
-          uploadDate: "2024-05-01",
-        },
-        {
-          id: 3,
-          src: "https://cdn.myspa.vn/file/myspa-cdn/myspa_blog/uploads/2021/08/Goi-duoi-toc-1024x642.jpg",
-          uploadDate: "2024-05-01",
-        },
-      ],
-    },
-    {
-      service_id: 2,
-      serviceName: "Shaving",
-      description: "Facial shave with a special razor, includes skin care.",
-      price: 100000,
-      serviceTime: 15,
-      images: [
-        {
-          id: 1,
-          src: "https://cdn.myspa.vn/file/myspa-cdn/myspa_blog/uploads/2021/08/Goi-tao-kieu-toc-1024x642.jpg",
-          uploadDate: "2024-05-01",
-        },
-        {
-          id: 2,
-          src: "https://cdn.myspa.vn/file/myspa-cdn/myspa_blog/uploads/2021/08/Goi-cat-toc-1024x642.jpg",
-          uploadDate: "2024-05-01",
-        },
-        {
-          id: 3,
-          src: "https://cdn.myspa.vn/file/myspa-cdn/myspa_blog/uploads/2021/08/Goi-duoi-toc-1024x642.jpg",
-          uploadDate: "2024-05-01",
-        },
-      ],
-    },
-    {
-      service_id: 3,
-      serviceName: "Hair Coloring",
-      description:
-        "Hair dyeing with fashionable colors, protects hair and scalp.",
-      price: 500000,
-      reducePrice: 400000,
-      serviceTime: 90,
-      images: [
-        {
-          id: 1,
-          src: "https://cdn.myspa.vn/file/myspa-cdn/myspa_blog/uploads/2021/08/Goi-tao-kieu-toc-1024x642.jpg",
-          uploadDate: "2024-05-01",
-        },
-        {
-          id: 2,
-          src: "https://cdn.myspa.vn/file/myspa-cdn/myspa_blog/uploads/2021/08/Goi-cat-toc-1024x642.jpg",
-          uploadDate: "2024-05-01",
-        },
-        {
-          id: 3,
-          src: "https://cdn.myspa.vn/file/myspa-cdn/myspa_blog/uploads/2021/08/Goi-duoi-toc-1024x642.jpg",
-          uploadDate: "2024-05-01",
-        },
-      ],
-    },
-    {
-      service_id: 4,
-      serviceName: "Hair Care",
-      description:
-        "Thorough hair care service, includes wash, rinse, and head massage.",
-      price: 200000,
-      serviceTime: 45,
-      images: [
-        {
-          id: 1,
-          src: "https://cdn.myspa.vn/file/myspa-cdn/myspa_blog/uploads/2021/08/Goi-tao-kieu-toc-1024x642.jpg",
-          uploadDate: "2024-05-01",
-        },
-        {
-          id: 2,
-          src: "https://cdn.myspa.vn/file/myspa-cdn/myspa_blog/uploads/2021/08/Goi-cat-toc-1024x642.jpg",
-          uploadDate: "2024-05-01",
-        },
-        {
-          id: 3,
-          src: "https://cdn.myspa.vn/file/myspa-cdn/myspa_blog/uploads/2021/08/Goi-duoi-toc-1024x642.jpg",
-          uploadDate: "2024-05-01",
-        },
-      ],
-    },
-    {
-      service_id: 5,
-      serviceName: "Hair Care1",
-      description:
-        "Thorough hair care service, includes wash, rinse, and head massage.",
-      price: 200000,
-      serviceTime: 45,
-      images: [
-        {
-          id: 1,
-          src: "https://cdn.myspa.vn/file/myspa-cdn/myspa_blog/uploads/2021/08/Goi-tao-kieu-toc-1024x642.jpg",
-          uploadDate: "2024-05-01",
-        },
-        {
-          id: 2,
-          src: "https://cdn.myspa.vn/file/myspa-cdn/myspa_blog/uploads/2021/08/Goi-cat-toc-1024x642.jpg",
-          uploadDate: "2024-05-01",
-        },
-        {
-          id: 3,
-          src: "https://cdn.myspa.vn/file/myspa-cdn/myspa_blog/uploads/2021/08/Goi-duoi-toc-1024x642.jpg",
-          uploadDate: "2024-05-01",
-        },
-      ],
-    },
-    {
-      service_id: 6,
-      serviceName: "Hair Care2",
-      description:
-        "Thorough hair care service, includes wash, rinse, and head massage.",
-      price: 200000,
-      serviceTime: 45,
-      images: [
-        {
-          id: 1,
-          src: "https://cdn.myspa.vn/file/myspa-cdn/myspa_blog/uploads/2021/08/Goi-tao-kieu-toc-1024x642.jpg",
-          uploadDate: "2024-05-01",
-        },
-        {
-          id: 2,
-          src: "https://cdn.myspa.vn/file/myspa-cdn/myspa_blog/uploads/2021/08/Goi-cat-toc-1024x642.jpg",
-          uploadDate: "2024-05-01",
-        },
-        {
-          id: 3,
-          src: "https://cdn.myspa.vn/file/myspa-cdn/myspa_blog/uploads/2021/08/Goi-duoi-toc-1024x642.jpg",
-          uploadDate: "2024-05-01",
-        },
-      ],
-    },
-    {
-      service_id: 7,
-      serviceName: "Hair Care3",
-      description:
-        "Thorough hair care service, includes wash, rinse, and head massage.",
-      price: 200000,
-      reducePrice: 100000,
-      serviceTime: 45,
-      images: [
-        {
-          id: 1,
-          src: "https://cdn.myspa.vn/file/myspa-cdn/myspa_blog/uploads/2021/08/Goi-tao-kieu-toc-1024x642.jpg",
-          uploadDate: "2024-05-01",
-        },
-        {
-          id: 2,
-          src: "https://cdn.myspa.vn/file/myspa-cdn/myspa_blog/uploads/2021/08/Goi-cat-toc-1024x642.jpg",
-          uploadDate: "2024-05-01",
-        },
-        {
-          id: 3,
-          src: "https://cdn.myspa.vn/file/myspa-cdn/myspa_blog/uploads/2021/08/Goi-duoi-toc-1024x642.jpg",
-          uploadDate: "2024-05-01",
-        },
-      ],
-    },
-    {
-      service_id: 8,
-      serviceName: "Hair Care4",
-      description:
-        "Thorough hair care service, includes wash, rinse, and head massage.",
-      price: 200000,
-      serviceTime: 45,
-    },
-  ];
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedService, setSelectedService] = useState(null);
   const [searchKey, setSearchKey] = useState("");
@@ -312,6 +126,9 @@ const Service = (storeId) => {
               // Handle navigation or other actions
             }}
           >
+            <View style={styles.imgService}>
+              <Image source={{ uri: item?.img }} style={styles.image} />
+            </View>
             <TouchableOpacity
               style={styles.serviceInfo}
               // onPress={() => openModal(item)}
@@ -352,7 +169,7 @@ const Service = (storeId) => {
               style={styles.bookButton}
               onPress={() => handleBook(storeId, item)}
             >
-              <Text style={styles.button}>Book</Text>
+              <Text style={styles.button}>Đặt </Text>
             </TouchableOpacity>
           </View>
         ))}
@@ -429,7 +246,7 @@ const styles = StyleSheet.create({
     // marginHorizontal: SIZES.xSmall,
   },
   serviceInfo: {
-    flex: 6, // 7 parts
+    flex: 4, // 7 parts
     flexDirection: "column",
   },
   pricingInfo: {
@@ -439,6 +256,11 @@ const styles = StyleSheet.create({
   },
   bookButton: {
     flex: 2, // 1 part
+  },
+  imgService: {
+    flex: 2, // 1 part
+    height: "100%",
+    marginRight: 5,
   },
   button: {
     backgroundColor: COLORS.secondary,
@@ -536,5 +358,10 @@ const styles = StyleSheet.create({
     borderRadius: SIZES.medium,
     justifyContent: "center",
     alignItems: "center",
+  },
+  image: {
+    aspectRatio: 1,
+    resizeMode: "cover",
+    borderRadius: SIZES.small,
   },
 });

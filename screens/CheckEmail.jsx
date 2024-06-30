@@ -37,6 +37,7 @@ const CheckEmail = () => {
   const [countdown, setCountdown] = useState(null);
   const [otp, setOtp] = useState(null);
   const [emailError, setEmailError] = useState("");
+  const [resetButton, setResetButton] = useState(false);
   const dispatch = useDispatch();
   const { loading, error, emailExists, CheckOtp } = useSelector(
     (state) => state.OTP
@@ -48,10 +49,10 @@ const CheckEmail = () => {
       timer = setInterval(() => {
         setCountdown((prevCountdown) => {
           if (prevCountdown <= 1) {
-            // If countdown reaches 0
             clearInterval(timer);
-            setModalOtp(false); // Close the modal
-            return null; // Reset the countdown
+            setModalOtp(false);
+            setResetButton(true);
+            return null;
           } else {
             return prevCountdown - 1; // Otherwise, decrease the countdown
           }
@@ -80,6 +81,7 @@ const CheckEmail = () => {
   useEffect(() => {
     if (CheckOtp === true) {
       setModalOtp(false);
+      setResetButton(false);
       setOtp(null);
       setEmail(null);
       navigation.navigate("Signup", { email: email });
@@ -92,6 +94,8 @@ const CheckEmail = () => {
   };
 
   const handleContinuePress = async () => {
+    // await dispatch(resetCheckOtp());
+    await handleModalClose();
     if (!email) {
       setEmailError("Email không được để trống");
       return;
@@ -141,6 +145,7 @@ const CheckEmail = () => {
   };
   const handleModalClose = () => {
     // Reset all OTP-related states and dispatch Redux action
+    console.log("handleModalClose");
     setModalOtp(false);
     dispatch(resetCheckOtp());
   };
@@ -201,15 +206,21 @@ const CheckEmail = () => {
             {emailError}
           </Text>
         ) : null}
-        <TouchableOpacity onPress={handleContinuePress}>
-          <Text style={styles.button}>Tiếp tục</Text>
-        </TouchableOpacity>
+        {resetButton ? (
+          <TouchableOpacity onPress={handleContinuePress}>
+            <Text style={styles.button}>Thử lại</Text>
+          </TouchableOpacity>
+        ) : (
+          <TouchableOpacity onPress={handleContinuePress}>
+            <Text style={styles.button}>Tiếp tục</Text>
+          </TouchableOpacity>
+        )}
       </View>
       <Modal
         animationType="slide"
         transparent={true}
         visible={modalOtp}
-        onRequestClose={handleModalClose}
+        // onRequestClose={handleModalClose}
       >
         <View style={styles.fullScreenModal}>
           <View style={styles.modalContainer}>

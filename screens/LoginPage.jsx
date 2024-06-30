@@ -23,6 +23,7 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import { Ionicons, Feather } from "@expo/vector-icons";
 import * as SecureStore from "expo-secure-store";
 import Loader from "../components/auth/Loader";
+import { resetCheckOtp } from "../store/otp/action";
 const LoginPage = () => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
@@ -49,6 +50,14 @@ const LoginPage = () => {
   const validate = () => {
     Keyboard.dismiss();
     let valid = true;
+    console.log("login", inputs);
+    // if (!inputs.username) {
+    //   handleError("Phone is required", "username");
+    //   valid = false;
+    // } else if (!inputs.username.match(/^[0-9]{10,12}$/)) {
+    //   handleError("Provide a valid phone number", "username");
+    //   valid = false;
+    // }
     // if (!inputs.username) {
     //   handleError("Username is required", "username");
     //   valid = false;
@@ -56,12 +65,11 @@ const LoginPage = () => {
     //   handleError("At least 3 characters are required", "username");
     //   valid = false;
     // }
-    console.log("login", inputs);
     if (!inputs.username) {
-      handleError("Phone is required", "username");
+      handleError("Email is required", "username");
       valid = false;
-    } else if (!inputs.username.match(/^[0-9]{10,12}$/)) {
-      handleError("Provide a valid phone number", "username");
+    } else if (!/\S+@\S+\.\S+/.test(inputs.username)) {
+      handleError("Provide a valid email", "username");
       valid = false;
     }
     if (!inputs.password) {
@@ -99,6 +107,11 @@ const LoginPage = () => {
     }
   };
 
+  const handleRegister = () => {
+    dispatch(resetCheckOtp());
+    navigation.navigate("CheckEmail");
+  };
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <Loader visible={loader} />
@@ -126,15 +139,15 @@ const LoginPage = () => {
             Điền thông tin để đăng nhập vào HairHub
           </Text>
           <Input
-            placeholder="Enter your phone"
-            icon="cellphone"
-            label={"Số điện thoại"}
+            placeholder="Enter your email"
+            icon="email"
+            label={"Email"}
             error={errors.username}
             onFocus={() => {
               handleError(null, "username");
             }}
             onChangeText={(text) => handleChanges(text, "username")}
-            keyboardType="numeric"
+            // keyboardType="numeric"
           />
 
           <Input
@@ -153,8 +166,8 @@ const LoginPage = () => {
           <Button title={"LOGIN"} onPress={validate} />
           <Text
             style={styles.registered}
-            onPress={() => navigation.navigate("Signup")}
-            // onPress={() => navigation.navigate("CheckEmail")}
+            // onPress={() => navigation.navigate("Signup")}
+            onPress={handleRegister}
           >
             Don't have an account? Register
           </Text>

@@ -166,12 +166,12 @@ const Details = ({ navigation }) => {
             <Text style={styles.averageRatingText}>
               {salonDetail?.averageRating > 0
                 ? (salonDetail?.rate).toFixed(1) + "/5.0"
-                : "No ratings"}
+                : "Không có đánh giá"}
             </Text>
             <Text style={styles.averageRatingText}>
               {salonDetail?.totalReviewer
-                ? salonDetail?.totalReviewer + " reviews"
-                : "(0 review)"}
+                ? salonDetail?.totalReviewer + " đánh giá"
+                : "(0 đánh giá)"}
             </Text>
           </View>
         </View>

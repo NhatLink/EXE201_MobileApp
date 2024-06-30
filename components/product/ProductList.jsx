@@ -5,6 +5,7 @@ import {
   StyleSheet,
   ActivityIndicator,
   Text,
+  RefreshControl,
 } from "react-native";
 import ProductCardView from "../ProductViewCard";
 import useFetch from "../../hook/useFetch";
@@ -13,18 +14,25 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchSalonInformation } from "../../store/salon/action";
 
 const ProductList = () => {
-  // const [currentPage, setCurrentPage] = useState(1);
-  // const [itemsPerPage, setItemsPerPage] = useState(4);
-  // const dispatch = useDispatch();
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(4);
+  const [refreshing, setRefreshing] = useState(false);
+  const dispatch = useDispatch();
   const salonInformation = useSelector((state) => state.SALON.allSalon);
 
-  // if (isLoading) {
-  //   return (
-  //     <View style={styles.loadingContainer}>
-  //       <ActivityIndicator size="large" color={COLORS.primary} />
-  //     </View>
-  //   );
-  // }
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await dispatch(fetchSalonInformation(currentPage, itemsPerPage));
+    setRefreshing(false);
+  };
+
+  if (refreshing) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color={COLORS.primary} />
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
@@ -34,6 +42,9 @@ const ProductList = () => {
         numColumns={2}
         contentContainerStyle={styles.container}
         ItemSeparatorComponent={() => <View style={styles.separator} />}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
       />
       {/* <View style={styles.paging}>
         {currentPage > 1 && (

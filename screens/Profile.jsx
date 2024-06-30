@@ -228,14 +228,14 @@ const Profile = ({ navigation }) => {
               >
                 <Image
                   source={{
-                    uri: userInfo?.img,
+                    uri: user?.img,
                   }}
                   resizeMode="cover"
                   style={styles.avatar}
                 />
                 <View>
-                  <Text style={styles.title}>{userInfo?.fullName}</Text>
-                  <Text style={styles.subtitle}>{userInfo?.phone}</Text>
+                  <Text style={styles.title}>{user?.fullName}</Text>
+                  <Text style={styles.subtitle}>{user?.phone}</Text>
                 </View>
               </TouchableOpacity>
             </View>
@@ -248,27 +248,29 @@ const Profile = ({ navigation }) => {
                   color={COLORS.primary}
                   size={25}
                 />
-                <Text style={styles.menuItemText}>Favorites</Text>
+                <Text style={styles.menuItemText}>Salon/Barber yêu thích</Text>
               </View>
             </TouchableOpacity>
-            {/* <TouchableOpacity onPress={() => navigation.navigate("History")}>
+            <TouchableOpacity
+              onPress={() => navigation.navigate("Appointment schedule")}
+            >
               <View style={styles.menuItem}>
                 <MaterialCommunityIcons
-                  name="history"
+                  name="calendar-multiple"
                   color={COLORS.primary}
                   size={25}
                 />
-                <Text style={styles.menuItemText}>History</Text>
+                <Text style={styles.menuItemText}>Lịch hẹn</Text>
               </View>
-            </TouchableOpacity> */}
+            </TouchableOpacity>
             <TouchableOpacity onPress={() => navigation.navigate("Orders")}>
               <View style={styles.menuItem}>
                 <MaterialCommunityIcons
-                  name="history"
+                  name="calendar-refresh"
                   size={24}
                   color={COLORS.primary}
                 />
-                <Text style={styles.menuItemText}>History</Text>
+                <Text style={styles.menuItemText}>Lịch sử lịch hẹn</Text>
               </View>
             </TouchableOpacity>
 
@@ -286,7 +288,7 @@ const Profile = ({ navigation }) => {
             <TouchableOpacity onPress={logout}>
               <View style={styles.menuItem}>
                 <AntDesign name="logout" size={24} color={COLORS.primary} />
-                <Text style={styles.menuItemText}>Logout</Text>
+                <Text style={styles.menuItemText}>Đăng xuất</Text>
               </View>
             </TouchableOpacity>
 

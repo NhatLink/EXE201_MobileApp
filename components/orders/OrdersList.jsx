@@ -171,7 +171,7 @@ const OrdersList = () => {
         </ScrollView>
       </View>
 
-      {filteredData.length === 0 ? (
+      {filteredData && filteredData?.length === 0 ? (
         <View
           style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
         >

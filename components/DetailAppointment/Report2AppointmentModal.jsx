@@ -20,7 +20,6 @@ import * as ImagePicker from "expo-image-picker";
 import { CreateReport } from "../../store/report/action";
 import { useDispatch } from "react-redux";
 import Loader from "../auth/Loader";
-import ReportAppointmentModal from "./ReportAppointmentModal";
 
 const Report2AppointmentModal = ({
   isVisible,

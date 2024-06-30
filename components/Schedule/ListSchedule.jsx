@@ -11,7 +11,7 @@ import {
   TextInput,
   Keyboard,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useState, memo } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { COLORS, SHADOWS, SIZES, images } from "../../constants";
 import { useNavigation } from "@react-navigation/native";
@@ -22,45 +22,45 @@ import { Ionicons, Feather } from "@expo/vector-icons";
 import { useDispatch } from "react-redux";
 import * as SecureStore from "expo-secure-store";
 import { CancelAppointmentByCustomer } from "../../store/appointment/action";
-const ListSchedule = ({ item }) => {
-  const dispatch = useDispatch();
+const ListSchedule = React.memo(({ item }) => {
+  // const dispatch = useDispatch();
   const navigation = useNavigation();
-  const [modalVisible, setModalVisible] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(10);
+  // const [modalVisible, setModalVisible] = useState(false);
+  // const [currentPage, setCurrentPage] = useState(1);
+  // const [itemsPerPage, setItemsPerPage] = useState(10);
 
-  const OnCancel = async (item) => {
-    async function fetchData() {
-      const accountId = await SecureStore.getItemAsync("accountId");
-      const userInfoJson = await SecureStore.getItemAsync("userInfo");
-      console.log("salon item", item.id);
-      let userInfo = null;
-      if (userInfoJson) {
-        try {
-          userInfo = JSON.parse(userInfoJson);
-        } catch (error) {
-          console.error("Error parsing userInfo", error);
-        }
-      }
-      const data = {
-        customerId: userInfo?.id,
-        status: "CANCEL_BY_CUSTOMER",
-      };
-      if (item?.id && accountId && userInfo && userInfo?.id) {
-        dispatch(
-          CancelAppointmentByCustomer(
-            item?.id,
-            data,
-            currentPage,
-            itemsPerPage,
-            accountId
-          )
-        );
-      }
-    }
-    fetchData();
-    setModalVisible(false); // Close modal after action
-  };
+  // const OnCancel = async (item) => {
+  //   async function fetchData() {
+  //     const accountId = await SecureStore.getItemAsync("accountId");
+  //     const userInfoJson = await SecureStore.getItemAsync("userInfo");
+  //     console.log("salon item", item.id);
+  //     let userInfo = null;
+  //     if (userInfoJson) {
+  //       try {
+  //         userInfo = JSON.parse(userInfoJson);
+  //       } catch (error) {
+  //         console.error("Error parsing userInfo", error);
+  //       }
+  //     }
+  //     const data = {
+  //       customerId: userInfo?.id,
+  //       status: "CANCEL_BY_CUSTOMER",
+  //     };
+  //     if (item?.id && accountId && userInfo && userInfo?.id) {
+  //       dispatch(
+  //         CancelAppointmentByCustomer(
+  //           item?.id,
+  //           data,
+  //           currentPage,
+  //           itemsPerPage,
+  //           accountId
+  //         )
+  //       );
+  //     }
+  //   }
+  //   fetchData();
+  //   setModalVisible(false); // Close modal after action
+  // };
 
   return (
     <>
@@ -117,8 +117,8 @@ const ListSchedule = ({ item }) => {
             <View key={itemDetail?.id} style={styles.serviceItem}>
               <View style={styles.serviceInfo}>
                 <Text style={styles.serviceName} numberOfLines={1}>
-                  {itemDetail?.serviceHair?.serviceName}{" "}
-                  {`(${itemDetail?.serviceHair?.time * 60} Phút)`}
+                  {itemDetail?.serviceName}{" "}
+                  {`(${itemDetail?.timeServiceHair * 60} Phút)`}
                 </Text>
                 <Text style={styles.serviceDescription} numberOfLines={1}>{`${
                   itemDetail?.startTime?.split("T")[1]
@@ -128,7 +128,7 @@ const ListSchedule = ({ item }) => {
                 <Text
                   style={styles.servicePrice}
                   numberOfLines={1}
-                >{`${itemDetail?.serviceHair?.price?.toLocaleString()} VND`}</Text>
+                >{`${itemDetail?.priceServiceHair?.toLocaleString()} VND`}</Text>
                 <View style={styles.containerInfo}>
                   <View>
                     <Text style={styles.title}>
@@ -171,7 +171,7 @@ const ListSchedule = ({ item }) => {
         </View>
       </View>
 
-      <Modal
+      {/* <Modal
         animationType="slide"
         transparent={true}
         visible={modalVisible}
@@ -186,8 +186,6 @@ const ListSchedule = ({ item }) => {
               {item?.appointmentDetails[0]?.startTime?.split("T")[1]}
             </Text>
             <View style={styles.containerInfo}>
-              {/* <Button title="Hủy" onPress={() => setModalVisible(false)} />
-              <Button title="Tiếp tục" onPress={() => OnCancel(item)} /> */}
               <TouchableOpacity onPress={() => setModalVisible(false)}>
                 <Text style={styles.button1}>Hủy</Text>
               </TouchableOpacity>
@@ -197,12 +195,12 @@ const ListSchedule = ({ item }) => {
             </View>
           </View>
         </View>
-      </Modal>
+      </Modal> */}
     </>
   );
-};
+});
 
-export default ListSchedule;
+export default memo(ListSchedule);
 
 const styles = StyleSheet.create({
   container: {

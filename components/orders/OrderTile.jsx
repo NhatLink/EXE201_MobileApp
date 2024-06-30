@@ -193,8 +193,8 @@ const OrderTile = ({ item }) => {
             <View key={itemDetail?.id} style={styles.serviceItem}>
               <View style={styles.serviceInfo}>
                 <Text style={styles.serviceName} numberOfLines={1}>
-                  {itemDetail?.serviceHair?.serviceName}{" "}
-                  {`(${itemDetail?.serviceHair?.time * 60} Phút)`}
+                  {itemDetail?.serviceName}{" "}
+                  {`(${itemDetail?.timeServiceHair * 60} Phút)`}
                 </Text>
                 <Text style={styles.serviceDescription} numberOfLines={1}>{`${
                   itemDetail?.startTime?.split("T")[1]
@@ -204,7 +204,7 @@ const OrderTile = ({ item }) => {
                 <Text
                   style={styles.servicePrice}
                   numberOfLines={1}
-                >{`${itemDetail?.serviceHair?.price?.toLocaleString()} VND`}</Text>
+                >{`${itemDetail?.priceServiceHair?.toLocaleString()} VND`}</Text>
                 <View style={styles.containerInfo}>
                   <View>
                     <Text style={styles.title}>

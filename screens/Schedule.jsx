@@ -35,17 +35,18 @@ const Schedule = () => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(100);
+  const [itemsPerPage, setItemsPerPage] = useState(20);
   const { appointment, loading } = useSelector((state) => state.APPOINTMENT);
   const { user, accessToken, refreshToken, isAuthenticated } = useSelector(
     (state) => state.USER
   );
-
+  // console.log(appointment);
+  // console.log(isAuthenticated);
   const [refreshing, setRefreshing] = useState(false);
 
   const fetchData = async () => {
     const accountId = await SecureStore.getItemAsync("accountId");
-    console.log(accountId);
+    // console.log(accountId);
     if (accountId) {
       dispatch(GetAppointmentByAccountId(currentPage, itemsPerPage, accountId));
     }
@@ -62,23 +63,25 @@ const Schedule = () => {
 
   const [items, setItems] = useState({});
   // const [selectedDate, setSelectedDate] = useState(null);
-
+  console.log("items", items);
   useEffect(() => {
     const newItems = {};
-    appointment.forEach((appointment) => {
-      const dateSchedule = appointment.startDate.split("T")[0];
-      if (!newItems[dateSchedule]) {
-        newItems[dateSchedule] = [];
-      }
-      newItems[dateSchedule].push(appointment);
-    });
-    setItems(newItems);
+    if (appointment && appointment.length > 0) {
+      appointment?.forEach((appointment) => {
+        const dateSchedule = appointment.startDate.split("T")[0];
+        if (!newItems[dateSchedule]) {
+          newItems[dateSchedule] = [];
+        }
+        newItems[dateSchedule].push(appointment);
+      });
+      setItems(newItems);
+    }
   }, [appointment]);
 
   const renderItem = (item) => {
     return <ListSchedule item={item} />;
   };
-
+  // const renderItem = ({ item }) => <ListSchedule item={item} />;
   // const handleDayPress = (day) => {
   //   setSelectedDate(day.dateString);
   //   console.log('Selected date:', day.dateString);
@@ -127,7 +130,7 @@ const Schedule = () => {
       >
         <Loader visible={loading} />
         <Text style={styles.title}>Lịch hẹn của bạn</Text>
-        {/* {appointment && appointment?.length === 0 ? (
+        {appointment && appointment?.length === 0 ? (
           <View
             style={{
               flex: 1,
@@ -162,23 +165,23 @@ const Schedule = () => {
               )}
             </View>
           </View>
-        ) : ( */}
-        <Agenda
-          items={items}
-          renderItem={renderItem}
-          renderEmptyData={renderEmptyDate}
-          // onRefresh={() => onRefresh}
-          // refreshing={loading}
-          refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-          }
-          // onDayPress={handleDayPress}
+        ) : (
+          <Agenda
+            items={items}
+            renderItem={renderItem}
+            renderEmptyData={renderEmptyDate}
+            // onRefresh={() => onRefresh}
+            // refreshing={loading}
+            refreshControl={
+              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+            }
+            // onDayPress={handleDayPress}
 
-          theme={{
-            agendaTodayColor: COLORS.red,
-          }}
-        />
-        {/* )} */}
+            theme={{
+              agendaTodayColor: COLORS.red,
+            }}
+          />
+        )}
       </SafeAreaView>
     </GestureHandlerRootView>
   );

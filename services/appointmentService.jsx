@@ -27,6 +27,6 @@ export const AppointmentService = {
     );
   },
   CancelAppointmentByCustomer(id, data) {
-    return API.put(`/api/v1/appointments/UpdateAppointment/${id}`, data);
+    return API.put(`/api/v1/appointments/CancelAppointByCustomer/${id}`, data);
   },
 };

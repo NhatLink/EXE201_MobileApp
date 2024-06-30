@@ -53,10 +53,11 @@ const DetailProfile = ({ navigation }) => {
   const [modalPhone, setModalPhone] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [fullname, setFullname] = useState(user?.fullName);
-  const [phone, setPhone] = useState(user?.email);
+  const [phone, setPhone] = useState(user?.phone);
   const [errors, setErrors] = useState({});
   const [loader, setLoader] = useState(false);
   const dispatch = useDispatch();
+  console.log(userData);
   useEffect(() => {
     async function fetchData() {
       setLoader(true);
@@ -146,18 +147,18 @@ const DetailProfile = ({ navigation }) => {
     if (!phone) {
       // handleError("Phone is required", "phone");
       handleError("Email is required", "phone");
+    } else if (!phone.match(/^[0-9]{10}$/)) {
+      handleError(
+        "Provide a valid phone number with exactly 10 digits",
+        "phone"
+      );
     }
-    // else if (!phone.match(/^[0-9]{10}$/)) {
-    //   handleError(
-    //     "Provide a valid phone number with exactly 10 digits",
-    //     "phone"
-    //   );
+    // else if (!phone.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
+    //   handleError("Provide a valid email address", "phone");
     // }
-    else if (!phone.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
-      handleError("Provide a valid email address", "phone");
-    } else {
+    else {
       setModalPhone(false);
-      handleChanges(phone, "email");
+      handleChanges(phone, "phone");
       handleError(null, "phone");
     }
   };
@@ -337,7 +338,7 @@ const DetailProfile = ({ navigation }) => {
           </View>
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={() => {}}>
+        <TouchableOpacity onPress={() => setModalPhone(true)}>
           <View style={styles.menuItem}>
             <View style={styles.menuItem2}>
               <MaterialCommunityIcons
@@ -353,7 +354,7 @@ const DetailProfile = ({ navigation }) => {
           </View>
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={() => setModalPhone(true)}>
+        <View>
           <View style={styles.menuItem}>
             <View style={styles.menuItem2}>
               <MaterialCommunityIcons
@@ -367,7 +368,7 @@ const DetailProfile = ({ navigation }) => {
               {userData?.email ?? "trống"}
             </Text>
           </View>
-        </TouchableOpacity>
+        </View>
         <Modal
           animationType="slide"
           transparent={true}
@@ -511,7 +512,7 @@ const DetailProfile = ({ navigation }) => {
                   value={phone}
                   // keyboardType="number-pad"
                   onChangeText={(text) => setPhone(text)}
-                  placeholder="Email"
+                  placeholder="Phone"
                   onFocus={() => {
                     handleError(null, "phone");
                   }}

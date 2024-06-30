@@ -33,7 +33,7 @@ const Signup = () => {
   const [loader, setLoader] = useState(false);
   const [responseData, setResponseData] = useState(null);
   const [inputs, setInputs] = useState({
-    // username: "",
+    userName: "",
     // email: "",
     password: "",
     // confirmPassword: "",
@@ -48,13 +48,13 @@ const Signup = () => {
   const [confirmPassword, setConfirmpassword] = useState(null);
   const navigation = useNavigation();
   const route = useRoute();
-  // const { email } = route.params;
+  const { email } = route.params;
 
-  // useEffect(() => {
-  //   if (email) {
-  //     setInputs((prevState) => ({ ...prevState, email }));
-  //   }
-  // }, [email]);
+  useEffect(() => {
+    if (email) {
+      setInputs((prevState) => ({ ...prevState, userName: email }));
+    }
+  }, [email]);
 
   const handleError = (errorMessage, input) => {
     setErrors((prevState) => ({ ...prevState, [input]: errorMessage }));
@@ -66,7 +66,7 @@ const Signup = () => {
       // email,
       password,
       // confirmPassword,
-      // username,
+      userName,
       // address,
       fullName,
       phone,
@@ -75,13 +75,13 @@ const Signup = () => {
       // avatar,
     } = inputs;
 
-    // if (!email) {
-    //   handleError("Email is required", "email");
-    //   valid = false;
-    // } else if (!/\S+@\S+\.\S+/.test(email)) {
-    //   handleError("Provide a valid email", "email");
-    //   valid = false;
-    // }
+    if (!userName) {
+      handleError("Email is required", "userName");
+      valid = false;
+    } else if (!/\S+@\S+\.\S+/.test(userName)) {
+      handleError("Provide a valid email", "userName");
+      valid = false;
+    }
 
     if (!password) {
       handleError("Password is required", "password");
@@ -115,6 +115,9 @@ const Signup = () => {
     } else if (fullName.length < 3) {
       handleError("At least 3 characters are required", "fullName");
       valid = false;
+    } else if (fullName.length > 30) {
+      handleError("No more 30 characters", "fullName");
+      valid = false;
     }
 
     // if (!address) {
@@ -125,7 +128,7 @@ const Signup = () => {
     if (!phone) {
       handleError("Phone is required", "phone");
       valid = false;
-    } else if (!phone.match(/^[0-9]{10,12}$/)) {
+    } else if (!phone.match(/^[0-9]{10}$/)) {
       handleError("Provide a valid phone number", "phone");
       valid = false;
     }
@@ -155,8 +158,11 @@ const Signup = () => {
     try {
       await dispatch(registerUser(inputs));
       navigation.navigate("Profile");
+      console.log("inputs regist", inputs);
     } catch (error) {
       console.log(error);
+    } finally {
+      setLoader(false);
     }
   };
 
@@ -207,12 +213,12 @@ const Signup = () => {
   //   }
   // };
 
-  const onChangeDate = (event, selectedDate) => {
-    const currentDate = selectedDate || inputs.dayOfBirth;
-    // setShowDatePicker(Platform.OS === "ios");
-    setShowDatePicker(false);
-    setInputs((prevState) => ({ ...prevState, dayOfBirth: currentDate }));
-  };
+  // const onChangeDate = (event, selectedDate) => {
+  //   const currentDate = selectedDate || inputs.dayOfBirth;
+  //   // setShowDatePicker(Platform.OS === "ios");
+  //   setShowDatePicker(false);
+  //   setInputs((prevState) => ({ ...prevState, dayOfBirth: currentDate }));
+  // };
 
   return (
     <ScrollView>
@@ -232,19 +238,19 @@ const Signup = () => {
               />
             </TouchableOpacity>
             <Text style={styles.motto}>Tạo mới một tài khoản </Text>
-            {/* <Text style={styles.submotto}>
-                {`Điền thông tin đầy đủ để tham gia vào HairHub với tư cách là ${email}`}
-              </Text> */}
-            {/* <Input
+            <Text style={styles.submotto}>
+              {`Điền thông tin đầy đủ để tham gia vào HairHub với tư cách là ${email}`}
+            </Text>
+            <Input
               placeholder="Enter email"
               icon="email-outline"
               label="Email"
-              value={inputs.email}
-              error={errors.email}
-              onFocus={() => handleError(null, "email")}
-              onChangeText={(text) => handleChanges(text, "email")}
+              value={inputs.userName}
+              error={errors.userName}
+              onFocus={() => handleError(null, "userName")}
+              onChangeText={(text) => handleChanges(text, "userName")}
               editable={false}
-            /> */}
+            />
             {/* <Input
               placeholder="Username"
               label="Username"

@@ -37,6 +37,21 @@ const appointmentReducer = (state = initialState, action) => {
         loading: false,
         appointment: action.payload.items,
       };
+    // const newItems = {};
+    // if (action.payload.items && action.payload.items.length > 0) {
+    //   action.payload.items.forEach((appointment) => {
+    //     const dateSchedule = appointment.startDate.split("T")[0];
+    //     if (!newItems[dateSchedule]) {
+    //       newItems[dateSchedule] = [];
+    //     }
+    //     newItems[dateSchedule].push(appointment);
+    //   });
+    // }
+    // return {
+    //   ...state,
+    //   appointment: newItems,
+    //   loading: false,
+    // };
     case APPOINTMENT_FAILURE:
       return {
         ...state,

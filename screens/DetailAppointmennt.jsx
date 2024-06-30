@@ -38,6 +38,7 @@ import MapView, { Marker, Polyline } from "react-native-maps";
 import * as Location from "expo-location";
 import CustomMarker from "../components/CustomMarker";
 import { ReportAppointmentModal } from "../components";
+import CancelAppointmentModal from "../components/DetailAppointment/CancelAppointmentModal";
 
 const GOOGLE_API_KEY = "AIzaSyCmAt2KHp7yJVDWMWlrd_uUMtvzhSExNaQ";
 const DetailAppointmennt = ({ navigation }) => {
@@ -72,7 +73,7 @@ const DetailAppointmennt = ({ navigation }) => {
     fetchData();
   }, [appointmentId]);
 
-  const OnCancel = async () => {
+  const OnCancel = async (reason) => {
     async function fetchData() {
       setLoad(true);
       const accountId = await SecureStore.getItemAsync("accountId");
@@ -87,8 +88,10 @@ const DetailAppointmennt = ({ navigation }) => {
       }
       const data = {
         customerId: userInfo?.id,
-        status: "CANCEL_BY_CUSTOMER",
+        reasonCancel: reason,
       };
+
+      console.log(data);
       if (appointmentDetail?.id && accountId && userInfo && userInfo?.id) {
         await dispatch(
           CancelAppointmentByCustomer(
@@ -282,6 +285,18 @@ const DetailAppointmennt = ({ navigation }) => {
   const toggleModal3 = () => {
     setModalVisible3(!modalVisible3);
   };
+  const getStatusText = (status) => {
+    switch (status) {
+      case "SUCCESSED":
+        return "Thành công";
+      case "FAILED":
+        return "Thất bại";
+      case "CANCEL_BY_CUSTOMER":
+        return "Hủy bởi khách hàng";
+      default:
+        return "Trạng thái không xác định"; // Optional, for handling any unexpected statuses
+    }
+  };
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.upperRow}>
@@ -323,7 +338,14 @@ const DetailAppointmennt = ({ navigation }) => {
           <View style={styles.line} />
           {appointmentDetail && appointmentDetail?.status && (
             <View>
-              <Text style={styles.content}>{appointmentDetail?.status}</Text>
+              <Text style={styles.contentHeader}>
+                {getStatusText(appointmentDetail?.status)}
+              </Text>
+              {appointmentDetail && appointmentDetail?.reasonCancel && (
+                <Text
+                  style={styles.content}
+                >{`Lý do hủy lịch: ${appointmentDetail?.reasonCancel}`}</Text>
+              )}
               <Text style={styles.content}>Thời gian bắt đầu dịch vụ:</Text>
               <Text style={styles.content}>
                 {appointmentDetail?.startDate?.split("T")[0]} /{" "}
@@ -344,7 +366,7 @@ const DetailAppointmennt = ({ navigation }) => {
               <TouchableOpacity
                 onPress={() =>
                   navigation.navigate("Details", {
-                    product: data?.order?.product_id?._id,
+                    product: appointmentDetail?.salonInformation?.id,
                   })
                 }
                 // style={styles.checkoutBtn}
@@ -393,13 +415,13 @@ const DetailAppointmennt = ({ navigation }) => {
           {appointmentDetail?.appointmentDetails?.map((itemDetail) => (
             <View key={itemDetail?.id} style={styles.serviceItem}>
               <Image
-                source={{ uri: itemDetail?.serviceHair?.img }}
+                source={{ uri: itemDetail?.imgServiceHair }}
                 style={styles.productImage}
               />
               <View style={styles.serviceInfo}>
                 <Text style={styles.serviceName} numberOfLines={1}>
-                  {itemDetail?.serviceHair?.serviceName}{" "}
-                  {`(${itemDetail?.serviceHair?.time * 60} Phút)`}
+                  {itemDetail?.serviceName}{" "}
+                  {`(${itemDetail?.timeServiceHair * 60} Phút)`}
                 </Text>
                 <Text style={styles.serviceDescription} numberOfLines={1}>{`${
                   itemDetail?.startTime?.split("T")[1]
@@ -409,7 +431,7 @@ const DetailAppointmennt = ({ navigation }) => {
                 <Text
                   style={styles.servicePrice}
                   numberOfLines={1}
-                >{`${itemDetail?.serviceHair?.price?.toLocaleString()} VND`}</Text>
+                >{`${itemDetail?.priceServiceHair?.toLocaleString()} VND`}</Text>
                 <View style={styles.containerInfo}>
                   <View>
                     <Text style={styles.titleService}>
@@ -497,7 +519,7 @@ const DetailAppointmennt = ({ navigation }) => {
           </View>
         </View>
       </Modal>
-      <Modal
+      {/* <Modal
         animationType="slide"
         transparent={true}
         visible={modalVisible1}
@@ -517,8 +539,6 @@ const DetailAppointmennt = ({ navigation }) => {
               }
             </Text>
             <View style={styles.containerInfo}>
-              {/* <Button title="Hủy" onPress={() => setModalVisible(false)} />
-              <Button title="Tiếp tục" onPress={() => OnCancel(item)} /> */}
               <TouchableOpacity onPress={() => setModalVisible1(false)}>
                 <Text style={styles.button1}>Đóng</Text>
               </TouchableOpacity>
@@ -528,7 +548,7 @@ const DetailAppointmennt = ({ navigation }) => {
             </View>
           </View>
         </View>
-      </Modal>
+      </Modal> */}
       <Modal
         animationType="fade"
         transparent={true}
@@ -610,6 +630,13 @@ const DetailAppointmennt = ({ navigation }) => {
           Appointmentid: appointmentDetail?.id,
           RoleNameReport: "Customer",
         }}
+      />
+      <CancelAppointmentModal
+        isVisible={modalVisible1}
+        onClose={() => {
+          setModalVisible1(!modalVisible1);
+        }}
+        OnCancel={OnCancel}
       />
     </SafeAreaView>
   );
