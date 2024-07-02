@@ -8,15 +8,42 @@ import {
   setStoreId,
   resetBooking,
 } from "../../store/bookingStore/action";
+import * as SecureStore from "expo-secure-store";
+import { ToastAndroid } from "react-native";
+import { resetAvailable } from "../../store/booking/action";
+import { fetchServiceHairBySalonInformationId } from "../../store/salon/action";
 const SearchTile = ({ item }) => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
-  const handleBook = (storeId, item) => {
-    dispatch(resetBooking());
-    dispatch(setStoreId(storeId?.storeId));
-    dispatch(addService(item));
-    // Navigation or additional logic
-    navigation.navigate("Booking");
+  const handleBook = async (storeId, item) => {
+    try {
+      const accessToken = await SecureStore.getItemAsync("accessToken");
+      if (accessToken) {
+        dispatch(resetBooking());
+        dispatch(resetAvailable());
+        dispatch(setStoreId(storeId));
+        dispatch(addService(item));
+        dispatch(fetchServiceHairBySalonInformationId(storeId));
+        // Điều hướng hoặc logic bổ sung
+        navigation.navigate("Booking");
+      } else {
+        throw new Error("Access token không tồn tại");
+      }
+    } catch (error) {
+      console.log("Lỗi trong handleBook:", error);
+      ToastAndroid.show(
+        "Vui lòng đăng nhập để sử dụng tính năng trên",
+        ToastAndroid.SHORT
+      );
+    }
+    // dispatch(resetBooking());
+    // dispatch(resetAvailable());
+    // dispatch(setStoreId(storeId?.storeId));
+    // dispatch(addService(item));
+    // console.log("store", storeId);
+    // console.log("item", item);
+    // // Navigation or additional logic
+    // navigation.navigate("Booking");
   };
   return (
     // <View>

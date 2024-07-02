@@ -97,7 +97,7 @@ const Schedule = () => {
         />
         {!isAuthenticated && <Text>Không có lịch hẹn nào vào ngày này</Text>}
         {appointment && appointment?.length === 0 && (
-          <View>
+          <View style={{ marginTop: 10 }}>
             <TouchableOpacity onPress={() => navigation.navigate("Search")}>
               <Text style={styles.button}>Tìm kiếm dịch vụ</Text>
             </TouchableOpacity>
@@ -135,7 +135,7 @@ const Schedule = () => {
             style={{
               flex: 1,
               alignItems: "center",
-              justifyContent: "space-between",
+              justifyContent: "center",
             }}
           >
             <View>
@@ -147,7 +147,7 @@ const Schedule = () => {
                 Không có lịch hẹn nào được tìm thấy
               </Text>
             </View>
-            <View>
+            <View style={{ marginTop: 10 }}>
               <TouchableOpacity onPress={() => navigation.navigate("Search")}>
                 <Text style={styles.button}>Tìm kiếm dịch vụ</Text>
               </TouchableOpacity>
@@ -200,8 +200,8 @@ const styles = StyleSheet.create({
   },
   searchImage: {
     resizeMode: "cover",
-    width: 300,
-    height: 300,
+    width: SIZES.width - 500,
+    height: SIZES.height - 500,
     opacity: 0.9,
   },
   emptyText: {

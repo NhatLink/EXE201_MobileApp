@@ -19,6 +19,7 @@ import formatDate from "../../utils/helper";
 import OrderTile from "../../components/orders/OrderTile";
 import { SliderBox } from "react-native-image-slider-box";
 import { Ionicons, Feather } from "@expo/vector-icons";
+import ModalDetailHistoryReport from "./ModalDetailHistoryReport";
 const ListHistory = ({ item }) => {
   const navigation = useNavigation();
   const [modalVisible, setModalVisible] = useState(false);
@@ -26,93 +27,80 @@ const ListHistory = ({ item }) => {
   const [searchKey, setSearchKey] = useState("");
   const [favorites, setFavorites] = useState(false);
   // console.log("item schedule: ", item);
+  const getStatusText = (status) => {
+    switch (status) {
+      case "PENDING":
+        return "Đang xử lý";
+      case "APPROVED":
+        return "Chấp thuận";
+      case "REJECTED":
+        return "Thất bại";
+      default:
+        return "Từ chối";
+    }
+  };
   return (
     <View style={styles.container}>
       <View style={styles.containerDate}>
         <View style={styles.line1} />
         <Text style={styles.text}>
-          {item?.dateSchedule} / {item?.timeSchedule}
+          {item?.createDate?.split("T")[0]} /{" "}
+          {item?.createDate?.split("T")[1].split(".")[0]}
         </Text>
         <View style={styles.line} />
       </View>
       <View>
+        <Text style={styles.description2}>Salon / barber bị báo cáo: </Text>
         <View style={styles.descriptionWrapper}>
           <TouchableOpacity style={styles.imageContainer}>
             <Image
-              source={{ uri: item?.store?.image }}
+              source={{ uri: item?.salonInformation?.img }}
               resizeMode="cover"
               style={styles.productImg}
             />
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.Storedescription}
-            onPress={() => navigation.navigate("Details", { product: item.id })}
+            onPress={() =>
+              navigation.navigate("Details", {
+                product: item?.salonInformation?.id,
+              })
+            }
           >
-            <Text style={styles.description}>{item?.store?.name}</Text>
-            <Text style={styles.descriptionText}>{item?.store?.address}</Text>
+            <Text style={styles.description}>
+              {item?.salonInformation?.name}
+            </Text>
+            <Text style={styles.descriptionText}>
+              {item?.salonInformation?.address}
+            </Text>
           </TouchableOpacity>
         </View>
-        {item?.services?.map((item) => (
-          <View
-            key={item.id}
-            style={styles.serviceItem}
-            onPress={() => {
-              // Handle navigation or other actions
-            }}
-          >
-            <View style={styles.serviceInfo}>
-              <Text style={styles.serviceName} numberOfLines={1}>
-                {item.serviceName}
-              </Text>
-              {/* <Text style={styles.serviceDescription} numberOfLines={1}>
-                  {item.description}
-                </Text> */}
-              <Text
-                style={styles.serviceDescription}
-                numberOfLines={1}
-              >{`${item.time}`}</Text>
-            </View>
-            <View style={styles.pricingInfo}>
-              {item?.discountPrice ? (
-                <>
-                  <Text
-                    style={styles.servicePrice}
-                    numberOfLines={1}
-                  >{`${item?.discountPrice?.toLocaleString()} VND`}</Text>
-                  <Text
-                    style={styles.servicePrice2}
-                    numberOfLines={1}
-                  >{`${item.price.toLocaleString()} VND`}</Text>
-                </>
-              ) : (
-                <>
-                  <Text
-                    style={styles.servicePrice}
-                    numberOfLines={1}
-                  >{`${item.price.toLocaleString()} VND`}</Text>
-                </>
-              )}
-            </View>
-          </View>
-        ))}
         <View style={styles.descriptionWrapper2}>
           <View style={styles.Storedescription}>
-            <Text style={styles.description2}>Tổng tiền:</Text>
-            <Text style={styles.descriptionText2}>Tổng thời gian:</Text>
+            <Text style={styles.description2}>Lý do:</Text>
+            <Text style={styles.descriptionText2}>Trạng thái đơn:</Text>
           </View>
           <TouchableOpacity style={styles.priceTime} onPress={() => {}}>
-            <Text
-              style={styles.descriptionPrice}
-            >{`${item?.totalPrice?.toLocaleString()} VND`}</Text>
-            <Text style={styles.descriptionTextTime}>{item?.timeSchedule}</Text>
+            <Text style={styles.descriptionPrice}>{item?.reasonReport}</Text>
+            <Text style={styles.descriptionTextTime}>
+              {getStatusText(item?.status)}
+            </Text>
           </TouchableOpacity>
         </View>
         <View style={styles.descriptionWrapper2}>
-          <TouchableOpacity style={styles.bookButton} onPress={() => {}}>
-            <Text style={styles.button}>Đặt lại</Text>
+          <TouchableOpacity
+            style={styles.bookButton}
+            onPress={() => setModalVisible(true)}
+          >
+            <Text style={styles.button}>Chi tiết</Text>
           </TouchableOpacity>
         </View>
       </View>
+      <ModalDetailHistoryReport
+        isVisible={modalVisible}
+        onClose={() => setModalVisible(false)}
+        data={item}
+      />
     </View>
   );
 };
@@ -148,10 +136,10 @@ const styles = StyleSheet.create({
     alignItems: "flex-end", // Align text to right if needed
   },
   Storedescription: {
-    flex: 5,
+    flex: 3,
     justifyContent: "center",
     alignItems: "flex-start",
-    paddingLeft: SIZES.small,
+    // paddingLeft: SIZES.small,
   },
   bookButton: {
     flex: 2,
@@ -160,7 +148,7 @@ const styles = StyleSheet.create({
     alignItems: "flex-end",
   },
   priceTime: {
-    flex: 5,
+    flex: 8,
     justifyContent: "center",
     alignItems: "flex-end",
   },
@@ -192,13 +180,13 @@ const styles = StyleSheet.create({
     fontSize: SIZES.large - 2,
   },
   descriptionWrapper: {
-    marginTop: SIZES.medium,
+    // marginTop: SIZES.medium,
     // marginHorizontal: SIZES.large,
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    borderBottomWidth: 0.5,
-    borderBottomColor: COLORS.black,
+    // borderBottomWidth: 0.5,
+    // borderBottomColor: COLORS.black,
   },
   descriptionText: {
     fontFamily: "regular",
@@ -213,6 +201,7 @@ const styles = StyleSheet.create({
     borderRadius: SIZES.medium,
     justifyContent: "center",
     alignItems: "center",
+    marginRight: 5,
   },
   productImg: {
     width: "100%",
@@ -225,7 +214,7 @@ const styles = StyleSheet.create({
     fontSize: SIZES.large - 2,
   },
   descriptionWrapper2: {
-    marginTop: SIZES.small,
+    marginTop: 5,
     // marginHorizontal: SIZES.large,
     flexDirection: "row",
     justifyContent: "space-between",
@@ -242,7 +231,7 @@ const styles = StyleSheet.create({
   descriptionPrice: {
     fontFamily: "bold",
     textAlign: "right",
-    fontSize: SIZES.large - 2,
+    fontSize: SIZES.medium - 2,
   },
   descriptionTextTime: {
     fontFamily: "regular",

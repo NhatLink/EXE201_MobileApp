@@ -33,4 +33,13 @@ export const SalonInfomationService = {
       `/api/v1/servicehairs/GetServiceHairBySalonInformationId/${id}`
     );
   },
+  GetFeedBackBySalonId(id, page, size, rating) {
+    return API.get(`/api/v1/feedbacks/GetFeedBackBySalonId/${id}`, {
+      params: {
+        rating,
+        page,
+        size,
+      },
+    });
+  },
 };

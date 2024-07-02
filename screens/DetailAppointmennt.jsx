@@ -37,8 +37,9 @@ import * as SecureStore from "expo-secure-store";
 import MapView, { Marker, Polyline } from "react-native-maps";
 import * as Location from "expo-location";
 import CustomMarker from "../components/CustomMarker";
-import { ReportAppointmentModal } from "../components";
+import { ReportAppointmentModal, StarRating } from "../components";
 import CancelAppointmentModal from "../components/DetailAppointment/CancelAppointmentModal";
+import FeedbackAppointmentModal from "../components/DetailAppointment/FeedbackAppointmentModal";
 
 const GOOGLE_API_KEY = "AIzaSyCmAt2KHp7yJVDWMWlrd_uUMtvzhSExNaQ";
 const DetailAppointmennt = ({ navigation }) => {
@@ -53,13 +54,15 @@ const DetailAppointmennt = ({ navigation }) => {
   const [modalVisible1, setModalVisible1] = useState(false);
   const [modalVisible2, setModalVisible2] = useState(false);
   const [modalVisible3, setModalVisible3] = useState(false);
+  const [modalVisible4, setModalVisible4] = useState(false);
   const [contentFeedback, setContentFeedback] = useState("");
   const [ratingFeedback, setRatingFeedback] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
-  const { appointmentDetail, appointment, loading } = useSelector(
+  const { appointmentDetail, feedbackAppointment, loading } = useSelector(
     (state) => state.APPOINTMENT
   );
+  console.log("feedbackAppointment:", feedbackAppointment);
   const { user, accountId } = useSelector((state) => state.USER);
   useEffect(() => {
     async function fetchData() {
@@ -160,6 +163,10 @@ const DetailAppointmennt = ({ navigation }) => {
   const [duration, setDuration] = useState("");
   const [startAddress, setStartAddress] = useState("");
   const [endAddress, setEndAddress] = useState("");
+  const today = new Date();
+  const startDate = new Date(appointmentDetail?.startDate);
+  const differenceInTime = today.getTime() - startDate.getTime();
+  const differenceInDays = differenceInTime / (1000 * 3600 * 24);
 
   useEffect(() => {
     (async () => {
@@ -410,7 +417,29 @@ const DetailAppointmennt = ({ navigation }) => {
         </View>
 
         <View style={styles.section}>
-          <Text style={styles.header}>Thông tin đơn</Text>
+          <View style={styles.sectionRow1}>
+            <Text style={styles.header}>Thông tin đơn</Text>
+            {appointmentDetail?.isFeedback === true ? (
+              <TouchableOpacity
+                style={styles.checkoutBtn}
+                onPress={() => setModalVisible4(true)}
+              >
+                <Text style={styles.checkOutText}>Xem đánh giá của bạn</Text>
+              </TouchableOpacity>
+            ) : appointmentDetail?.status === "SUCCESSED" ? (
+              differenceInDays > 3 ? (
+                <Text style={styles.checkOutText}>Quá hạn đánh giá</Text>
+              ) : (
+                <TouchableOpacity
+                  style={styles.checkoutBtn}
+                  onPress={() => setModalVisible(true)}
+                >
+                  <Text style={styles.checkOutText}>Đánh giá</Text>
+                </TouchableOpacity>
+              )
+            ) : null}
+          </View>
+
           <View style={styles.line} />
           {appointmentDetail?.appointmentDetails?.map((itemDetail) => (
             <View key={itemDetail?.id} style={styles.serviceItem}>
@@ -471,19 +500,9 @@ const DetailAppointmennt = ({ navigation }) => {
               )}
             </TouchableOpacity>
           </View>
-          {data?.delivery?.status === "Chờ đánh giá" ? (
-            <TouchableOpacity
-              style={styles.containerDelivery}
-              onPress={() => setModalVisible(true)}
-            >
-              <View style={styles.checkoutBtn}>
-                <Text style={styles.checkOutText}>Feedback</Text>
-              </View>
-            </TouchableOpacity>
-          ) : null}
         </View>
       </ScrollView>
-      <Modal
+      {/* <Modal
         animationType="slide"
         transparent={true}
         visible={modalVisible}
@@ -518,37 +537,68 @@ const DetailAppointmennt = ({ navigation }) => {
             </View>
           </View>
         </View>
-      </Modal>
-      {/* <Modal
+      </Modal> */}
+      <Modal
         animationType="slide"
         transparent={true}
-        visible={modalVisible1}
+        visible={modalVisible4}
         onRequestClose={() => {
-          setModalVisible1(!modalVisible1);
+          setModalVisible4(!modalVisible4);
         }}
       >
         <View style={styles.fullScreenModal}>
           <View style={styles.modalContainer}>
-            <Text style={styles.modalTextTitle}>
-              Bạn muốn hủy lịch hẹn vào{" "}
-              {appointmentDetail?.startDate?.split("T")[0]} /{" "}
-              {
-                appointmentDetail?.appointmentDetails[0]?.startTime?.split(
-                  "T"
-                )[1]
-              }
-            </Text>
-            <View style={styles.containerInfo}>
-              <TouchableOpacity onPress={() => setModalVisible1(false)}>
-                <Text style={styles.button1}>Đóng</Text>
-              </TouchableOpacity>
-              <TouchableOpacity onPress={() => OnCancel()}>
-                <Text style={styles.button1}>Tiếp tục Hủy</Text>
-              </TouchableOpacity>
+            <View style={styles.feedback}>
+              <View style={styles.reviewContainer}>
+                <View style={styles.imageContainer}>
+                  {/* Check spelling here if it's really `imageContanner` */}
+                  <Image
+                    source={{ uri: feedbackAppointment?.customer?.img }}
+                    style={styles.image}
+                  />
+                </View>
+                <View style={styles.avatarContainer}>
+                  <Text style={styles.author}>
+                    {feedbackAppointment?.customer?.fullName}
+                  </Text>
+                  <Text style={styles.date}>
+                    {feedbackAppointment?.createDate?.split("T")[0]} -{" "}
+                    {
+                      feedbackAppointment?.createDate
+                        ?.split("T")[1]
+                        ?.split(".")[0]
+                    }
+                  </Text>
+                </View>
+              </View>
+              <Text style={styles.author}>
+                Dịch vụ đã dùng:{" "}
+                {feedbackAppointment?.appointment?.appointmentDetails?.length >
+                0
+                  ? feedbackAppointment.appointment.appointmentDetails
+                      .map((detail) => detail.serviceName)
+                      .join(", ")
+                  : "Không có dịch vụ nào"}
+              </Text>
+
+              <StarRating rating={feedbackAppointment?.rating} />
+              <Text style={styles.feedbackText}>
+                {feedbackAppointment?.comment}
+              </Text>
+              <View horizontal style={styles.imageContainerService}>
+                {feedbackAppointment?.fileFeedbacks?.map((image, index) => (
+                  <View key={index} style={styles.imageWrapperService}>
+                    <Image
+                      source={{ uri: image.img }}
+                      style={styles.imageService}
+                    />
+                  </View>
+                ))}
+              </View>
             </View>
           </View>
         </View>
-      </Modal> */}
+      </Modal>
       <Modal
         animationType="fade"
         transparent={true}
@@ -638,6 +688,17 @@ const DetailAppointmennt = ({ navigation }) => {
         }}
         OnCancel={OnCancel}
       />
+      <FeedbackAppointmentModal
+        isVisible={modalVisible}
+        onClose={() => {
+          setModalVisible(!modalVisible);
+        }}
+        data={{
+          SalonId: appointmentDetail?.salonInformation?.id,
+          CustomerId: user.id,
+          AppointmentId: appointmentDetail?.id,
+        }}
+      />
     </SafeAreaView>
   );
 };
@@ -695,8 +756,9 @@ const styles = StyleSheet.create({
   sectionRow1: {
     flexDirection: "row",
     justifyContent: "space-between",
-    backgroundColor: "#f8f9fa",
+    alignItems: "center",
     borderRadius: 8,
+    marginBottom: 10,
   },
   column: {
     flex: 1,
@@ -706,7 +768,6 @@ const styles = StyleSheet.create({
   header: {
     fontSize: 18,
     fontWeight: "bold",
-    marginBottom: 10, // Increase bottom margin
     color: COLORS.primary, // Change text color
   },
   content: {
@@ -750,12 +811,11 @@ const styles = StyleSheet.create({
   },
   checkoutBtn: {
     width: 150,
-    height: 40, // Increase height
+    height: 40,
     backgroundColor: COLORS.primary,
     borderRadius: 20,
     justifyContent: "center",
     alignItems: "center",
-    marginTop: 10, // Add top margin
   },
   checkOutText: {
     fontSize: SIZES.small,
@@ -772,8 +832,8 @@ const styles = StyleSheet.create({
     textTransform: "uppercase",
   },
   containerDelivery: {
-    flex: 1,
-    justifyContent: "space-between",
+    // flex: 1,
+    justifyContent: "center",
     alignItems: "center",
     flexDirection: "row",
     maxWidth: 200,
@@ -953,15 +1013,16 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   modalContainer: {
-    width: "80%",
-    padding: 20,
+    height: "40%",
+    padding: 5,
+    width: "90%",
     backgroundColor: COLORS.secondary,
     borderRadius: 10,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.8,
     shadowRadius: 2,
-    elevation: 5,
+    // elevation: 5,
   },
   modalTextTitle: {
     fontWeight: "bold",
@@ -1020,6 +1081,61 @@ const styles = StyleSheet.create({
   map: {
     width: "100%",
     height: "100%",
+    borderRadius: 10,
+  },
+  feedback: {
+    marginBottom: 10,
+    padding: 10,
+    // borderWidth: 1,
+    // borderColor: "#ccc",
+    // borderRadius: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: "#ccc",
+  },
+  totalFeedbackText: {
+    fontSize: SIZES.small,
+    fontWeight: "bold",
+  },
+  feedbackText: {
+    fontSize: 14,
+    color: "#666",
+  },
+  author: {
+    fontSize: SIZES.small,
+    fontWeight: "bold",
+    textAlign: "left",
+    marginVertical: 3,
+  },
+  date: {
+    fontSize: SIZES.xSmall,
+    color: "#666",
+    marginBottom: 5,
+  },
+  reviewContainer: {
+    flexDirection: "row",
+    justifyContent: "flex-start",
+    alignItems: "center",
+  },
+  image: {
+    width: 30,
+    height: 30,
+    borderRadius: 40,
+    overflow: "hidden",
+    marginRight: SIZES.small,
+  },
+  imageContainerService: {
+    flexDirection: "row",
+    justifyContent: "flex-start",
+    alignItems: "center",
+    marginVertical: 10,
+  },
+  imageWrapperService: {
+    position: "relative",
+    marginRight: 10,
+  },
+  imageService: {
+    width: 100,
+    height: 100,
     borderRadius: 10,
   },
 });

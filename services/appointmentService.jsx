@@ -26,6 +26,9 @@ export const AppointmentService = {
       }
     );
   },
+  GetFeedBackByAppointmentId(id) {
+    return API.get(`/api/v1/feedbacks/GetFeedBackByAppointmentId/${id}`);
+  },
   CancelAppointmentByCustomer(id, data) {
     return API.put(`/api/v1/appointments/CancelAppointByCustomer/${id}`, data);
   },

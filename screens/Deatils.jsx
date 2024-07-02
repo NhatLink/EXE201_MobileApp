@@ -164,7 +164,7 @@ const Details = ({ navigation }) => {
           <View style={styles.ratingContainer}>
             {/* <StarRating rating={item?.avgRating} /> */}
             <Text style={styles.averageRatingText}>
-              {salonDetail?.averageRating > 0
+              {salonDetail?.rate > 0
                 ? (salonDetail?.rate).toFixed(1) + "/5.0"
                 : "Không có đánh giá"}
             </Text>

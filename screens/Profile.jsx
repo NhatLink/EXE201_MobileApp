@@ -203,11 +203,11 @@ const Profile = ({ navigation }) => {
 
   const logout = () => {
     Alert.alert(
-      "Logout",
-      "Are you sure you want to logout?",
+      "Đăng xuất khỏi hệ thống",
+      "Bạn muốn đăng xuất tài khoản?",
       [
-        { text: "Cancel", onPress: () => console.log("Cancel pressed") },
-        { text: "Continue", onPress: () => userLogout() },
+        { text: "Đóng", onPress: () => console.log("Cancel pressed") },
+        { text: "Tiếp tục đăng xuất", onPress: () => userLogout() },
       ],
       { defaultIndex: 1 } // Index 1 corresponds to the "Delete" button
     );
@@ -271,6 +271,17 @@ const Profile = ({ navigation }) => {
                   color={COLORS.primary}
                 />
                 <Text style={styles.menuItemText}>Lịch sử lịch hẹn</Text>
+              </View>
+            </TouchableOpacity>
+
+            <TouchableOpacity onPress={() => navigation.navigate("History")}>
+              <View style={styles.menuItem}>
+                <MaterialCommunityIcons
+                  name="alert-decagram-outline"
+                  size={24}
+                  color={COLORS.primary}
+                />
+                <Text style={styles.menuItemText}>Lịch sử báo cáo</Text>
               </View>
             </TouchableOpacity>
 

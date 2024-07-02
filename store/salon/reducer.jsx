@@ -4,6 +4,7 @@ import {
   GET_SALON_EMPPLOYEE_BY_SALON_ID,
   GET_SALON_SERVICE_BY_SALON_ID,
   SEARCH_SALON_INFORMATION,
+  GET_SALON_FEEDBACK_BY_SALON_ID,
 } from "./action";
 
 const initialState = {
@@ -12,6 +13,7 @@ const initialState = {
   salonEmployee: [],
   salonService: [],
   searchSalon: [],
+  feedback: [],
 };
 
 const reducer = (state = initialState, action) => {
@@ -40,6 +42,11 @@ const reducer = (state = initialState, action) => {
       return {
         ...state,
         searchSalon: action.payload.items,
+      };
+    case GET_SALON_FEEDBACK_BY_SALON_ID:
+      return {
+        ...state,
+        feedback: action.payload,
       };
     default:
       return state;

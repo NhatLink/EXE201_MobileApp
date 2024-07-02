@@ -17,6 +17,11 @@ export const APPOINTMENT_ID_REQUEST = "APPOINTMENT_ID_REQUEST";
 export const APPOINTMENT_ID_SUCCESS = "APPOINTMENT_ID_SUCCESS";
 export const APPOINTMENT_ID_FAILURE = "APPOINTMENT_ID_SUCCESS";
 
+export const FEEDBACK_APPOINTMENT_ID_SUCCESS =
+  "FEEDBACK_APPOINTMENT_ID_SUCCESS";
+export const FEEDBACK_APPOINTMENT_ID_FAILURE =
+  "FEEDBACK_APPOINTMENT_ID_FAILURE";
+
 export const GetAppointmentByAccountId =
   (page, size, accountId) => async (dispatch) => {
     dispatch({ type: APPOINTMENT_REQUEST });
@@ -37,10 +42,21 @@ export const GetAppointmentById = (id) => async (dispatch) => {
   dispatch({ type: APPOINTMENT_ID_REQUEST });
   try {
     const response = await AppointmentService.getAppointmentById(id);
+    dispatch(GetFeedBackByAppointmentId(id));
     dispatch({ type: APPOINTMENT_ID_SUCCESS, payload: response.data });
   } catch (error) {
     dispatch({ type: APPOINTMENT_ID_FAILURE, payload: error.message });
     console.log("error GetAppointmentById", error);
+  }
+};
+
+export const GetFeedBackByAppointmentId = (id) => async (dispatch) => {
+  try {
+    const response = await AppointmentService.GetFeedBackByAppointmentId(id);
+    dispatch({ type: FEEDBACK_APPOINTMENT_ID_SUCCESS, payload: response.data });
+  } catch (error) {
+    dispatch({ type: FEEDBACK_APPOINTMENT_ID_FAILURE, payload: error.message });
+    console.log("error GetFeedBackByAppointmentId", error);
   }
 };
 

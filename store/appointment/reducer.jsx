@@ -11,6 +11,8 @@ import {
   APPOINTMENT_ID_FAILURE,
   APPOINTMENT_ID_REQUEST,
   APPOINTMENT_ID_SUCCESS,
+  FEEDBACK_APPOINTMENT_ID_FAILURE,
+  FEEDBACK_APPOINTMENT_ID_SUCCESS,
 } from "./action";
 
 const initialState = {
@@ -19,6 +21,7 @@ const initialState = {
   historyAppointment: [],
   loading: false,
   error: null,
+  feedbackAppointment: [],
 };
 
 const appointmentReducer = (state = initialState, action) => {
@@ -36,6 +39,7 @@ const appointmentReducer = (state = initialState, action) => {
         ...state,
         loading: false,
         appointment: action.payload.items,
+        error: null,
       };
     // const newItems = {};
     // if (action.payload.items && action.payload.items.length > 0) {
@@ -63,11 +67,23 @@ const appointmentReducer = (state = initialState, action) => {
         ...state,
         loading: false,
         appointmentDetail: action.payload,
+        error: null,
       };
     case APPOINTMENT_ID_FAILURE:
       return {
         ...state,
         loading: false,
+        error: action.payload,
+      };
+    case FEEDBACK_APPOINTMENT_ID_SUCCESS:
+      return {
+        ...state,
+        feedbackAppointment: action.payload,
+        error: null,
+      };
+    case FEEDBACK_APPOINTMENT_ID_FAILURE:
+      return {
+        ...state,
         error: action.payload,
       };
     case HISTORY_APPOINTMENT_SUCCESS:
@@ -87,7 +103,7 @@ const appointmentReducer = (state = initialState, action) => {
         ...state,
         loading: false,
       };
-    case HISTORY_APPOINTMENT_FAILURE:
+    case CANCEL_APPOINTMENT_FAILURE:
       return {
         ...state,
         loading: false,

@@ -108,7 +108,7 @@ const Favorites = ({ navigation }) => {
         >
           <Ionicons name="chevron-back-circle" size={30} color={COLORS.black} />
         </TouchableOpacity>
-        <Text style={styles.title}> Favorites </Text>
+        <Text style={styles.title}> Salon/Barber yêu thích </Text>
       </View>
       {favoritesData?.length > 0 ? (
         <FlatList
@@ -149,7 +149,31 @@ const Favorites = ({ navigation }) => {
           keyExtractor={(item, index) => index.toString()}
         />
       ) : (
-        <Text>No favorite found</Text>
+        <View
+          style={{
+            // flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}
+        >
+          <View style={{ marginBottom: 20 }}>
+            <Image
+              source={require("../assets/images/error-in-calendar.png")}
+              // source={{
+              //   uri: "https://banner2.cleanpng.com/20180320/jdq/kisspng-heart-love-red-favorite-5ab09a2c3c8919.626171351521523244248.jpg",
+              // }}
+              style={styles.searchImage}
+            />
+            <Text style={styles.emptyText}>
+              Không có yêu thích nào được tìm thấy
+            </Text>
+          </View>
+          <View>
+            <TouchableOpacity onPress={() => navigation.navigate("Search")}>
+              <Text style={styles.button}>Tìm kiếm salon barber</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
       )}
     </SafeAreaView>
   );
@@ -213,5 +237,32 @@ const styles = StyleSheet.create({
     color: COLORS.gray,
     marginTop: 3,
     textTransform: "capitalize",
+  },
+  searchImage: {
+    resizeMode: "cover",
+    width: SIZES.width - 500,
+    height: SIZES.height - 500,
+    opacity: 0.9,
+  },
+  emptyText: {
+    fontWeight: "bold",
+    textAlign: "center",
+    fontSize: SIZES.medium,
+  },
+  emptyText2: {
+    fontWeight: "bold",
+    textAlign: "center",
+    fontSize: SIZES.small,
+    color: COLORS.gray,
+    marginVertical: 10,
+  },
+  button: {
+    backgroundColor: COLORS.secondary,
+    textAlign: "center",
+    padding: 10,
+    borderRadius: 10,
+    marginHorizontal: 5,
+    width: SIZES.width - 20,
+    fontWeight: "bold",
   },
 });

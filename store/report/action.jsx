@@ -1,9 +1,9 @@
 import { reportService } from "../../services/reportService";
 import { ToastAndroid } from "react-native";
 
-// export const SEND_REPORT_REQUEST = "SEND_REPORT_REQUEST";
-// export const SEND_REPORT_SUCCESS = "SEND_REPORT_SUCCESS";
-// export const SEND_REPORT_FAILURE = "SEND_REPORT_FAILURE";
+export const REPORT_REQUEST = "REPORT_REQUEST";
+export const REPORT_SUCCESS = "REPORT_SUCCESS";
+export const REPORT_FAILURE = "REPORT_FAILURE";
 
 export const CreateReport = (data) => async (dispatch) => {
   try {
@@ -15,3 +15,19 @@ export const CreateReport = (data) => async (dispatch) => {
     console.log("error CreateReport", errorMessage);
   }
 };
+export const GetReportByCustomerId =
+  (id, page, size, status) => async (dispatch) => {
+    dispatch({ type: REPORT_REQUEST });
+    try {
+      const response = await reportService.GetReportByCustomerId(
+        id,
+        page,
+        size,
+        status
+      );
+      dispatch({ type: REPORT_SUCCESS, payload: response.data });
+    } catch (error) {
+      dispatch({ type: REPORT_FAILURE, payload: error.message });
+      console.log("error GetReportByCustomerId", error);
+    }
+  };

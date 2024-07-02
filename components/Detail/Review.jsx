@@ -18,38 +18,39 @@ import formatDate from "../../utils/helper";
 import OrderTile from "../../components/orders/OrderTile";
 import { StarRating } from "../../components";
 import { FontAwesome, FontAwesome5 } from "@expo/vector-icons";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchFeedbackBySalonInformationId } from "../../store/salon/action";
 const Review = (storeId) => {
   const navigation = useNavigation();
-  const services = [
-    {
-      reviewerName: "Nguyễn Văn A",
-      reviewerAvatar:
-        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQOf4hNCvGeBVpxK7iCqSmGHQv6SKimx8CIpg&s",
-      reviewDate: "2024-05-01",
-      rating: 5,
-      serviceUsed: "Shaving",
-      review: "Very satisfied with the service, friendly staff.",
-    },
-    {
-      reviewerName: "Trần Thị B",
-      reviewerAvatar:
-        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQOf4hNCvGeBVpxK7iCqSmGHQv6SKimx8CIpg&s",
-      reviewDate: "2024-04-20",
-      rating: 4,
-      serviceUsed: "Hair Care",
-      review: "Good service but a bit of a wait.",
-    },
-  ];
-  const [filteredFeedbacks, setFilteredFeedbacks] = useState(services);
-  const [dataFeedback, setDataFeedback] = useState(services);
+  const dispatch = useDispatch();
+  const { feedback, salonDetail } = useSelector((state) => state.SALON);
+  console.log(feedback);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(3);
   const [selectedRating, setSelectedRating] = useState(null);
-  const filterFeedbacksByRating = (rating) => {
+
+  const filterFeedbacksByRating = async (rating) => {
     setSelectedRating(rating);
     if (rating === null) {
-      setFilteredFeedbacks(dataFeedback);
+      // setFilteredFeedbacks(dataFeedback);
+      await dispatch(
+        fetchFeedbackBySalonInformationId(
+          storeId.storeId,
+          currentPage,
+          itemsPerPage
+        )
+      );
     } else {
-      setFilteredFeedbacks(
-        dataFeedback.filter((feedback) => feedback.rating === rating)
+      // setFilteredFeedbacks(
+      //   dataFeedback.filter((feedback) => feedback.rating === rating)
+      // );
+      await dispatch(
+        fetchFeedbackBySalonInformationId(
+          storeId.storeId,
+          currentPage,
+          itemsPerPage,
+          rating
+        )
       );
     }
   };
@@ -60,6 +61,16 @@ const Review = (storeId) => {
   //       </View>
   //     );
   //   }
+  const Decrease = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+  const Increase = () => {
+    if (currentPage < feedback?.totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
   return (
     <SafeAreaView style={styles.container}>
       {/* <TouchableOpacity style={styles.feedbackHeader}>
@@ -68,24 +79,16 @@ const Review = (storeId) => {
 
       <View style={styles.ratingContainer}>
         <StarRating
-          rating={
-            dataFeedback?.length > 0
-              ? dataFeedback?.reduce((acc, curr) => acc + curr.rating, 0) /
-                dataFeedback?.length
-              : 0
-          }
+          rating={salonDetail?.totalRating > 0 ? salonDetail?.totalRating : 0}
         />
         <Text style={styles.averageRatingText}>
-          {dataFeedback?.length > 0
-            ? (
-                dataFeedback?.reduce((acc, curr) => acc + curr.rating, 0) /
-                dataFeedback?.length
-              ).toFixed(1) + "/5.0"
+          {salonDetail?.rate > 0
+            ? (salonDetail?.rate).toFixed(1) + "/5.0"
             : "No ratings"}
         </Text>
         <Text style={styles.totalFeedbackText}>
-          {dataFeedback?.length > 0
-            ? "(" + dataFeedback?.length + " lượt đánh giá)"
+          {salonDetail?.totalReviewer > 0
+            ? "(" + salonDetail?.totalReviewer + " lượt đánh giá)"
             : "(0 lượt đánh giá)"}
         </Text>
       </View>
@@ -121,31 +124,50 @@ const Review = (storeId) => {
 
       <View style={styles.feedbackSection}>
         <Text style={styles.totalFeedbackText}>
-          Lượt đánh giá: {filteredFeedbacks?.length}
+          Lượt đánh giá: {feedback?.items?.length}
         </Text>
-        {filteredFeedbacks.length > 0 ? (
-          filteredFeedbacks.map((feedback, index) => (
+        {feedback?.items?.length > 0 ? (
+          feedback?.items?.map((feedback, index) => (
             <View key={index} style={styles.feedback}>
               <View style={styles.reviewContainer}>
                 <View style={styles.imageContainer}>
                   {/* Check spelling here if it's really `imageContanner` */}
                   <Image
-                    source={{ uri: feedback.reviewerAvatar }}
+                    source={{ uri: feedback?.customer?.img }}
                     style={styles.image}
                   />
                 </View>
                 <View style={styles.avatarContainer}>
-                  <Text style={styles.author}>{feedback?.reviewerName}</Text>
+                  <Text style={styles.author}>
+                    {feedback?.customer?.fullName}
+                  </Text>
                   <Text style={styles.date}>
-                    {formatDate(feedback?.reviewDate)}
+                    {feedback?.createDate.split("T")[0]} -{" "}
+                    {feedback?.createDate.split("T")[1].split(".")[0]}
                   </Text>
                 </View>
               </View>
               <Text style={styles.author}>
-                Dịch vụ đã dùng: {feedback?.serviceUsed}
+                Dịch vụ đã dùng:{" "}
+                {feedback?.appointment?.appointmentDetails?.length > 0
+                  ? feedback.appointment.appointmentDetails
+                      .map((detail) => detail.serviceName)
+                      .join(", ")
+                  : "Không có dịch vụ nào"}
               </Text>
+
               <StarRating rating={feedback?.rating} />
-              <Text style={styles.feedbackText}>{feedback?.review}</Text>
+              <Text style={styles.feedbackText}>{feedback?.comment}</Text>
+              <View horizontal style={styles.imageContainerService}>
+                {feedback?.fileFeedbacks?.map((image, index) => (
+                  <View key={index} style={styles.imageWrapperService}>
+                    <Image
+                      source={{ uri: image.img }}
+                      style={styles.imageService}
+                    />
+                  </View>
+                ))}
+              </View>
             </View>
           ))
         ) : (
@@ -158,6 +180,27 @@ const Review = (storeId) => {
           //     }}
           //     style={styles.imageNotFound}
           //   />
+        )}
+      </View>
+      <View style={styles.paging}>
+        {currentPage > 1 && (
+          <TouchableOpacity style={styles.pagingArrow} onPress={Decrease}>
+            <Ionicons
+              name="arrow-back-circle-outline"
+              size={24}
+              color={COLORS.primary}
+            />
+          </TouchableOpacity>
+        )}
+        <Text style={styles.pagingArrow}>{feedback?.page}</Text>
+        {currentPage < feedback?.totalPages && (
+          <TouchableOpacity style={styles.pagingArrow} onPress={Increase}>
+            <Ionicons
+              name="arrow-forward-circle-outline"
+              size={24}
+              color={COLORS.primary}
+            />
+          </TouchableOpacity>
         )}
       </View>
     </SafeAreaView>
@@ -187,7 +230,7 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   feedbackSection: {
-    marginVertical: SIZES.small,
+    marginTop: SIZES.small,
     paddingHorizontal: SIZES.medium,
   },
   feedbackName: {
@@ -218,6 +261,7 @@ const styles = StyleSheet.create({
     fontSize: SIZES.small,
     fontWeight: "bold",
     textAlign: "left",
+    marginVertical: 3,
   },
   date: {
     fontSize: SIZES.xSmall,
@@ -277,7 +321,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "flex-start",
     alignItems: "center",
-    paddingBottom: SIZES.xSmall,
   },
   avatarContainer: {
     // flexDirection: "column",
@@ -296,5 +339,33 @@ const styles = StyleSheet.create({
     borderRadius: 40,
     overflow: "hidden",
     marginRight: SIZES.small,
+  },
+  imageContainerService: {
+    flexDirection: "row",
+    justifyContent: "flex-start",
+    alignItems: "center",
+    marginVertical: 10,
+  },
+  imageWrapperService: {
+    position: "relative",
+    marginRight: 10,
+  },
+  imageService: {
+    width: 100,
+    height: 100,
+    borderRadius: 10,
+  },
+  paging: {
+    // position: "absolute",
+    // bottom: 0,
+    // right: "50%",
+    flex: 1,
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  pagingArrow: {
+    // marginVertical: 10,
+    padding: 10,
   },
 });

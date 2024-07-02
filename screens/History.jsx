@@ -1,7 +1,7 @@
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons, Feather } from "@expo/vector-icons";
 import { SIZES, COLORS } from "../constants";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { ListHistory } from "../components";
 import {
   View,
@@ -15,55 +15,180 @@ import {
   Modal,
   ScrollView,
   Animated,
+  RefreshControl,
+  ActivityIndicator,
 } from "react-native";
-import axios from "axios";
-import { baseUrl } from "../utils/IP";
-import SearchTile from "../components/product/SearchTile";
-import SearchWhereModal from "../components/Search/SearchWhereModal";
-import SearchStoreModal from "../components/Search/SearchStoreModal";
-import SearchSeviceModal from "../components/Search/SearchSeviceModal";
 import { useNavigation } from "@react-navigation/native";
 import { useDispatch, useSelector } from "react-redux";
-import { GetAppointmentByHistoryCustomerId } from "../store/appointment/action";
 import Loader from "../components/auth/Loader";
 import * as SecureStore from "expo-secure-store";
+import { GetReportByCustomerId } from "../store/report/action";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 const History = () => {
   const navigation = useNavigation();
   // console.log("appoint", appointments);
   const dispatch = useDispatch();
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(10);
-  const { historyAppointment, loading } = useSelector(
-    (state) => state.APPOINTMENT
-  );
+  const [itemsPerPage, setItemsPerPage] = useState(5);
+  const [selectedStatus, setSelectedStatus] = useState(null);
+  const [status, setStatus] = useState(null);
+  const { customerReport, loading } = useSelector((state) => state.REPORT);
+  const [refreshing, setRefreshing] = useState(false);
   const { user, accessToken, refreshToken, isAuthenticated } = useSelector(
     (state) => state.USER
   );
-  console.log("historyAppointment:", historyAppointment);
-  useEffect(() => {
-    async function fetchData() {
-      const userInfoJson = await SecureStore.getItemAsync("userInfo");
-      let userInfo = null;
-      if (userInfoJson) {
-        try {
-          userInfo = JSON.parse(userInfoJson);
-        } catch (error) {
-          console.error("Error parsing userInfo", error);
-        }
+  console.log("customerReport:", customerReport);
+  const fetchData = async () => {
+    const userInfoJson = await SecureStore.getItemAsync("userInfo");
+    let userInfo = null;
+    if (userInfoJson) {
+      try {
+        userInfo = JSON.parse(userInfoJson);
+      } catch (error) {
+        console.error("Error parsing userInfo", error);
       }
-      if (userInfo && userInfo?.id) {
-        dispatch(
-          GetAppointmentByHistoryCustomerId(
-            currentPage,
-            itemsPerPage,
-            userInfo?.id
-          )
-        );
-      }
-      console.log("accountId", userInfo);
     }
+    if (userInfo && userInfo?.id) {
+      dispatch(
+        GetReportByCustomerId(userInfo?.id, currentPage, itemsPerPage, status)
+      );
+    }
+    console.log("accountId", userInfo);
+  };
+  useEffect(() => {
     fetchData();
+  }, [currentPage, itemsPerPage, selectedStatus]);
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    fetchData().then(() => setSelectedStatus(null), setRefreshing(false));
   }, []);
+  const filterReport = async (status) => {
+    setSelectedStatus(status);
+    // const userInfoJson = await SecureStore.getItemAsync("userInfo");
+    // let userInfo = null;
+    // if (userInfoJson) {
+    //   try {
+    //     userInfo = JSON.parse(userInfoJson);
+    //   } catch (error) {
+    //     console.error("Error parsing userInfo", error);
+    //   }
+    // }
+    if (status === null) {
+      // dispatch(
+      //   GetReportByCustomerId(
+      //     userInfo?.id,
+      //     currentPage,
+      //     itemsPerPage,
+      //   )
+      // );
+      setStatus(null);
+    } else if (status === "Đang xử lý") {
+      // dispatch(
+      //   GetReportByCustomerId(
+      //     userInfo?.id,
+      //     currentPage,
+      //     itemsPerPage,
+      //     "PENDING"
+      //   )
+      // );
+      setStatus("PENDING");
+    } else if (status === "Chấp thuận") {
+      // dispatch(
+      //   GetReportByCustomerId(
+      //     userInfo?.id,
+      //     currentPage,
+      //     itemsPerPage,
+      //     "APPROVED"
+      //   )
+      // );
+      setStatus("APPROVED");
+    } else if (status === "Từ chối") {
+      // dispatch(
+      //   GetReportByCustomerId(
+      //     userInfo?.id,
+      //     currentPage,
+      //     itemsPerPage,
+      //     "REJECTED"
+      //   )
+      // );
+      setStatus("REJECTED");
+    }
+  };
+  const Decrease = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+  const Increase = () => {
+    if (currentPage < feedback?.totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+  if (loading) {
+    return (
+      <SafeAreaView
+        style={{
+          flex: 1,
+          color: COLORS.lightWhite,
+          marginTop: 10,
+        }}
+      >
+        {/* <Loader visible={loading} /> */}
+        <View style={styles.upperRow}>
+          <TouchableOpacity
+            style={{ paddingLeft: 0 }}
+            onPress={() => navigation.goBack()}
+          >
+            <Ionicons
+              name="chevron-back-circle"
+              size={30}
+              color={COLORS.black}
+            />
+          </TouchableOpacity>
+          <Text style={styles.title}> Lịch sử báo cáo</Text>
+        </View>
+        <View style={styles.filtersContainer}>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+            <TouchableOpacity
+              style={styles.filterButton}
+              onPress={() => filterReport(null)}
+            >
+              <View style={styles.filterContent}>
+                <MaterialCommunityIcons
+                  name="alert-decagram"
+                  size={16}
+                  color="gray"
+                />
+                <Text style={styles.filterText}>Tất cả</Text>
+              </View>
+            </TouchableOpacity>
+            {["Đang xử lý", "Chấp thuận", "Từ chối"].map((status) => (
+              <TouchableOpacity
+                key={status}
+                style={[
+                  styles.filterButton,
+                  selectedStatus === status && styles.selectedFilterButton,
+                ]}
+                onPress={() => filterReport(status)}
+              >
+                <View style={styles.filterContent}>
+                  <MaterialCommunityIcons
+                    name="alert-decagram"
+                    size={16}
+                    color="gray"
+                  />
+                  <Text style={styles.filterText}>{status}</Text>
+                </View>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+        </View>
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={COLORS.primary} />
+        </View>
+      </SafeAreaView>
+    );
+  }
   return (
     <SafeAreaView
       style={{
@@ -72,7 +197,7 @@ const History = () => {
         marginTop: 10,
       }}
     >
-      <Loader visible={loading} />
+      {/* <Loader visible={loading} /> */}
       <View style={styles.upperRow}>
         <TouchableOpacity
           style={{ paddingLeft: 0 }}
@@ -80,10 +205,47 @@ const History = () => {
         >
           <Ionicons name="chevron-back-circle" size={30} color={COLORS.black} />
         </TouchableOpacity>
-        <Text style={styles.title}> Lịch sử </Text>
+        <Text style={styles.title}> Lịch sử báo cáo</Text>
       </View>
-
-      {historyAppointment && historyAppointment.length === 0 ? (
+      <View style={styles.filtersContainer}>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+          <TouchableOpacity
+            style={styles.filterButton}
+            onPress={() => filterReport(null)}
+          >
+            <View style={styles.filterContent}>
+              <MaterialCommunityIcons
+                name="alert-decagram"
+                size={16}
+                color="gray"
+              />
+              <Text style={styles.filterText}>Tất cả</Text>
+            </View>
+          </TouchableOpacity>
+          {["Đang xử lý", "Chấp thuận", "Từ chối"].map((status) => (
+            <TouchableOpacity
+              key={status}
+              style={[
+                styles.filterButton,
+                selectedStatus === status && styles.selectedFilterButton,
+              ]}
+              onPress={() => filterReport(status)}
+            >
+              <View style={styles.filterContent}>
+                <MaterialCommunityIcons
+                  name="alert-decagram"
+                  size={16}
+                  color="gray"
+                />
+                <Text style={styles.filterText}>{status}</Text>
+              </View>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+      </View>
+      {customerReport &&
+      customerReport?.items &&
+      customerReport?.items?.length === 0 ? (
         <View
           style={{
             flex: 1,
@@ -97,10 +259,10 @@ const History = () => {
               style={styles.searchImage}
             />
             <Text style={styles.emptyText}>
-              Không có lịch hẹn nào được tìm thấy
+              Không có báo cáo nào được tìm thấy
             </Text>
           </View>
-          <View style={styles.buttonContain}>
+          {/* <View style={styles.buttonContain}>
             <TouchableOpacity onPress={() => navigation.navigate("Search")}>
               <Text style={styles.button}>Tìm kiếm dịch vụ</Text>
             </TouchableOpacity>
@@ -116,14 +278,40 @@ const History = () => {
                 </TouchableOpacity>
               </>
             )}
-          </View>
+          </View> */}
         </View>
       ) : (
-        <FlatList
-          data={historyAppointment}
-          keyExtractor={(item) => item?.id}
-          renderItem={({ item }) => <ListHistory item={item} />}
-        />
+        <>
+          <FlatList
+            data={customerReport?.items}
+            refreshControl={
+              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+            }
+            keyExtractor={(item) => item?.id}
+            renderItem={({ item }) => <ListHistory item={item} />}
+          />
+          <View style={styles.paging}>
+            {currentPage > 1 && (
+              <TouchableOpacity style={styles.pagingArrow} onPress={Decrease}>
+                <Ionicons
+                  name="arrow-back-circle-outline"
+                  size={24}
+                  color={COLORS.primary}
+                />
+              </TouchableOpacity>
+            )}
+            <Text style={styles.pagingArrow}>{customerReport?.page}</Text>
+            {currentPage < customerReport?.totalPages && (
+              <TouchableOpacity style={styles.pagingArrow} onPress={Increase}>
+                <Ionicons
+                  name="arrow-forward-circle-outline"
+                  size={24}
+                  color={COLORS.primary}
+                />
+              </TouchableOpacity>
+            )}
+          </View>
+        </>
       )}
     </SafeAreaView>
   );
@@ -174,5 +362,51 @@ const styles = StyleSheet.create({
   },
   buttonContain: {
     marginBottom: 10,
+  },
+  filtersContainer: {
+    flexDirection: "row",
+    paddingVertical: 10,
+    paddingHorizontal: 5,
+    backgroundColor: "#f0f0f0",
+  },
+
+  filterButton: {
+    padding: 10,
+    marginRight: 5,
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 10,
+    backgroundColor: "#fff",
+  },
+
+  selectedFilterButton: {
+    borderColor: COLORS.primary,
+    backgroundColor: COLORS.secondary,
+  },
+  filterContent: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+
+  filterText: {
+    marginLeft: 5,
+    textAlign: "center",
+    fontWeight: "bold",
+  },
+  paging: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  pagingArrow: {
+    // marginVertical: 10,
+    padding: 10,
+  },
+  loadingContainer: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    alignContent: "center",
   },
 });

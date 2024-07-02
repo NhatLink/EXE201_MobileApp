@@ -16,7 +16,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { COLORS, SHADOWS, SIZES, images } from "../../constants";
 import { useNavigation } from "@react-navigation/native";
 import { Ionicons, Feather } from "@expo/vector-icons";
-import { removeService } from "../../store/bookingStore/action";
+import { removeService, setService } from "../../store/bookingStore/action";
 import { useDispatch, useSelector } from "react-redux";
 import StaffService from "./StaffService";
 import Loader from "../auth/Loader";
@@ -29,6 +29,10 @@ const ListService = () => {
   const [load, setLoad] = useState(false);
   const handleDelete = async (id) => {
     setLoad(true);
+    const remainingServices = totalService.filter(
+      (service) => service.id !== id
+    );
+    settotalService(remainingServices);
     await dispatch(removeService(id));
     if (bookAppoinment && bookAppoinment.bookingDetailResponses && services) {
       let timesArray = bookAppoinment.bookingDetailResponses.map((detail) => ({
@@ -42,7 +46,7 @@ const ListService = () => {
         ...service,
         ...timesArray.find((time) => time.id === service.id),
       }));
-
+      // await dispatch(setService(combinedData));
       settotalService(combinedData);
       // console.log("data service", combinedData);
     }
@@ -60,24 +64,53 @@ const ListService = () => {
     setserviceId(item);
   };
   const canPressButton = services.length > 0 && availableTime.length > 0;
+  // useEffect(() => {
+
+  //   if (bookAppoinment && bookAppoinment.bookingDetailResponses && services) {
+  //     let timesArray = bookAppoinment.bookingDetailResponses.map((detail) => ({
+  //       id: detail.serviceHair.id,
+  //       startTime: detail.serviceHair.startTime,
+  //       endTime: detail.serviceHair.endTime,
+  //       waitingTime: detail.serviceHair.waitingTime,
+  //     }));
+
+  //     const combinedData = services.map((service) => ({
+  //       ...service,
+  //       ...timesArray.find((time) => time.id === service.id),
+  //     }));
+
+  //     settotalService(combinedData);
+  //     // dispatch(setService(combinedData));
+  //     // console.log("data service", combinedData);
+  //   }
+  // }, [bookAppoinment]);
+
   useEffect(() => {
-    if (bookAppoinment && bookAppoinment.bookingDetailResponses && services) {
-      let timesArray = bookAppoinment.bookingDetailResponses.map((detail) => ({
-        id: detail.serviceHair.id,
-        startTime: detail.serviceHair.startTime,
-        endTime: detail.serviceHair.endTime,
-        waitingTime: detail.serviceHair.waitingTime,
-      }));
+    async function fetchData() {
+      if (bookAppoinment && bookAppoinment.bookingDetailResponses && services) {
+        let timesArray = bookAppoinment.bookingDetailResponses.map(
+          (detail) => ({
+            id: detail.serviceHair.id,
+            startTime: detail.serviceHair.startTime,
+            endTime: detail.serviceHair.endTime,
+            waitingTime: detail.serviceHair.waitingTime,
+          })
+        );
 
-      const combinedData = services.map((service) => ({
-        ...service,
-        ...timesArray.find((time) => time.id === service.id),
-      }));
+        const combinedData = services.map((service) => ({
+          ...service,
+          ...timesArray.find((time) => time.id === service.id),
+        }));
 
-      settotalService(combinedData);
-      // console.log("data service", combinedData);
+        settotalService(combinedData);
+        // await dispatch(setService(combinedData));
+        // console.log("data service", combinedData);
+      }
     }
+
+    fetchData();
   }, [bookAppoinment]);
+
   return (
     <>
       <Loader visible={load} />
@@ -101,7 +134,7 @@ const ListService = () => {
               >
                 <View style={styles.serviceInfo}>
                   <Text style={styles.serviceName} numberOfLines={1}>
-                    {item.serviceName}
+                    {`${item.serviceName} (${item?.time * 60} phút)`}
                   </Text>
                   <Text style={styles.serviceDescription} numberOfLines={1}>
                     {item.description}
@@ -167,10 +200,23 @@ const ListService = () => {
           {services.length > 1 && availableTime.length > 0 && (
             <TouchableOpacity
               style={styles.cancelButton}
-              onPress={() => handleDelete(item.id)}
+              onPress={() => handleDelete(item?.id)}
             >
               <Ionicons name="close-circle" size={30} color={COLORS.black} />
             </TouchableOpacity>
+          )}
+          {/* <Text style={styles.watingTime} numberOfLines={2}>
+            {`-----------Chờ ${item?.waitingTime * 60} phút -------------`}
+          </Text> */}
+          {item?.waitingTime !== 0 && (
+            <View style={styles.containerDate}>
+              <View style={styles.line1} />
+              <Text style={styles.text}>
+                {" "}
+                Chờ {item?.waitingTime ?? 0 * 60} Phút
+              </Text>
+              <View style={styles.line} />
+            </View>
           )}
         </View>
       ))}
@@ -292,5 +338,27 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: SIZES.small,
     marginHorizontal: 5,
+  },
+  containerDate: {
+    flexDirection: "row",
+    alignItems: "center",
+    width: "100%",
+    paddingHorizontal: 10,
+  },
+  line: {
+    flex: 4,
+    height: 1,
+    backgroundColor: COLORS.gray,
+  },
+  line1: {
+    flex: 4,
+    height: 1,
+    backgroundColor: COLORS.gray,
+  },
+  text: {
+    marginHorizontal: 10,
+    fontSize: 15,
+    color: COLORS.red,
+    fontWeight: "bold",
   },
 });

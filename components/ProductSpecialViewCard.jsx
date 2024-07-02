@@ -19,7 +19,7 @@ const ProductSpecialViewCard = ({ item }) => {
             {/* <StarRating rating={item?.avgRating} /> */}
             <Text style={styles.averageRatingText}>
               {item?.totalRating > 0
-                ? (item?.totalRating).toFixed(1) + "/5.0"
+                ? (item?.rate).toFixed(1) + "/5.0"
                 : "No ratings"}
             </Text>
             <Text style={styles.averageRatingText}>

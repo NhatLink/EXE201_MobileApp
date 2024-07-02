@@ -8,4 +8,13 @@ export const reportService = {
       },
     });
   },
+  GetReportByCustomerId(id, page, size, status) {
+    return API.get(`/api/v1/reports/GetReportByCustomerId/${id}`, {
+      params: {
+        page,
+        size,
+        status,
+      },
+    });
+  },
 };

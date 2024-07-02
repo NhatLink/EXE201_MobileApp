@@ -4,6 +4,7 @@ export const ACT_SALON_INFORMATION_BY_ID = "ACT_SALON_INFORMATION_BY_ID";
 export const GET_SALON_EMPPLOYEE_BY_SALON_ID =
   "GET_SALON_EMPPLOYEE_BY_SALON_ID";
 export const GET_SALON_SERVICE_BY_SALON_ID = "GET_SALON_SERVICE_BY_SALON_ID";
+export const GET_SALON_FEEDBACK_BY_SALON_ID = "GET_SALON_FEEDBACK_BY_SALON_ID";
 export const SEARCH_SALON_INFORMATION = "SEARCH_SALON_INFORMATION";
 export function actSalonInformation(list) {
   return {
@@ -71,6 +72,7 @@ export function fetchSalonInformationById(id) {
       dispatch(actSalonInformationById(response.data));
       dispatch(fetchSalonEmployeeBySalonInformationId(id));
       dispatch(fetchServiceHairBySalonInformationId(id));
+      dispatch(fetchFeedbackBySalonInformationId(id, 1, 3));
     } catch (error) {
       console.error("Failed to fetch SalonInformation By Id:", error);
     }
@@ -99,6 +101,27 @@ export function fetchServiceHairBySalonInformationId(id) {
       const response =
         await SalonInfomationService.GetServiceHairBySalonInformationId(id);
       dispatch({ type: GET_SALON_SERVICE_BY_SALON_ID, payload: response.data });
+    } catch (error) {
+      console.error(
+        "Failed to fetch ServiceHair By SalonInformationId:",
+        error
+      );
+    }
+  };
+}
+export function fetchFeedbackBySalonInformationId(id, page, size, rating) {
+  return async (dispatch) => {
+    try {
+      const response = await SalonInfomationService.GetFeedBackBySalonId(
+        id,
+        page,
+        size,
+        rating
+      );
+      dispatch({
+        type: GET_SALON_FEEDBACK_BY_SALON_ID,
+        payload: response.data,
+      });
     } catch (error) {
       console.error(
         "Failed to fetch ServiceHair By SalonInformationId:",

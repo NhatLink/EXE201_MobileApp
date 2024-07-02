@@ -7,6 +7,7 @@ import otpReducer from "./otp/reducer";
 import appointmentReducer from "./appointment/reducer";
 import bookingServiceReducer from "./booking/reducer";
 import voucherServiceReducer from "./voucher/reducer";
+import reportServiceReducer from "./report/reducer";
 const rootReducer = combineReducers({
   USER: userReducer,
   booking: bookingReducer,
@@ -15,6 +16,7 @@ const rootReducer = combineReducers({
   APPOINTMENT: appointmentReducer,
   BOOKING: bookingServiceReducer,
   VOUCHER: voucherServiceReducer,
+  REPORT: reportServiceReducer,
 });
 
 const store = createStore(rootReducer, applyMiddleware(thunk));
