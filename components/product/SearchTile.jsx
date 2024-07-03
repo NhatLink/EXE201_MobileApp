@@ -155,7 +155,7 @@ const SearchTile = ({ item }) => {
               style={styles.bookButton}
               onPress={() => handleBook(item?.id, itemService)}
             >
-              <Text style={styles.button}>Book</Text>
+              <Text style={styles.button}>Đặt</Text>
             </TouchableOpacity>
           </View>
         ))}

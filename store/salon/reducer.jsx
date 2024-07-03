@@ -41,7 +41,7 @@ const reducer = (state = initialState, action) => {
     case SEARCH_SALON_INFORMATION:
       return {
         ...state,
-        searchSalon: action.payload.items,
+        searchSalon: action.payload,
       };
     case GET_SALON_FEEDBACK_BY_SALON_ID:
       return {

@@ -8,6 +8,8 @@ import {
   Modal,
   ScrollView,
   Button,
+  ToastAndroid,
+  Linking,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -23,41 +25,19 @@ import axios from "axios";
 const GOOGLE_API_KEY = "AIzaSyCmAt2KHp7yJVDWMWlrd_uUMtvzhSExNaQ";
 const About = (storeId) => {
   const navigation = useNavigation();
-  const workingDays = [
-    {
-      dayOfWeek: "Monday",
-      status: "Open",
-      openTime: "9:00",
-      closeTime: "19:00",
-    },
-    {
-      dayOfWeek: "Tuesday",
-      status: "Open",
-      openTime: "9:00",
-      closeTime: "19:00",
-    },
-    {
-      dayOfWeek: "Wednesday",
-      status: "Closed",
-      openTime: "-",
-      closeTime: "-",
-    },
-    {
-      dayOfWeek: "Thursday",
-      status: "Open",
-      openTime: "9:00",
-      closeTime: "19:00",
-    },
-    {
-      dayOfWeek: "Friday",
-      status: "Open",
-      openTime: "9:00",
-      closeTime: "21:00",
-    },
-  ];
   const { salonService, salonDetail, salonEmployee } = useSelector(
     (state) => state.SALON
   );
+  const handleCallPress = (phoneNumber) => {
+    if (phoneNumber && phoneNumber.match(/^[0-9]{10}$/)) {
+      Linking.openURL(`tel:${phoneNumber}`);
+    } else {
+      ToastAndroid.show(
+        "Có vẻ số điện thoại của salon / barber không đúng, vui lòng thử lại sau",
+        ToastAndroid.SHORT
+      );
+    }
+  };
 
   // const [destination, setDestination] = useState({
   //   latitude: 10.875123789279687,
@@ -238,8 +218,13 @@ const About = (storeId) => {
               {salonDetail?.salonOwner?.phone}
             </Text>
           </View>
-          <TouchableOpacity style={styles.bookButton} onPress={() => {}}>
-            <Text style={styles.button}>Call</Text>
+          <TouchableOpacity
+            style={styles.bookButton}
+            onPress={() => {
+              handleCallPress(salonDetail?.salonOwner?.phone);
+            }}
+          >
+            <Text style={styles.button}>Gọi điện</Text>
           </TouchableOpacity>
         </View>
         {/* <View style={styles.contactContanner}>
@@ -345,17 +330,20 @@ const styles = StyleSheet.create({
     alignItems: "flex-end", // Align text to right if needed
   },
   bookButton: {
-    flex: 2, // 1 part
+    flex: 3, // 1 part
   },
   bookButton2: {
     marginHorizontal: 20,
   },
   button: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
     backgroundColor: COLORS.secondary,
     textAlign: "center",
     padding: 10,
     borderRadius: 10,
-    marginLeft: 5,
+    // marginLeft: 5,
     fontWeight: "bold",
   },
   serviceName: {

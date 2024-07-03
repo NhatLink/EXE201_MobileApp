@@ -18,21 +18,28 @@
       "supportsTablet": true
     },
     "android": {
+      "usesCleartextTraffic": true,
       "adaptiveIcon": {
-        "foregroundImage": "./assets/HairhubIcon.png",
+        "foregroundImage": "./assets/LogoHair.jpg",
         "backgroundColor": "#ffffff"
       },
       "config": {
         "googleMaps": {
           "apiKey": "AIzaSyCmAt2KHp7yJVDWMWlrd_uUMtvzhSExNaQ"
         }
-      }
+      },
+      "package": "com.nhatlink.hairhub"
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
       "expo-secure-store"
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "8b27474d-e39c-4e00-9399-76a93f2618c7"
+      }
+    }
   }
 }

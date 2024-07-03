@@ -26,182 +26,6 @@ import { searchSalonInformation } from "../store/salon/action";
 import Loader from "../components/auth/Loader";
 import * as SecureStore from "expo-secure-store";
 const Search = () => {
-  const products = [
-    {
-      id: "1",
-      image: [
-        "https://images.squarespace-cdn.com/content/v1/5fd787d32a8a4a2604b22b5d/a1a982a2-8886-4017-a735-3fde5aeab145/msbs-barbershop-perspective-22000.jpg",
-      ],
-      productName: "Haircut Classic",
-      description:
-        "QL51/KM47 Đ. Hùng Vương, Tân Phước, Tân Thành, Bà Rịa - Vũng Tàu 790000, Việt Nam",
-      price: 15,
-      avgRating: 4.2,
-      reviewCount: 25,
-      services: [
-        {
-          service_id: 1,
-          serviceName: "Basic Haircut",
-          description: "Quick and suitable haircut for all ages.",
-          price: 150000,
-          reducePrice: 120000,
-          serviceTime: "30 minutes",
-          images: [
-            {
-              id: 1,
-              src: "https://cdn.myspa.vn/file/myspa-cdn/myspa_blog/uploads/2021/08/Goi-tao-kieu-toc-1024x642.jpg",
-              uploadDate: "2024-05-01",
-            },
-            {
-              id: 2,
-              src: "https://cdn.myspa.vn/file/myspa-cdn/myspa_blog/uploads/2021/08/Goi-cat-toc-1024x642.jpg",
-              uploadDate: "2024-05-01",
-            },
-            {
-              id: 3,
-              src: "https://cdn.myspa.vn/file/myspa-cdn/myspa_blog/uploads/2021/08/Goi-duoi-toc-1024x642.jpg",
-              uploadDate: "2024-05-01",
-            },
-          ],
-        },
-        {
-          service_id: 2,
-          serviceName: "Shaving",
-          description: "Facial shave with a special razor, includes skin care.",
-          price: 100000,
-          serviceTime: "15 minutes",
-          images: [
-            {
-              id: 1,
-              src: "https://cdn.myspa.vn/file/myspa-cdn/myspa_blog/uploads/2021/08/Goi-tao-kieu-toc-1024x642.jpg",
-              uploadDate: "2024-05-01",
-            },
-            {
-              id: 2,
-              src: "https://cdn.myspa.vn/file/myspa-cdn/myspa_blog/uploads/2021/08/Goi-cat-toc-1024x642.jpg",
-              uploadDate: "2024-05-01",
-            },
-            {
-              id: 3,
-              src: "https://cdn.myspa.vn/file/myspa-cdn/myspa_blog/uploads/2021/08/Goi-duoi-toc-1024x642.jpg",
-              uploadDate: "2024-05-01",
-            },
-          ],
-        },
-      ],
-    },
-    {
-      id: "2",
-      image: [
-        "https://images.squarespace-cdn.com/content/v1/5fd787d32a8a4a2604b22b5d/a1a982a2-8886-4017-a735-3fde5aeab145/msbs-barbershop-perspective-22000.jpg",
-      ],
-      productName: "Beard Trim",
-      description:
-        "QL51/KM47 Đ. Hùng Vương, Tân Phước, Tân Thành, Bà Rịa - Vũng Tàu 790000, Việt Nam",
-      price: 10,
-      avgRating: 4.5,
-      reviewCount: 18,
-    },
-    {
-      id: "3",
-      image: [
-        "https://images.squarespace-cdn.com/content/v1/5fd787d32a8a4a2604b22b5d/a1a982a2-8886-4017-a735-3fde5aeab145/msbs-barbershop-perspective-22000.jpg",
-      ],
-      productName: "Hair Coloring",
-      description:
-        "QL51/KM47 Đ. Hùng Vương, Tân Phước, Tân Thành, Bà Rịa - Vũng Tàu 790000, Việt Nam",
-      price: 50,
-      avgRating: 4.8,
-      reviewCount: 10,
-    },
-    {
-      id: "4",
-      image: [
-        "https://images.squarespace-cdn.com/content/v1/5fd787d32a8a4a2604b22b5d/a1a982a2-8886-4017-a735-3fde5aeab145/msbs-barbershop-perspective-22000.jpg",
-      ],
-      productName: "Hair Wash",
-      description:
-        "QL51/KM47 Đ. Hùng Vương, Tân Phước, Tân Thành, Bà Rịa - Vũng Tàu 790000, Việt Nam",
-      price: 8,
-      avgRating: 4.0,
-      reviewCount: 30,
-    },
-    {
-      id: "5",
-      image: [
-        "https://images.squarespace-cdn.com/content/v1/5fd787d32a8a4a2604b22b5d/a1a982a2-8886-4017-a735-3fde5aeab145/msbs-barbershop-perspective-22000.jpg",
-      ],
-      productName: "Complete Grooming",
-      description:
-        "QL51/KM47 Đ. Hùng Vương, Tân Phước, Tân Thành, Bà Rịa - Vũng Tàu 790000, Việt Nam",
-      price: 70,
-      avgRating: 4.9,
-      reviewCount: 20,
-    },
-    {
-      id: "6",
-      image: [
-        "https://images.squarespace-cdn.com/content/v1/5fd787d32a8a4a2604b22b5d/a1a982a2-8886-4017-a735-3fde5aeab145/msbs-barbershop-perspective-22000.jpg",
-      ],
-      productName: "Complete Grooming",
-      description:
-        "QL51/KM47 Đ. Hùng Vương, Tân Phước, Tân Thành, Bà Rịa - Vũng Tàu 790000, Việt Nam",
-      price: 70,
-      avgRating: 4.9,
-      reviewCount: 20,
-      services: [
-        {
-          service_id: 1,
-          serviceName: "Basic Haircut",
-          description: "Quick and suitable haircut for all ages.",
-          price: 150000,
-          reducePrice: 120000,
-          serviceTime: "30 minutes",
-          images: [
-            {
-              id: 1,
-              src: "https://cdn.myspa.vn/file/myspa-cdn/myspa_blog/uploads/2021/08/Goi-tao-kieu-toc-1024x642.jpg",
-              uploadDate: "2024-05-01",
-            },
-            {
-              id: 2,
-              src: "https://cdn.myspa.vn/file/myspa-cdn/myspa_blog/uploads/2021/08/Goi-cat-toc-1024x642.jpg",
-              uploadDate: "2024-05-01",
-            },
-            {
-              id: 3,
-              src: "https://cdn.myspa.vn/file/myspa-cdn/myspa_blog/uploads/2021/08/Goi-duoi-toc-1024x642.jpg",
-              uploadDate: "2024-05-01",
-            },
-          ],
-        },
-      ],
-    },
-    {
-      id: "7",
-      image: [
-        "https://images.squarespace-cdn.com/content/v1/5fd787d32a8a4a2604b22b5d/a1a982a2-8886-4017-a735-3fde5aeab145/msbs-barbershop-perspective-22000.jpg",
-      ],
-      productName: "Computer hair ",
-      description:
-        "QL51/KM47 Đ. Hùng Vương, Tân Phước, Tân Thành, Bà Rịa - Vũng Tàu 790000, Việt Nam",
-      price: 70,
-      avgRating: 4.9,
-      reviewCount: 20,
-    },
-    {
-      id: "8",
-      image: [
-        "https://images.squarespace-cdn.com/content/v1/5fd787d32a8a4a2604b22b5d/a1a982a2-8886-4017-a735-3fde5aeab145/msbs-barbershop-perspective-22000.jpg",
-      ],
-      productName: "LAst ",
-      description:
-        "QL51/KM47 Đ. Hùng Vương, Tân Phước, Tân Thành, Bà Rịa - Vũng Tàu 790000, Việt Nam",
-      price: 70,
-      avgRating: 4.9,
-      reviewCount: 20,
-    },
-  ];
   const dispatch = useDispatch();
   const [searchKeyService, setSearchKeyService] = useState("");
   const [searchKeyStore, setSearchKeyStore] = useState("");
@@ -214,6 +38,16 @@ const Search = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const { searchSalon } = useSelector((state) => state.SALON);
+  const Decrease = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+  const Increase = () => {
+    if (currentPage < searchSalon?.totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
   useEffect(() => {
     async function fetchData() {
       setLoader(true);
@@ -376,10 +210,10 @@ const Search = () => {
           </View>
         </View>
       </View>
-      {searchSalon.length === 0 ? (
+      {searchSalon && searchSalon?.items && searchSalon?.items?.length === 0 ? (
         <View style={{ flex: 1 }}>
           <Text style={styles.searchResultText}>
-            {`Kết quả tìm kiếm (${searchSalon.length})`}
+            {`Kết quả tìm kiếm (${searchSalon?.items?.length})`}
           </Text>
           <Image
             source={require("../assets/images/Pose23.png")}
@@ -389,13 +223,34 @@ const Search = () => {
       ) : (
         <>
           <Text style={styles.searchResultText}>
-            {`Kết quả tìm kiếm (${searchSalon.length})`}
+            {`Kết quả tìm kiếm (${searchSalon?.items?.length})`}
           </Text>
           <FlatList
-            data={searchSalon}
+            data={searchSalon.items}
             keyExtractor={(item) => item?.id}
             renderItem={({ item }) => <SearchTile item={item} />}
           />
+          <View style={styles.paging}>
+            {currentPage > 1 && (
+              <TouchableOpacity style={styles.pagingArrow} onPress={Decrease}>
+                <Ionicons
+                  name="arrow-back-circle-outline"
+                  size={24}
+                  color={COLORS.primary}
+                />
+              </TouchableOpacity>
+            )}
+            <Text style={styles.pagingArrow}>{searchSalon?.page}</Text>
+            {currentPage < searchSalon?.totalPages && (
+              <TouchableOpacity style={styles.pagingArrow} onPress={Increase}>
+                <Ionicons
+                  name="arrow-forward-circle-outline"
+                  size={24}
+                  color={COLORS.primary}
+                />
+              </TouchableOpacity>
+            )}
+          </View>
         </>
       )}
       <SearchStoreModal
@@ -544,5 +399,17 @@ const styles = StyleSheet.create({
     textAlign: "left",
     fontSize: SIZES.medium,
     paddingHorizontal: 20,
+  },
+  paging: {
+    // position: "absolute",
+    // bottom: 0,
+    // right: "50%",
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  pagingArrow: {
+    // marginVertical: 10,
+    padding: 10,
   },
 });
