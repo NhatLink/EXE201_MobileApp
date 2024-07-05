@@ -79,7 +79,7 @@ const SearchSeviceModal = ({
             />
           </TouchableOpacity>
         </View>
-        {result.map((item) => (
+        {/* {result.map((item) => (
           <TouchableOpacity
             key={item}
             style={styles.serviceItem}
@@ -95,7 +95,7 @@ const SearchSeviceModal = ({
               {item}
             </Text>
           </TouchableOpacity>
-        ))}
+        ))} */}
       </View>
       <TouchableOpacity style={styles.buttonClose} onPress={onClose}>
         {/* <Text style={styles.textStyle}>Close</Text> */}

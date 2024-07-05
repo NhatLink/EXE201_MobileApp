@@ -132,11 +132,11 @@ const DetailProfile = ({ navigation }) => {
   };
   const handleChangeFullName = () => {
     if (!fullname) {
-      handleError("Full name is required", "fullname");
+      handleError("Cần nhập đầy đủ họ tên", "fullname");
     } else if (fullname.length < 3) {
-      handleError("Full name must be at least 3 characters", "fullname");
+      handleError("Họ tên phải có ít nhất 3 kí tự", "fullname");
     } else if (fullname.length > 40) {
-      handleError("Full name must be less than 40 characters", "fullname");
+      handleError("Họ tên không vượt quá 40 kí tự", "fullname");
     } else {
       setModalFullname(false);
       handleChanges(fullname, "fullName");
@@ -146,12 +146,9 @@ const DetailProfile = ({ navigation }) => {
   const handleChangeEmail = () => {
     if (!phone) {
       // handleError("Phone is required", "phone");
-      handleError("Email is required", "phone");
+      handleError("Chưa nhập số điện thoại", "phone");
     } else if (!phone.match(/^[0-9]{10}$/)) {
-      handleError(
-        "Provide a valid phone number with exactly 10 digits",
-        "phone"
-      );
+      handleError("Số điện thoại cần có đúng 10 chữ số", "phone");
     }
     // else if (!phone.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
     //   handleError("Provide a valid email address", "phone");
@@ -223,7 +220,7 @@ const DetailProfile = ({ navigation }) => {
       // Handling post-login logic can be done within the loginUser action or here
     } catch (error) {
       console.error("updateUserById error:", error);
-      Alert.alert("Error", "Oops, something went wrong. Try again");
+      Alert.alert("Lỗi", "Có lỗi gì đó xảy ra, thử lại sau");
     } finally {
       setLoader(false);
       navigation.navigate("Profile");
@@ -447,6 +444,7 @@ const DetailProfile = ({ navigation }) => {
                 <TextInput
                   style={styles.searchInput}
                   value={fullname}
+                  maxLength={40}
                   onChangeText={(text) => setFullname(text)}
                   placeholder="Họ và tên"
                   onFocus={() => {

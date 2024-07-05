@@ -149,22 +149,19 @@ const ListSchedule = React.memo(({ item }) => {
               <Text style={styles.description2}>Tổng tiền:</Text>
             </View>
             <TouchableOpacity style={styles.priceTime}>
-              {item?.discountedPrice > 0 ? (
+              {item && item?.discountedPrice > 0 ? (
                 <>
-                  <Text
-                    style={styles.descriptionPrice}
-                    numberOfLines={1}
-                  >{`${item?.totalPrice?.toLocaleString()} VND`}</Text>
-                  <Text
-                    style={styles.servicePrice2}
-                    numberOfLines={1}
-                  >{`${item?.originalPrice?.toLocaleString()} VND`}</Text>
+                  <Text style={styles.descriptionPrice} numberOfLines={1}>{`${
+                    item?.totalPrice?.toLocaleString() ?? 0
+                  } VND`}</Text>
+                  <Text style={styles.servicePrice2} numberOfLines={1}>{`${
+                    item?.originalPrice?.toLocaleString() ?? 0
+                  } VND`}</Text>
                 </>
               ) : (
-                <Text
-                  style={styles.descriptionPrice}
-                  numberOfLines={1}
-                >{`${item?.totalPrice?.toLocaleString()} VND`}</Text>
+                <Text style={styles.descriptionPrice} numberOfLines={1}>{`${
+                  item?.totalPrice?.toLocaleString() ?? 0
+                } VND`}</Text>
               )}
             </TouchableOpacity>
           </View>

@@ -66,17 +66,17 @@ const LoginPage = () => {
     //   valid = false;
     // }
     if (!inputs.username) {
-      handleError("Email is required", "username");
+      handleError("Chưa nhập email", "username");
       valid = false;
     } else if (!/\S+@\S+\.\S+/.test(inputs.username)) {
-      handleError("Provide a valid email", "username");
+      handleError("Email phải hợp lệ", "username");
       valid = false;
     }
     if (!inputs.password) {
-      handleError("Password is required", "password");
+      handleError("Chưa nhập mật khẩu", "password");
       valid = false;
     } else if (inputs.password.length < 8) {
-      handleError("At least 8 characters are required", "password");
+      handleError("Mật khẩu phải có ít nhất 8 kí tự", "password");
       valid = false;
     }
     if (valid) {

@@ -76,28 +76,31 @@ const Signup = () => {
     } = inputs;
 
     if (!userName) {
-      handleError("Email is required", "userName");
+      handleError("Chưa nhập email", "userName");
       valid = false;
     } else if (!/\S+@\S+\.\S+/.test(userName)) {
-      handleError("Provide a valid email", "userName");
+      handleError("Nhập email hợp lệ", "userName");
       valid = false;
     }
 
     if (!password) {
-      handleError("Password is required", "password");
+      handleError("Chưa nhập mật khẩu", "password");
       valid = false;
     } else if (password.length < 8) {
-      handleError("At least 8 characters are required", "password");
+      handleError("Mật khẩu cần ít nhất 8 kí tự", "password");
       valid = false;
     } else if (password.length > 30) {
-      handleError("No more 30 characters", "password");
+      handleError("Mật khẩu không vượt quá 30 kí tự", "password");
       valid = false;
     }
     if (!confirmPassword) {
-      handleError("Confirm Password is required", "confirmPassword");
+      handleError("Chưa nhập mật khẩu xác nhận", "confirmPassword");
       valid = false;
     } else if (confirmPassword !== password) {
-      handleError("Passwords do not match", "confirmPassword");
+      handleError(
+        "Mật khẩu xác nhận chưa trùng với mật khẩu",
+        "confirmPassword"
+      );
       valid = false;
     }
 
@@ -110,13 +113,13 @@ const Signup = () => {
     // }
 
     if (!fullName) {
-      handleError("Full name is required", "fullName");
+      handleError("Chưa nhập họ tên", "fullName");
       valid = false;
     } else if (fullName.length < 3) {
-      handleError("At least 3 characters are required", "fullName");
+      handleError("Họ tên cần ít nhất 3 kí tự", "fullName");
       valid = false;
     } else if (fullName.length > 30) {
-      handleError("No more 30 characters", "fullName");
+      handleError("Họ tên không vượt quá 30 kí tự", "fullName");
       valid = false;
     }
 
@@ -126,10 +129,10 @@ const Signup = () => {
     // }
 
     if (!phone) {
-      handleError("Phone is required", "phone");
+      handleError("Số điện thoại chưa nhập", "phone");
       valid = false;
     } else if (!phone.match(/^[0-9]{10}$/)) {
-      handleError("Provide a valid phone number", "phone");
+      handleError("Số điện thoại cần có đúng 10 chữ số", "phone");
       valid = false;
     }
 

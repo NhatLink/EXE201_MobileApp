@@ -8,7 +8,6 @@ import {
   RefreshControl,
 } from "react-native";
 import ProductCardView from "../ProductViewCard";
-import useFetch from "../../hook/useFetch";
 import { COLORS, SIZES } from "../../constants";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchSalonInformation } from "../../store/salon/action";

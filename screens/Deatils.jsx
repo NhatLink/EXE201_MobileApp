@@ -26,7 +26,6 @@ import addToCart from "../hook/addToCart";
 import { WebView } from "react-native-webview";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { FontAwesome, FontAwesome5 } from "@expo/vector-icons";
-import useUser from "../hook/useUser";
 import axios from "axios";
 import { usePayment } from "../hook/PaymentContext";
 import Toast from "react-native-toast-message";
@@ -47,12 +46,9 @@ const Details = ({ navigation }) => {
   const [favorites, setFavorites] = useState(false);
   const [idUser, setIdUser] = useState(null);
   const [loader, setLoader] = useState(false);
-  const userLogin = useUser(navigation);
   const { setPaymentUrl } = usePayment();
   const dispatch = useDispatch();
-  const { salonService, salonDetail, salonEmployee } = useSelector(
-    (state) => state.SALON
-  );
+  const { salonDetail, loading } = useSelector((state) => state.SALON);
   useFocusEffect(
     useCallback(() => {
       checkFavorites();
@@ -149,9 +145,19 @@ const Details = ({ navigation }) => {
       console.log(error);
     }
   };
+
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color={COLORS.primary} />
+        <Text>Đang lấy dữ liệu, xin chờ</Text>
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
-      <Loader visible={loader} />
+      {/* <Loader visible={loading} /> */}
       <ScrollView style={styles.wrapper}>
         <View style={styles.upperRow}>
           <TouchableOpacity onPress={() => navigation.goBack()}>
@@ -326,6 +332,12 @@ const styles = StyleSheet.create({
   image: {
     aspectRatio: 1,
     resizeMode: "cover",
+  },
+  loadingContainer: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    alignContent: "center",
   },
 });
 

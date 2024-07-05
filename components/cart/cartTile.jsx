@@ -16,7 +16,6 @@ import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
 import { WebView } from "react-native-webview";
-import useUser from "../../hook/useUser";
 import { baseUrl } from "../../utils/IP";
 import formatDate from "../../utils/helper";
 import { usePayment } from "../../hook/PaymentContext";
@@ -30,7 +29,6 @@ const CartTile = ({ item }) => {
   const [count, setCount] = useState(item?.order?.quantity);
   const [contentLocation, setcontentLocation] = useState("");
   // const [paymentUrl, setPaymentUrl] = useState(null);
-  const userLogin = useUser(navigation);
   const { setPaymentUrl } = usePayment();
   const [loading, setLoading] = useState(false);
   const toggleModal = () => {
@@ -100,10 +98,6 @@ const CartTile = ({ item }) => {
   // };
 
   const handlePress = async () => {
-    if (!userLogin) {
-      navigation.navigate("Login");
-      return;
-    }
     if (contentLocation === "") {
       Alert.alert("Error", "Gift sending address");
       return;

@@ -274,7 +274,7 @@ const About = (storeId) => {
                   </Text>
                 ) : (
                   <Text style={styles.servicePrice} numberOfLines={1}>
-                    Close
+                    Đóng cửa
                   </Text>
                 )}
               </View>

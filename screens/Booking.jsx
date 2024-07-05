@@ -60,26 +60,27 @@ const Booking = ({ navigation }) => {
     totalPrice,
     createAppointment,
   } = useSelector((state) => state.BOOKING);
+  const { user, accountId } = useSelector((state) => state.USER);
   console.log("availableTime", availableTime);
   // console.log("bookAppoinment", bookAppoinment?.bookingDetailResponses);
   // console.log("voucher:", voucher);
   console.log("dateBooking", dateBooking);
   const canPressButton = availableTime && availableTime.length > 0;
   const confirmBooking = async () => {
-    const userInfoJson = await SecureStore.getItemAsync("userInfo");
-    const accountId = await SecureStore.getItemAsync("accountId");
-    let userInfo = null;
-    if (userInfoJson) {
-      try {
-        userInfo = JSON.parse(userInfoJson);
-      } catch (error) {
-        console.error("Error parsing userInfo", error);
-      }
-    }
+    // const userInfoJson = await SecureStore.getItemAsync("userInfo");
+    // const accountId = await SecureStore.getItemAsync("accountId");
+    // let userInfo = null;
+    // if (userInfoJson) {
+    //   try {
+    //     userInfo = JSON.parse(userInfoJson);
+    //   } catch (error) {
+    //     console.error("Error parsing userInfo", error);
+    //   }
+    // }
 
     if (
-      userInfo &&
-      userInfo?.id &&
+      user &&
+      user?.id &&
       bookAppoinment &&
       bookAppoinment.bookingDetailResponses &&
       totalPrice &&
@@ -375,7 +376,7 @@ const Booking = ({ navigation }) => {
       </ScrollView>
       <View style={styles.bookContainer}>
         <View style={styles.bookPriceContainer}>
-          <Text style={styles.priceText}>Total Price:</Text>
+          <Text style={styles.priceText}>Tổng tiền:</Text>
           {/* <Text
             style={styles.priceText}
           >{`${totalPrice?.originalPrice?.toLocaleString()} VND`}</Text> */}

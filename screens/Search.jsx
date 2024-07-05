@@ -213,7 +213,7 @@ const Search = () => {
       {searchSalon && searchSalon?.items && searchSalon?.items?.length === 0 ? (
         <View style={{ flex: 1 }}>
           <Text style={styles.searchResultText}>
-            {`Kết quả tìm kiếm (${searchSalon?.items?.length})`}
+            {`Kết quả tìm kiếm (${searchSalon?.items?.length ?? 0})`}
           </Text>
           <Image
             source={require("../assets/images/Pose23.png")}

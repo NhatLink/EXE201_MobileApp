@@ -9,7 +9,7 @@ import { useNavigation } from "@react-navigation/native";
 import { useFocusEffect } from "@react-navigation/native";
 import fetchOrders from "../hook/fetchOrders";
 import * as SecureStore from "expo-secure-store";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { GetAppointmentByHistoryCustomerId } from "../store/appointment/action";
 
 const Orders = () => {
@@ -18,29 +18,21 @@ const Orders = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(100);
   const navigation = useNavigation();
-  // useFocusEffect(
-  //   React.useCallback(() => {
-  //     refetch;
-  //   }, [])
-  // );
+  const { user } = useSelector((state) => state.USER);
   useEffect(() => {
     async function fetchData() {
-      const userInfoJson = await SecureStore.getItemAsync("userInfo");
-      let userInfo = null;
-      if (userInfoJson) {
-        try {
-          userInfo = JSON.parse(userInfoJson);
-        } catch (error) {
-          console.error("Error parsing userInfo", error);
-        }
-      }
-      if (userInfo && userInfo?.id) {
+      // const userInfoJson = await SecureStore.getItemAsync("userInfo");
+      // let userInfo = null;
+      // if (userInfoJson) {
+      //   try {
+      //     userInfo = JSON.parse(userInfoJson);
+      //   } catch (error) {
+      //     console.error("Error parsing userInfo", error);
+      //   }
+      // }
+      if (user && user?.id) {
         dispatch(
-          GetAppointmentByHistoryCustomerId(
-            currentPage,
-            itemsPerPage,
-            userInfo?.id
-          )
+          GetAppointmentByHistoryCustomerId(currentPage, itemsPerPage, user?.id)
         );
       }
       // console.log("accountId", userInfo);

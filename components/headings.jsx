@@ -11,7 +11,6 @@ import {
 import React from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
-import useFetch from "../hook/useFetch";
 import { COLORS, SIZES } from "../constants";
 import ProductSpecialViewCard from "./ProductSpecialViewCard";
 import { useSelector } from "react-redux";
@@ -127,7 +126,6 @@ const Headings = () => {
       company: "Chăm sóc tóc",
     },
   ];
-  const { data, isLoading, error } = useFetch();
   return (
     <View style={styles.container}>
       <View style={styles.filtersContainer}>

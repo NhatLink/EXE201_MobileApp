@@ -11,7 +11,6 @@ import {
   FlatList,
 } from "react-native";
 import { COLORS, SIZES } from "../../constants";
-// import useFetch from "../../hook/useFetch";
 import ProductViewCard from "../ProductViewCard";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";

@@ -25,10 +25,11 @@ const SearchWhereModal = ({
   // const [location, setLocation] = useState("Ho Chi Minh, Vietnam");
   const { width, height } = useWindowDimensions();
   const handleSearch = async (data, details) => {
+    let desiredDescription = data.description.replace(", Việt Nam", "");
     Keyboard.dismiss();
     try {
       if (onSearchKeyChange) {
-        onSearchKeyChange(data.description);
+        onSearchKeyChange(desiredDescription);
       }
       onClose();
     } catch (error) {
@@ -50,7 +51,7 @@ const SearchWhereModal = ({
   const requestLocationPermission = async () => {
     let { status } = await Location.requestForegroundPermissionsAsync();
     if (status !== "granted") {
-      alert("Permission to access location was denied");
+      alert("Yêu cầu vị trí bị từ chối !");
       return false;
     }
     return true;
@@ -82,7 +83,10 @@ const SearchWhereModal = ({
         }
       } catch (error) {
         console.error("Error getting location:", error);
-        Alert.alert("Error", "Unable to retrieve location. Please try again.");
+        Alert.alert(
+          "Lỗi",
+          "Chưa thể lấy được vị trí của người dùng, vui lòng thử lại sau!"
+        );
       }
     }
   };

@@ -19,7 +19,7 @@ export default function QRScanner({ navigation }) {
   const [scanned, setScanned] = useState(false);
   const [loader, setLoader] = useState(false);
   const [dataScan, setDataScan] = useState(null);
-  const { checkInStatus, checkInData, accountId } = useSelector(
+  const { checkInStatus, checkInData, accountId, user } = useSelector(
     (state) => state.USER
   );
   const dispatch = useDispatch();
@@ -36,21 +36,21 @@ export default function QRScanner({ navigation }) {
     async function fetchData() {
       if (dataScan) {
         setLoader(true);
-        const accountId = await SecureStore.getItemAsync("accountId");
-        const userInfoJson = await SecureStore.getItemAsync("userInfo");
-        let userInfo = null;
-        if (userInfoJson) {
-          try {
-            userInfo = JSON.parse(userInfoJson);
-          } catch (error) {
-            console.error("Error parsing userInfo", error);
-          }
-        }
+        // const accountId = await SecureStore.getItemAsync("accountId");
+        // const userInfoJson = await SecureStore.getItemAsync("userInfo");
+        // let userInfo = null;
+        // if (userInfoJson) {
+        //   try {
+        //     userInfo = JSON.parse(userInfoJson);
+        //   } catch (error) {
+        //     console.error("Error parsing userInfo", error);
+        //   }
+        // }
         const data = {
-          customerId: userInfo?.id,
+          customerId: user?.id,
           dataString: dataScan,
         };
-        if (dataScan && accountId && userInfo && userInfo?.id) {
+        if (dataScan && accountId && user && user?.id) {
           await dispatch(checkInByUser(accountId, data));
         }
         setLoader(false);

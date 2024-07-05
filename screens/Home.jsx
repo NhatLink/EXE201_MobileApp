@@ -62,7 +62,7 @@ const Home = () => {
   const requestLocationPermission = async () => {
     let { status } = await Location.requestForegroundPermissionsAsync();
     if (status !== "granted") {
-      alert("Permission to access location was denied");
+      alert("Yêu cầu vị trí bị từ chối !");
       return false;
     }
     return true;
@@ -82,7 +82,10 @@ const Home = () => {
         }
       } catch (error) {
         console.error("Error getting location:", error);
-        Alert.alert("Error", "Unable to retrieve location. Please try again.");
+        Alert.alert(
+          "Lỗi",
+          "Chưa thể lấy được vị trí của người dùng, vui lòng thử lại sau!"
+        );
       }
     }
   };

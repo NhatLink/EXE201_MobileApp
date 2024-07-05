@@ -79,23 +79,23 @@ const DetailAppointmennt = ({ navigation }) => {
   const OnCancel = async (reason) => {
     async function fetchData() {
       setLoad(true);
-      const accountId = await SecureStore.getItemAsync("accountId");
-      const userInfoJson = await SecureStore.getItemAsync("userInfo");
-      let userInfo = null;
-      if (userInfoJson) {
-        try {
-          userInfo = JSON.parse(userInfoJson);
-        } catch (error) {
-          console.error("Error parsing userInfo", error);
-        }
-      }
+      // const accountId = await SecureStore.getItemAsync("accountId");
+      // const userInfoJson = await SecureStore.getItemAsync("userInfo");
+      // let userInfo = null;
+      // if (userInfoJson) {
+      //   try {
+      //     userInfo = JSON.parse(userInfoJson);
+      //   } catch (error) {
+      //     console.error("Error parsing userInfo", error);
+      //   }
+      // }
       const data = {
         customerId: userInfo?.id,
         reasonCancel: reason,
       };
 
       console.log(data);
-      if (appointmentDetail?.id && accountId && userInfo && userInfo?.id) {
+      if (appointmentDetail?.id && accountId && user && user?.id) {
         await dispatch(
           CancelAppointmentByCustomer(
             appointmentDetail?.id,
@@ -258,7 +258,7 @@ const DetailAppointmennt = ({ navigation }) => {
     return d;
   };
 
-  if (load) {
+  if (loading) {
     return (
       <SafeAreaView style={styles.container}>
         <View style={styles.upperRow}>
@@ -332,7 +332,8 @@ const DetailAppointmennt = ({ navigation }) => {
         <View style={styles.section}>
           <View style={styles.sectionRow1}>
             <Text style={styles.header}>Trạng thái</Text>
-            {appointmentDetail?.status === "BOOKING" && (
+            {appointmentDetail &&
+            appointmentDetail?.status !== "BOOKING" ? null : (
               <TouchableOpacity
                 style={styles.bookButton}
                 onPress={() => setModalVisible1(true)}

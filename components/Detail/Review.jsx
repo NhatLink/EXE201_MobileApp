@@ -24,7 +24,6 @@ const Review = (storeId) => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const { feedback, salonDetail } = useSelector((state) => state.SALON);
-  console.log(feedback);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(3);
   const [selectedRating, setSelectedRating] = useState(null);

@@ -179,7 +179,7 @@ export const fetchUser2 = (accessToken) => async (dispatch, getState) => {
       JSON.stringify(response.data.customerResponse)
     );
     dispatch({ type: FETCH_USER_SUCCESS, payload: response.data });
-    ToastAndroid.show("Chào mừng trở lại", ToastAndroid.SHORT);
+    // ToastAndroid.show("Chào mừng trở lại", ToastAndroid.SHORT);
   } catch (error) {
     if (error.response.status === 401) {
       console.log("Access token expired");
@@ -194,7 +194,7 @@ export const fetchUser2 = (accessToken) => async (dispatch, getState) => {
           JSON.stringify(response.data.customerResponse)
         );
         dispatch({ type: FETCH_USER_SUCCESS, payload: response.data });
-        ToastAndroid.show("Chào mừng trở lại !", ToastAndroid.SHORT);
+        // ToastAndroid.show("Chào mừng trở lại !", ToastAndroid.SHORT);
       } else {
         dispatch({ type: FETCH_USER_FAIL, payload: error.response?.data });
       }

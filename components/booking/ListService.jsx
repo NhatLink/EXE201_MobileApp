@@ -123,6 +123,15 @@ const ListService = () => {
               styles.subcontainer,
           ]}
         >
+          {item && item?.waitingTime === 0 ? null : (
+            <View style={styles.containerDate}>
+              <View style={styles.line1} />
+              <Text style={styles.text}>
+                {` Chờ ${item?.waitingTime ?? 0 * 60} phút`}
+              </Text>
+              <View style={styles.line} />
+            </View>
+          )}
           <View style={styles.container}>
             <View style={styles.serviceConatainer}>
               <View
@@ -208,16 +217,6 @@ const ListService = () => {
           {/* <Text style={styles.watingTime} numberOfLines={2}>
             {`-----------Chờ ${item?.waitingTime * 60} phút -------------`}
           </Text> */}
-          {item?.waitingTime !== 0 && (
-            <View style={styles.containerDate}>
-              <View style={styles.line1} />
-              <Text style={styles.text}>
-                {" "}
-                Chờ {item?.waitingTime ?? 0 * 60} Phút
-              </Text>
-              <View style={styles.line} />
-            </View>
-          )}
         </View>
       ))}
       <StaffService

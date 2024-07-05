@@ -37,15 +37,14 @@ const Schedule = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(20);
   const { appointment, loading } = useSelector((state) => state.APPOINTMENT);
-  const { user, accessToken, refreshToken, isAuthenticated } = useSelector(
-    (state) => state.USER
-  );
+  const { user, accessToken, refreshToken, isAuthenticated, accountId } =
+    useSelector((state) => state.USER);
   // console.log(appointment);
   // console.log(isAuthenticated);
   const [refreshing, setRefreshing] = useState(false);
 
   const fetchData = async () => {
-    const accountId = await SecureStore.getItemAsync("accountId");
+    // const accountId = await SecureStore.getItemAsync("accountId");
     // console.log(accountId);
     if (accountId) {
       dispatch(GetAppointmentByAccountId(currentPage, itemsPerPage, accountId));
@@ -53,8 +52,10 @@ const Schedule = () => {
   };
 
   useEffect(() => {
-    fetchData();
-  }, []);
+    if (isAuthenticated) {
+      fetchData();
+    }
+  }, [isAuthenticated]);
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
@@ -63,7 +64,6 @@ const Schedule = () => {
 
   const [items, setItems] = useState({});
   // const [selectedDate, setSelectedDate] = useState(null);
-  console.log("items", items);
   useEffect(() => {
     const newItems = {};
     if (appointment && appointment.length > 0) {
@@ -130,7 +130,7 @@ const Schedule = () => {
       >
         <Loader visible={loading} />
         <Text style={styles.title}>Lịch hẹn của bạn</Text>
-        {appointment && appointment?.length === 0 ? (
+        {!isAuthenticated && appointment && appointment?.length === 0 ? (
           <View
             style={{
               flex: 1,

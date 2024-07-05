@@ -9,8 +9,6 @@ const useUser = (navigation) => {
       try {
         const id = await AsyncStorage.getItem("id");
         const accessToken = await AsyncStorage.getItem("accessToken");
-        console.log("token", accessToken);
-        console.log("id", id);
 
         const userID = `user${id ? JSON.parse(id) : "default"}`;
         const userData = await AsyncStorage.getItem(userID);

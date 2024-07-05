@@ -39,21 +39,20 @@ const History = () => {
   );
   console.log("customerReport:", customerReport);
   const fetchData = async () => {
-    const userInfoJson = await SecureStore.getItemAsync("userInfo");
-    let userInfo = null;
-    if (userInfoJson) {
-      try {
-        userInfo = JSON.parse(userInfoJson);
-      } catch (error) {
-        console.error("Error parsing userInfo", error);
-      }
-    }
-    if (userInfo && userInfo?.id) {
+    // const userInfoJson = await SecureStore.getItemAsync("userInfo");
+    // let userInfo = null;
+    // if (userInfoJson) {
+    //   try {
+    //     userInfo = JSON.parse(userInfoJson);
+    //   } catch (error) {
+    //     console.error("Error parsing userInfo", error);
+    //   }
+    // }
+    if (user && user?.id) {
       dispatch(
-        GetReportByCustomerId(userInfo?.id, currentPage, itemsPerPage, status)
+        GetReportByCustomerId(user?.id, currentPage, itemsPerPage, status)
       );
     }
-    console.log("accountId", userInfo);
   };
   useEffect(() => {
     fetchData();
