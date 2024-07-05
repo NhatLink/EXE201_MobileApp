@@ -1,55 +1,25 @@
 import React, { useState } from "react";
-import { View, Text, StyleSheet, Dimensions } from "react-native";
-import { TabView, SceneMap, TabBar } from "react-native-tab-view";
-import { COLORS, SIZES, images } from "../../constants";
+import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { FontAwesome } from "@expo/vector-icons";
 import Service from "./Service";
 import Review from "./Review";
 import About from "./About";
-import ImageInWork from "./ImageInWork";
-const initialLayout = { width: Dimensions.get("window").width };
-
-// const DịchVụ = ({ storeId }) => (
-//   <View style={[styles.scene, { backgroundColor: "#ff4081" }]}>
-//     <Service storeId={storeId} />
-//   </View>
-// );
-
-// const ĐánhGiá = ({ storeId }) => (
-//   <View style={[styles.scene, { backgroundColor: "#673ab7" }]}>
-//     <Review storeId={storeId} />
-//   </View>
-// );
-
-// const HìnhẢnh = () => (
-//   <View style={[styles.scene, { backgroundColor: "#2196f3" }]}>
-//     <Text>Hình ảnh</Text>
-//   </View>
-// );
-
-// const ChiTiết = ({ storeId }) => (
-//   <View style={[styles.scene, { backgroundColor: "#32cd32" }]}>
-//     <About storeId={storeId} />
-//   </View>
-// );
+import { COLORS } from "../../constants";
 
 const TabViewComponent = ({ storeId }) => {
-  const [index, setIndex] = useState(0);
-  const [routes] = useState([
-    { key: "dichvu", title: "Dịch Vụ" },
-    { key: "danhgia", title: "Đánh Giá" },
-    // { key: "hinhanh", title: "Hình Ảnh" },
-    { key: "chitiet", title: "Chi Tiết" },
-  ]);
-  // console.log("storeId in tab", storeId);
-  const renderScene = ({ route }) => {
-    switch (route.key) {
-      case "dichvu":
+  const [selectedTab, setSelectedTab] = useState("Dịch Vụ");
+
+  const handleTabChange = (tab) => {
+    setSelectedTab(tab);
+  };
+
+  const renderContent = () => {
+    switch (selectedTab) {
+      case "Dịch Vụ":
         return <Service storeId={storeId} />;
-      case "danhgia":
+      case "Đánh Giá":
         return <Review storeId={storeId} />;
-      // case "hinhanh":
-      //   return <ImageInWork storeId={storeId} />;
-      case "chitiet":
+      case "Chi Tiết":
         return <About storeId={storeId} />;
       default:
         return null;
@@ -57,20 +27,42 @@ const TabViewComponent = ({ storeId }) => {
   };
 
   return (
-    <TabView
-      navigationState={{ index, routes }}
-      renderScene={renderScene}
-      onIndexChange={setIndex}
-      initialLayout={initialLayout}
-      renderTabBar={(props) => (
-        <TabBar
-          {...props}
-          indicatorStyle={{ backgroundColor: COLORS.black }}
-          style={styles.style}
-          labelStyle={styles.labelStyle}
-        />
-      )}
-    />
+    <View style={{ flex: 1 }}>
+      <View style={styles.filtersContainer}>
+        {["Dịch Vụ", "Đánh Giá", "Chi Tiết"].map((tab) => (
+          <TouchableOpacity
+            key={tab}
+            style={[
+              styles.filterButton,
+              selectedTab === tab && styles.selectedFilterButton,
+            ]}
+            onPress={() => handleTabChange(tab)}
+          >
+            <View style={styles.filterContent}>
+              {/* <FontAwesome name="star" size={16} color="gold" /> */}
+              <Text style={styles.filterText}>{tab}</Text>
+            </View>
+          </TouchableOpacity>
+        ))}
+      </View>
+      <View style={styles.scene}>
+        <View
+          style={selectedTab === "Dịch Vụ" ? styles.visible : styles.hidden}
+        >
+          <Service storeId={storeId} />
+        </View>
+        <View
+          style={selectedTab === "Đánh Giá" ? styles.visible : styles.hidden}
+        >
+          <Review storeId={storeId} />
+        </View>
+        <View
+          style={selectedTab === "Chi Tiết" ? styles.visible : styles.hidden}
+        >
+          <About storeId={storeId} />
+        </View>
+      </View>
+    </View>
   );
 };
 
@@ -80,11 +72,45 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  style: { backgroundColor: COLORS.lightWhite },
-  labelStyle: {
-    color: COLORS.black,
-    textTransform: "none",
-    fontSize: SIZES.small,
+  filtersContainer: {
+    flexDirection: "row",
+    justifyContent: "space-around", // Dàn đều các nút tab
+    paddingVertical: 5,
+    backgroundColor: COLORS.lightWhite,
+  },
+  filterButton: {
+    flex: 1, // Chia đều không gian giữa các nút tab
+    padding: 10,
+    marginHorizontal: 5,
+    borderBottomWidth: 1,
+    borderColor: COLORS.gray2,
+    borderRadius: 5,
+    backgroundColor: COLORS.lightWhite,
+    alignItems: "center", // Căn giữa nội dung bên trong nút tab
+  },
+  selectedFilterButton: {
+    borderBottomWidth: 1,
+    borderColor: COLORS.black,
+  },
+  filterContent: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  filterText: {
+    marginLeft: 5,
+    textAlign: "center",
+    fontWeight: "bold",
+    fontSize: 14,
+  },
+  visible: {
+    flex: 1,
+    width: "100%",
+    height: "100%",
+    display: "flex",
+  },
+  hidden: {
+    display: "none",
   },
 });
 

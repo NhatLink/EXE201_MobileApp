@@ -221,7 +221,7 @@ const Details = ({ navigation }) => {
             )}
           </View>
         </View>
-        {/* <TabViewComponent storeId={salonDetail?.id} /> */}
+        <TabViewComponent storeId={salonDetail?.id} />
       </ScrollView>
     </View>
   );
@@ -255,8 +255,8 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     position: "absolute",
-    width: SIZES.width - 44,
-    top: SIZES.large,
+    width: SIZES.width - 30,
+    top: 10,
     zIndex: 999,
   },
   details: {
@@ -298,9 +298,9 @@ const styles = StyleSheet.create({
   ratingContainer: {
     flexDirection: "column",
     backgroundColor: COLORS.secondary,
-    position: "absolute",
-    top: 0,
-    right: 0,
+    // position: "absolute",
+    // top: 0,
+    // right: 0,
     borderTopEndRadius: 10,
     borderBottomStartRadius: 10,
     padding: 5,
