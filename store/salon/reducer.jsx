@@ -1,6 +1,5 @@
 import {
   ACT_SALON_INFORMATION,
-  ACT_SALON_INFORMATION_BY_ID,
   GET_SALON_EMPPLOYEE_BY_SALON_ID,
   GET_SALON_SERVICE_BY_SALON_ID,
   SEARCH_SALON_INFORMATION,
@@ -27,7 +26,6 @@ const reducer = (state = initialState, action) => {
       return {
         ...state,
         loading: true,
-        salonDetail: [],
       };
     case ACT_SALON_INFORMATION:
       return {

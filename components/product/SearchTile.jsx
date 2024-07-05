@@ -80,13 +80,11 @@ const SearchTile = ({ item }) => {
           <View style={styles.ratingContainer}>
             {/* <StarRating rating={item?.avgRating} /> */}
             <Text style={styles.averageRatingText}>
-              {item?.avgRating > 0
-                ? (item?.avgRating).toFixed(1) + "/5.0"
-                : "No ratings"}
+              {item?.rate > 0 ? (item?.rate).toFixed(1) + "/5.0" : "No ratings"}
             </Text>
             <Text style={styles.averageRatingText}>
-              {item?.reviewCount
-                ? item?.reviewCount + " reviews"
+              {item?.totalReviewer
+                ? item?.totalReviewer + " reviews"
                 : "(0 review)"}
             </Text>
           </View>

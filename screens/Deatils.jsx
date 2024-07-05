@@ -9,6 +9,7 @@ import {
   Modal,
   TextInput,
   ActivityIndicator,
+  ToastAndroid,
 } from "react-native";
 import { baseUrl } from "../utils/IP";
 import React, { useState, useEffect, useCallback } from "react";
@@ -34,6 +35,7 @@ import { SliderBox } from "react-native-image-slider-box";
 import TabViewComponent from "../components/Detail/TabViewComponent";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  fetchFeedbackBySalonInformationId,
   fetchSalonEmployeeBySalonInformationId,
   fetchSalonInformationById,
   fetchServiceHairBySalonInformationId,
@@ -49,6 +51,9 @@ const Details = ({ navigation }) => {
   const { setPaymentUrl } = usePayment();
   const dispatch = useDispatch();
   const { salonDetail, loading } = useSelector((state) => state.SALON);
+  const { user, accessToken, refreshToken, isAuthenticated } = useSelector(
+    (state) => state.USER
+  );
   useFocusEffect(
     useCallback(() => {
       checkFavorites();
@@ -56,18 +61,10 @@ const Details = ({ navigation }) => {
     }, [checkFavorites])
   );
   useEffect(() => {
-    async function fetchData() {
-      setLoader(true);
-      const accountId = await SecureStore.getItemAsync("accountId");
+    if (product) {
       dispatch(fetchSalonInformationById(product));
-      // dispatch(fetchSalonEmployeeBySalonInformationId(product));
-      // dispatch(fetchServiceHairBySalonInformationId(product));
-      setIdUser(accountId);
-      setLoader(false);
     }
-
-    fetchData();
-  }, []);
+  }, [product]);
   // console.log("salonDetail:", salonDetail);
   // console.log("salonService:", salonService);
   // console.log("salonEmployee:", salonEmployee);
@@ -108,36 +105,31 @@ const Details = ({ navigation }) => {
 
         // console.log(`Deleted key: ${shopId}`);
         setFavorites(false);
-        Toast.show({
-          type: "info",
-          text1: `${salonDetail?.name}`,
-          text2: "Đã bị xóa khỏi danh sách yêu thích",
-          visibilityTime: 4000, // thời gian hiển thị Toast (tính bằng ms)
-          autoHide: true, // tự động ẩn Toast sau thời gian visibilityTime
-          topOffset: 30, // vị trí từ đỉnh màn hình (tính bằng px)
-          bottomOffset: 40, // vị trí từ đáy màn hình (tính bằng px)
-          textStyle: { fontSize: 20 }, // kiểu chữ cho text2
-          text1Style: { fontSize: 14, fontWeight: "bold" }, // kiểu chữ cho text1
-          backgroundColor: "#2196F3", // màu nền của Toast
-          onPress: () => console.log("Toast pressed"), // hàm sẽ được gọi khi người dùng nhấn vào Toast
-        });
+        // Toast.show({
+        //   type: "info",
+        //   text1: `${salonDetail?.name}`,
+        //   text2: "Đã bị xóa khỏi danh sách yêu thích",
+        //   visibilityTime: 4000, // thời gian hiển thị Toast (tính bằng ms)
+        //   autoHide: true, // tự động ẩn Toast sau thời gian visibilityTime
+        //   topOffset: 30, // vị trí từ đỉnh màn hình (tính bằng px)
+        //   bottomOffset: 40, // vị trí từ đáy màn hình (tính bằng px)
+        //   textStyle: { fontSize: 20 }, // kiểu chữ cho text2
+        //   text1Style: { fontSize: 14, fontWeight: "bold" }, // kiểu chữ cho text1
+        //   backgroundColor: "#2196F3", // màu nền của Toast
+        //   onPress: () => console.log("Toast pressed"), // hàm sẽ được gọi khi người dùng nhấn vào Toast
+        // });
+        ToastAndroid.show(
+          "Đã xóa khỏi danh sách yêu thích",
+          ToastAndroid.SHORT
+        );
       } else {
         favoritesObj[shopId] = productObj;
         console.log(`Added key: ${shopId}`);
         setFavorites(true);
-        Toast.show({
-          type: "info",
-          text1: `${salonDetail?.name}`,
-          text2: "Đã được thêm vào danh sách yêu thích",
-          visibilityTime: 4000, // thời gian hiển thị Toast (tính bằng ms)
-          autoHide: true, // tự động ẩn Toast sau thời gian visibilityTime
-          topOffset: 30, // vị trí từ đỉnh màn hình (tính bằng px)
-          bottomOffset: 40, // vị trí từ đáy màn hình (tính bằng px)
-          textStyle: { fontSize: 20 }, // kiểu chữ cho text2
-          text1Style: { fontSize: 14, fontWeight: "bold" }, // kiểu chữ cho text1
-          backgroundColor: "#2196F3", // màu nền của Toast
-          onPress: () => console.log("Toast pressed"), // hàm sẽ được gọi khi người dùng nhấn vào Toast
-        });
+        ToastAndroid.show(
+          "Được thêm vào danh sách yêu thích",
+          ToastAndroid.SHORT
+        );
       }
 
       await SecureStore.setItemAsync(favoritesId, JSON.stringify(favoritesObj));
@@ -214,7 +206,7 @@ const Details = ({ navigation }) => {
                 SALE
               </Text>
             )} */}
-            {idUser && (
+            {isAuthenticated && (
               <TouchableOpacity onPress={addFavorites}>
                 {favorites ? (
                   <Ionicons name="heart" size={40} color="red" />
@@ -229,7 +221,7 @@ const Details = ({ navigation }) => {
             )}
           </View>
         </View>
-        <TabViewComponent storeId={salonDetail?.id} />
+        {/* <TabViewComponent storeId={salonDetail?.id} /> */}
       </ScrollView>
     </View>
   );

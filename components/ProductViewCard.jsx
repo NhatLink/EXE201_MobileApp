@@ -25,9 +25,7 @@ const ProductViewCard = ({ item }) => {
           <Image source={{ uri: item?.img }} style={styles.image} />
           <View style={styles.ratingContainer}>
             <Text style={styles.averageRatingText}>
-              {item?.totalRating > 0
-                ? (item?.totalRating).toFixed(1) + "/5.0"
-                : "No ratings"}
+              {item?.rate > 0 ? (item?.rate).toFixed(1) + "/5.0" : "No ratings"}
             </Text>
             <Text style={styles.averageRatingText}>
               {item?.totalReviewer
