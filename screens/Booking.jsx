@@ -7,6 +7,7 @@ import {
   FlatList,
   ScrollView,
   ActivityIndicator,
+  ToastAndroid,
 } from "react-native";
 import React, { useEffect, useState, useCallback } from "react";
 import { COLORS, SIZES, SHADOWS } from "../constants";
@@ -61,11 +62,19 @@ const Booking = ({ navigation }) => {
     createAppointment,
   } = useSelector((state) => state.BOOKING);
   const { user, accountId } = useSelector((state) => state.USER);
-  console.log("availableTime", availableTime);
+  // console.log("availableTime", availableTime);
   // console.log("bookAppoinment", bookAppoinment?.bookingDetailResponses);
   // console.log("voucher:", voucher);
-  console.log("dateBooking", dateBooking);
+  // console.log("dateBooking", dateBooking);
   const canPressButton = availableTime && availableTime.length > 0;
+
+  const warningBooking = () => {
+    ToastAndroid.show(
+      "Salon/Barber chưa thể nhận đặt lịch vào thời gian này, vui lòng chọn thời gian khác !",
+      ToastAndroid.SHORT
+    );
+  };
+
   const confirmBooking = async () => {
     // const userInfoJson = await SecureStore.getItemAsync("userInfo");
     // const accountId = await SecureStore.getItemAsync("accountId");
@@ -77,7 +86,6 @@ const Booking = ({ navigation }) => {
     //     console.error("Error parsing userInfo", error);
     //   }
     // }
-
     if (
       user &&
       user?.id &&
@@ -108,7 +116,7 @@ const Booking = ({ navigation }) => {
         );
 
         return {
-          customerId: userInfo?.id,
+          customerId: user?.id,
           startDate: bookAppoinment?.day,
           totalPrice: totalPrice.totalPrice,
           originalPrice: totalPrice.originalPrice,
@@ -128,6 +136,11 @@ const Booking = ({ navigation }) => {
           itemsPerPage,
           accountId
         )
+      );
+    } else {
+      ToastAndroid.show(
+        "Có lỗi xảy ra, vui lòng thử lại sau !",
+        ToastAndroid.SHORT
       );
     }
   };
@@ -254,7 +267,7 @@ const Booking = ({ navigation }) => {
                 color={COLORS.black}
               />
             </TouchableOpacity>
-            <Text style={styles.title}>Booking</Text>
+            <Text style={styles.title}>Đặt lịch</Text>
           </View>
 
           {/* <ScrollView style={styles.content}> */}
@@ -466,7 +479,7 @@ const Booking = ({ navigation }) => {
         <Button
           title="Đặt Lịch"
           // onPress={confirmBooking}
-          onPress={canPressButton ? confirmBooking : null}
+          onPress={canPressButton ? confirmBooking : warningBooking}
         />
       </View>
     </>

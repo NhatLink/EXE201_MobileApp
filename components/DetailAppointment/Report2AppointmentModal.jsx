@@ -30,9 +30,6 @@ const Report2AppointmentModal = ({
   const dispatch = useDispatch();
   const [selectedImages, setSelectedImages] = useState([]);
   const [loader, setLoader] = useState(false);
-  useEffect(() => {
-    console.log("selectedImages:", selectedImages);
-  }, [selectedImages]);
 
   const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({

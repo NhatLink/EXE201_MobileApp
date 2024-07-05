@@ -34,10 +34,6 @@ const FeedbackAppointmentModal = ({ isVisible, onClose, data }) => {
   const [reason, setReason] = useState("");
   const [reasonError, setReasonError] = useState("");
   const [errorStar, setErrorStart] = useState("");
-  useEffect(() => {
-    console.log("selectedImages:", selectedImages);
-  }, [selectedImages]);
-
   const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,

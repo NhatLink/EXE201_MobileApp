@@ -13,6 +13,7 @@ import {
   APPOINTMENT_ID_SUCCESS,
   FEEDBACK_APPOINTMENT_ID_FAILURE,
   FEEDBACK_APPOINTMENT_ID_SUCCESS,
+  APPOINTMENT_ID_RESET,
 } from "./action";
 
 const initialState = {
@@ -74,6 +75,11 @@ const appointmentReducer = (state = initialState, action) => {
         ...state,
         loading: false,
         error: action.payload,
+      };
+    case APPOINTMENT_ID_RESET:
+      return {
+        ...state,
+        appointmentDetail: null,
       };
     case FEEDBACK_APPOINTMENT_ID_SUCCESS:
       return {

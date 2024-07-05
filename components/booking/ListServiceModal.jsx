@@ -123,7 +123,7 @@ const ListServiceModal = ({ isVisible, onClose }) => {
                   style={styles.bookButton}
                   onPress={() => handleBook(item)}
                 >
-                  <Text style={styles.button}>Book</Text>
+                  <Text style={styles.button}>Đặt</Text>
                 </TouchableOpacity>
               </View>
             ))

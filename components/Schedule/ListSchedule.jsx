@@ -21,9 +21,12 @@ import { SliderBox } from "react-native-image-slider-box";
 import { Ionicons, Feather } from "@expo/vector-icons";
 import { useDispatch } from "react-redux";
 import * as SecureStore from "expo-secure-store";
-import { CancelAppointmentByCustomer } from "../../store/appointment/action";
+import {
+  CancelAppointmentByCustomer,
+  resetAppointment,
+} from "../../store/appointment/action";
 const ListSchedule = React.memo(({ item }) => {
-  // const dispatch = useDispatch();
+  const dispatch = useDispatch();
   const navigation = useNavigation();
   // const [modalVisible, setModalVisible] = useState(false);
   // const [currentPage, setCurrentPage] = useState(1);
@@ -61,7 +64,12 @@ const ListSchedule = React.memo(({ item }) => {
   //   fetchData();
   //   setModalVisible(false); // Close modal after action
   // };
-
+  const goToDetailAppointment = async () => {
+    dispatch(resetAppointment());
+    navigation.navigate("DetailAppointment", {
+      appointmentId: item?.id,
+    });
+  };
   return (
     <>
       <View style={styles.container}>
@@ -103,12 +111,7 @@ const ListSchedule = React.memo(({ item }) => {
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.bookButton}
-              onPress={() =>
-                // setModalVisible(true)
-                navigation.navigate("DetailAppointment", {
-                  appointmentId: item?.id,
-                })
-              }
+              onPress={goToDetailAppointment}
             >
               <Text style={styles.button}>Chi tiết</Text>
             </TouchableOpacity>

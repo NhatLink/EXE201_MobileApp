@@ -62,6 +62,7 @@ const userReducer = (state = initialState, action) => {
         isAuthenticated: true,
         error: null,
         user: action.payload.customerResponse,
+        accountId: action.payload.accountId,
       };
     case FETCH_USER_FAIL:
       return {

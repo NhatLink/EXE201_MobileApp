@@ -16,7 +16,7 @@ export const CANCEL_APPOINTMENT_FAILURE = "CANCEL_APPOINTMENT_FAILURE";
 export const APPOINTMENT_ID_REQUEST = "APPOINTMENT_ID_REQUEST";
 export const APPOINTMENT_ID_SUCCESS = "APPOINTMENT_ID_SUCCESS";
 export const APPOINTMENT_ID_FAILURE = "APPOINTMENT_ID_SUCCESS";
-
+export const APPOINTMENT_ID_RESET = "APPOINTMENT_ID_RESET";
 export const FEEDBACK_APPOINTMENT_ID_SUCCESS =
   "FEEDBACK_APPOINTMENT_ID_SUCCESS";
 export const FEEDBACK_APPOINTMENT_ID_FAILURE =
@@ -94,3 +94,6 @@ export const CancelAppointmentByCustomer =
       console.error("Failed to CancelAppointmentByCustomer:", error);
     }
   };
+export const resetAppointment = () => ({
+  type: APPOINTMENT_ID_RESET,
+});

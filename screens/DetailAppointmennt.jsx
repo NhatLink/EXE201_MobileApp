@@ -62,18 +62,11 @@ const DetailAppointmennt = ({ navigation }) => {
   const { appointmentDetail, feedbackAppointment, loading } = useSelector(
     (state) => state.APPOINTMENT
   );
-  console.log("feedbackAppointment:", feedbackAppointment);
   const { user, accountId } = useSelector((state) => state.USER);
   useEffect(() => {
-    async function fetchData() {
-      setLoad(true);
-      const accountId = await SecureStore.getItemAsync("accountId");
-      if (accountId && appointmentId) {
-        dispatch(GetAppointmentById(appointmentId));
-      }
-      setLoad(false);
+    if (appointmentId) {
+      dispatch(GetAppointmentById(appointmentId));
     }
-    fetchData();
   }, [appointmentId]);
 
   const OnCancel = async (reason) => {
@@ -90,7 +83,7 @@ const DetailAppointmennt = ({ navigation }) => {
       //   }
       // }
       const data = {
-        customerId: userInfo?.id,
+        customerId: user?.id,
         reasonCancel: reason,
       };
 
@@ -289,11 +282,45 @@ const DetailAppointmennt = ({ navigation }) => {
       </SafeAreaView>
     );
   }
+
+  if (appointmentDetail === null) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={styles.upperRow}>
+          <TouchableOpacity
+            style={{ paddingLeft: 0 }}
+            onPress={() => navigation.goBack()}
+          >
+            <Ionicons
+              name="chevron-back-circle"
+              size={30}
+              color={COLORS.black}
+            />
+          </TouchableOpacity>
+          <View style={styles.productRow}>
+            <Text style={styles.title}> Thông tin đơn đặt lịch</Text>
+            {/* <TouchableOpacity style={styles.title} onPress={() => {}}>
+              <Ionicons
+                name="ellipsis-vertical-outline"
+                size={30}
+                color={COLORS.black}
+              />
+            </TouchableOpacity> */}
+          </View>
+        </View>
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={COLORS.primary} />
+        </View>
+      </SafeAreaView>
+    );
+  }
   const toggleModal3 = () => {
     setModalVisible3(!modalVisible3);
   };
   const getStatusText = (status) => {
     switch (status) {
+      case "BOOKING":
+        return "Đặt trước";
       case "SUCCESSED":
         return "Thành công";
       case "FAILED":
