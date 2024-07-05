@@ -118,7 +118,8 @@ const styles = StyleSheet.create({
   paging: {
     position: "absolute",
     bottom: 0,
-    right: "50%",
+    right: 50,
+    left: 50,
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",

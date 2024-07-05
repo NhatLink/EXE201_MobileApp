@@ -7,7 +7,7 @@
     "icon": "./assets/LogoHair.jpg",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/HairSplash.png",
+      "image": "./assets/HairSplash.jpg",
       "resizeMode": "contain",
       "backgroundColor": "#DDF0FF"
     },
