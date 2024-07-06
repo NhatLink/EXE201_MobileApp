@@ -109,7 +109,7 @@ const LoginPage = () => {
 
   const handleRegister = () => {
     dispatch(resetCheckOtp());
-    navigation.navigate("Signup", { email: "linh@gmail.com" });
+    navigation.navigate("CheckEmail");
   };
 
   return (
