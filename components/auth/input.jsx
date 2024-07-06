@@ -68,6 +68,22 @@ const Input = ({
             color="black"
           />
         )}
+        {label === "Mật khẩu" && (
+          <Ionicons
+            onPress={() => setObsecurePassWord(!obsecurePassWord)}
+            name={obsecurePassWord ? "eye-outline" : "eye-off-outline"}
+            size={24}
+            color="black"
+          />
+        )}
+        {label === "Xác nhận mật khẩu" && (
+          <Ionicons
+            onPress={() => setObsecurePassWord(!obsecurePassWord)}
+            name={obsecurePassWord ? "eye-outline" : "eye-off-outline"}
+            size={24}
+            color="black"
+          />
+        )}
         {label === "Confirm Password" && (
           <Ionicons
             onPress={() => setObsecurePassWord(!obsecurePassWord)}

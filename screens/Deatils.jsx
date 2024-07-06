@@ -51,9 +51,9 @@ const Details = ({ navigation }) => {
   const { setPaymentUrl } = usePayment();
   const dispatch = useDispatch();
   const { salonDetail, loading } = useSelector((state) => state.SALON);
-  const { user, accessToken, refreshToken, isAuthenticated } = useSelector(
-    (state) => state.USER
-  );
+  console.log(salonDetail);
+  const { user, accessToken, refreshToken, isAuthenticated, accountId } =
+    useSelector((state) => state.USER);
   useFocusEffect(
     useCallback(() => {
       checkFavorites();
@@ -92,7 +92,7 @@ const Details = ({ navigation }) => {
       id: salonDetail?.id,
       description: salonDetail?.description,
       img: salonDetail?.img,
-      isActive: salonDetail?.isActive,
+      isActive: salonDetail?.status,
     };
 
     try {
@@ -143,6 +143,39 @@ const Details = ({ navigation }) => {
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color={COLORS.primary} />
         <Text>Đang lấy dữ liệu, xin chờ</Text>
+      </View>
+    );
+  }
+
+  if (salonDetail && salonDetail?.status !== "APPROVED") {
+    return (
+      <View style={styles.container}>
+        <Modal
+          // visible={checkInStatus}
+          transparent={true}
+          animationType="slide"
+        >
+          <View style={styles.modalContainer}>
+            <View style={styles.modalContent}>
+              <Text style={styles.modalText}>
+                Salon/Barber hiện không còn nhận đặt lịch{" "}
+              </Text>
+              <Ionicons name="ban-outline" size={100} color={COLORS.primary} />
+              <Text style={styles.modalText}>
+                Vui lòng thử lại sau! Xin cảm ơn
+              </Text>
+
+              <View style={styles.containerInfo}>
+                <TouchableOpacity onPress={() => navigation.goBack()}>
+                  <Text style={styles.button1}>Trở về</Text>
+                </TouchableOpacity>
+                {/* <TouchableOpacity onPress={CheckIn}>
+                  <Text style={styles.button1}>Check In</Text>
+                </TouchableOpacity> */}
+              </View>
+            </View>
+          </View>
+        </Modal>
       </View>
     );
   }
@@ -330,6 +363,43 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     alignContent: "center",
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+  },
+  modalContent: {
+    width: 300,
+    padding: 20,
+    backgroundColor: "white",
+    borderRadius: 10,
+    alignItems: "center",
+  },
+  modalText: {
+    fontSize: 18,
+    marginVertical: 10,
+    textAlign: "center",
+  },
+  containerInfo: {
+    justifyContent: "center",
+    alignItems: "center",
+    flexDirection: "row",
+    marginTop: 5,
+  },
+  button1: {
+    backgroundColor: COLORS.primary,
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    textAlign: "center",
+    padding: 10,
+    borderRadius: 10,
+    marginHorizontal: 20,
+    marginVertical: 10,
+    fontWeight: "bold",
+    color: COLORS.lightWhite,
   },
 });
 

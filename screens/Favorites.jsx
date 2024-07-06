@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   Image,
   FlatList,
+  ToastAndroid,
 } from "react-native";
 import React, { useEffect, useState, useCallback } from "react";
 import { COLORS, SIZES, SHADOWS } from "../constants";
@@ -14,28 +15,24 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useFocusEffect } from "@react-navigation/native";
 const Favorites = ({ navigation }) => {
   const [favoritesData, setFavoritesData] = useState([]);
-  console.log("favoritesData", favoritesData);
-
   useFocusEffect(
     useCallback(() => {
       checkFavorites();
-    }, [checkFavorites]) // Không cần trả về hàm dọn dẹp trong trường hợp này
+    }, [])
   );
 
   const checkFavorites = useCallback(async () => {
     const userId = await SecureStore.getItemAsync("accountId");
     if (userId !== null) {
       const favoritesId = `favorites${userId}`;
-      console.log("fav", favoritesId);
       try {
         const favoritesObj = await SecureStore.getItemAsync(favoritesId);
         if (favoritesObj !== null) {
-          const favorites = JSON.parse(favoritesObj);
-          const favoritesArray = Object.values(favorites);
+          const favoritesArray = Object.values(JSON.parse(favoritesObj));
           setFavoritesData(favoritesArray);
         }
       } catch (error) {
-        console.log(error);
+        console.error(error);
       }
     }
   }, []);
@@ -43,62 +40,26 @@ const Favorites = ({ navigation }) => {
   const deleteFavorite = async (id) => {
     const userId = await SecureStore.getItemAsync("accountId");
     const favoritesId = `favorites${userId}`;
-    console.log(favoritesId);
-    let productId = id;
     try {
       const existingItem = await SecureStore.getItemAsync(favoritesId);
       let favoritesObj = existingItem ? JSON.parse(existingItem) : {};
 
-      if (favoritesObj[productId]) {
-        delete favoritesObj[productId];
-
-        await checkFavorites();
+      if (favoritesObj[id]) {
+        delete favoritesObj[id];
+        await SecureStore.setItem(favoritesId, JSON.stringify(favoritesObj));
+        ToastAndroid.show(
+          "Đã xóa khỏi danh sách yêu thích",
+          ToastAndroid.SHORT
+        );
+        setFavoritesData(Object.values(favoritesObj));
       } else {
-        console.log(`Key does not exist: ${productId}`);
-        navigation.navigate("Home");
+        console.log(`Item not found: ${id}`);
       }
-
-      await SecureStore.setItem(favoritesId, JSON.stringify(favoritesObj));
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
-  // const favoritesData = [
-  //   {
-  //     _id: "1",
-  //     image:
-  //       "https://www.gento.vn/wp-content/uploads/2024/04/barber-la-gi-8.jpg",
-  //     productName: "Shop 1",
-  //     description: "Description for Shop 1",
-  //     price: 19.99,
-  //   },
-  //   {
-  //     _id: "2",
-  //     image:
-  //       "https://www.gento.vn/wp-content/uploads/2024/04/barber-la-gi-8.jpg",
-  //     productName: "Shop 2",
-  //     description: "Description for Shop 2",
-  //     price: 29.99,
-  //   },
-  //   {
-  //     _id: "3",
-  //     image:
-  //       "https://www.gento.vn/wp-content/uploads/2024/04/barber-la-gi-8.jpg",
-  //     productName: "Shop 3",
-  //     description: "Description for Shop 3",
-  //     price: 39.99,
-  //   },
-  //   {
-  //     _id: "4",
-  //     image:
-  //       "https://www.gento.vn/wp-content/uploads/2024/04/barber-la-gi-8.jpg",
-  //     productName: "Shop 4",
-  //     description: "Description for Shop 4",
-  //     price: 49.99,
-  //   },
-  // ];
 
-  // console.log(favoritesData);
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.upperRow}>
@@ -130,10 +91,10 @@ const Favorites = ({ navigation }) => {
                   />
                 </TouchableOpacity>
                 <View style={styles.textContainer}>
-                  <Text style={styles.productTxt} numberOfLines={1}>
+                  <Text style={styles.productTxt} numberOfLines={2}>
                     {item.description}
                   </Text>
-                  <Text style={styles.supplierTxt} numberOfLines={1}>
+                  <Text style={styles.supplierTxt} numberOfLines={3}>
                     {item.address}
                   </Text>
                   {/* <Text style={styles.supplierTxt} numberOfLines={1}>
@@ -141,7 +102,7 @@ const Favorites = ({ navigation }) => {
                   </Text> */}
                 </View>
                 <TouchableOpacity onPress={() => deleteFavorite(item.id)}>
-                  <SimpleLineIcons name="trash" size={24} color="black" />
+                  <SimpleLineIcons name="trash" size={24} color="red" />
                 </TouchableOpacity>
               </TouchableOpacity>
             </View>

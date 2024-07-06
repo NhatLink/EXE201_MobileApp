@@ -87,7 +87,6 @@ const DetailAppointmennt = ({ navigation }) => {
         reasonCancel: reason,
       };
 
-      console.log(data);
       if (appointmentDetail?.id && accountId && user && user?.id) {
         await dispatch(
           CancelAppointmentByCustomer(
@@ -738,7 +737,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.lightWhite,
   },
   containerinfo: {
-    marginTop: 100,
+    marginTop: 60,
   },
   contentContainer: {
     justifyContent: "center",
@@ -754,7 +753,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     position: "absolute",
     width: SIZES.width - 10,
-    top: SIZES.xxLarge,
+    top: SIZES.large,
     zIndex: 999,
   },
   title: {

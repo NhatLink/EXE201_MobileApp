@@ -35,6 +35,8 @@ const CheckEmail = () => {
   const [userHaveAccount, setUserHaveAccount] = useState(false);
   const [modalOtp, setModalOtp] = useState(false);
   const [countdown, setCountdown] = useState(null);
+  const [countdown2, setCountdown2] = useState(null);
+  const [resetText, setResetText] = useState(null);
   const [otp, setOtp] = useState(null);
   const [emailError, setEmailError] = useState("");
   const [resetButton, setResetButton] = useState(false);
@@ -69,12 +71,40 @@ const CheckEmail = () => {
     };
   }, [modalOtp]);
 
+  useEffect(() => {
+    let timer;
+    if (modalOtp) {
+      setCountdown2(15); // Set initial countdown time to 2 minutes (120 seconds)
+      timer = setInterval(() => {
+        setCountdown2((prevCountdown) => {
+          if (prevCountdown <= 1) {
+            clearInterval(timer);
+            setResetText("Mã OTP chưa gửi về! Nhấn để thử lại");
+            setResetButton(true);
+            return null;
+          } else {
+            return prevCountdown - 1; // Otherwise, decrease the countdown
+          }
+        });
+      }, 1000); // Update countdown every second
+    } else {
+      setCountdown2(null); // Reset countdown when modal is closed
+    }
+    // Clean up function
+    return () => {
+      if (timer) {
+        clearInterval(timer);
+      }
+    };
+  }, [modalOtp]);
+
   // Convert countdown time to minutes and seconds for display
   const minutes = Math.floor(countdown / 60);
   const seconds = countdown % 60;
   useEffect(() => {
     if (emailExists === true) {
       setModalOtp(true);
+      setResetText(null);
     }
   }, [emailExists]);
 
@@ -84,6 +114,7 @@ const CheckEmail = () => {
       setResetButton(false);
       setOtp(null);
       setEmail(null);
+      setResetText(null);
       navigation.navigate("Signup", { email: email });
     }
   }, [CheckOtp]);
@@ -94,7 +125,6 @@ const CheckEmail = () => {
   };
 
   const handleContinuePress = async () => {
-    // await dispatch(resetCheckOtp());
     await handleModalClose();
     if (!email) {
       setEmailError("Email không được để trống");
@@ -120,11 +150,12 @@ const CheckEmail = () => {
         )
       );
     } catch (error) {
-      // If checkExistEmail throws an error (status code 404), it means the email doesn't exist
       setUserHaveAccount(true);
+      setModalOtp(false);
       console.log(error);
-      // No need to dispatch sendOtpEmail here as it's already dispatched in the checkExistEmail action
     }
+    // setModalOtp(true);
+    // setResetText(null);
   };
 
   const handleSubmitOTP = async () => {
@@ -145,12 +176,11 @@ const CheckEmail = () => {
   };
   const handleModalClose = () => {
     // Reset all OTP-related states and dispatch Redux action
-    console.log("handleModalClose");
     setModalOtp(false);
     dispatch(resetCheckOtp());
   };
   return (
-    <View style={styles.container2}>
+    <SafeAreaView style={styles.container2}>
       <Loader visible={loading} />
       <View>
         <TouchableOpacity
@@ -246,10 +276,24 @@ const CheckEmail = () => {
             <TouchableOpacity onPress={handleSubmitOTP}>
               <Text style={styles.button1}>Xác nhận</Text>
             </TouchableOpacity>
+            {resetText && (
+              <TouchableOpacity onPress={handleModalClose}>
+                <Text
+                  style={{
+                    color: COLORS.primary,
+                    textAlign: "center",
+                    fontWeight: "bold",
+                    textDecorationLine: "underline",
+                  }}
+                >
+                  {resetText}
+                </Text>
+              </TouchableOpacity>
+            )}
           </View>
         </View>
       </Modal>
-    </View>
+    </SafeAreaView>
   );
 };
 
@@ -259,8 +303,6 @@ const styles = StyleSheet.create({
   container2: {
     flex: 1,
     backgroundColor: COLORS.lightWhite,
-    // marginBottom: 70,
-    paddingTop: 20,
     justifyContent: "space-between",
     alignItems: "center",
     flexDirection: "column",

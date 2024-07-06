@@ -39,6 +39,14 @@ const About = (storeId) => {
     }
   };
 
+  const handlePress = () => {
+    const email = salonDetail?.salonOwner?.email;
+    if (email) {
+      const url = `mailto:${email}`;
+      Linking.openURL(url).catch((err) => console.error("Error:", err));
+    }
+  };
+
   // const [destination, setDestination] = useState({
   //   latitude: 10.875123789279687,
   //   longitude: 106.79814847509016,
@@ -206,7 +214,26 @@ const About = (storeId) => {
         )} */}
       </View>
       <View>
-        <Text style={styles.title}>Số Liên Hệ</Text>
+        <Text style={styles.title}>Liên Hệ</Text>
+        <View style={styles.contactContanner}>
+          <View style={styles.contactInfo}>
+            <Ionicons name="people" size={20} color={COLORS.primary} />
+            <Text style={styles.conntactItem} numberOfLines={1}>
+              Chủ salon: {salonDetail?.salonOwner?.fullName}
+            </Text>
+          </View>
+        </View>
+        <View style={styles.contactContanner}>
+          <View style={styles.contactInfo}>
+            <Ionicons name="mail" size={20} color={COLORS.primary} />
+            <Text style={styles.conntactItem} numberOfLines={1}>
+              {salonDetail?.salonOwner?.email}
+            </Text>
+          </View>
+          <TouchableOpacity style={styles.bookButton} onPress={handlePress}>
+            <Text style={styles.button}>Gửi email</Text>
+          </TouchableOpacity>
+        </View>
         <View style={styles.contactContanner}>
           <View style={styles.contactInfo}>
             <Ionicons
@@ -227,28 +254,6 @@ const About = (storeId) => {
             <Text style={styles.button}>Gọi điện</Text>
           </TouchableOpacity>
         </View>
-        {/* <View style={styles.contactContanner}>
-          <View style={styles.contactInfo}>
-            <Ionicons name="logo-facebook" size={20} color={COLORS.primary} />
-            <Text style={styles.conntactItem} numberOfLines={1}>
-              {salonDetail?.name}
-            </Text>
-          </View>
-          <TouchableOpacity style={styles.bookButton} onPress={() => {}}>
-            <Text style={styles.button}>View</Text>
-          </TouchableOpacity>
-        </View>
-        <View style={styles.contactContanner}>
-          <View style={styles.contactInfo}>
-            <Ionicons name="logo-instagram" size={20} color={COLORS.primary} />
-            <Text style={styles.conntactItem} numberOfLines={1}>
-              {salonDetail?.name}
-            </Text>
-          </View>
-          <TouchableOpacity style={styles.bookButton} onPress={() => {}}>
-            <Text style={styles.button}>View</Text>
-          </TouchableOpacity>
-        </View> */}
       </View>
       <View>
         <Text style={styles.title}>Giờ Làm Việc</Text>

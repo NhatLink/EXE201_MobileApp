@@ -263,8 +263,8 @@ const Signup = () => {
               onChangeText={(text) => handleChanges(text, "username")}
             /> */}
             <Input
-              placeholder="Phone"
-              label="Phone"
+              placeholder="Số điện thoại"
+              label="Số điện thoại"
               icon="phone"
               error={errors.phone}
               onFocus={() => handleError(null, "phone")}
@@ -273,8 +273,8 @@ const Signup = () => {
             />
 
             <Input
-              placeholder="Full Name"
-              label="Full Name"
+              placeholder="Họ và tên"
+              label="Họ và tên"
               icon="pen"
               error={errors.fullName}
               onFocus={() => handleError(null, "fullName")}
@@ -323,9 +323,9 @@ const Signup = () => {
             )} */}
 
             <Input
-              placeholder="Password"
+              placeholder="Mật khẩu"
               icon="lock-outline"
-              label="Password"
+              label="Mật khẩu"
               error={errors.password}
               onFocus={() => handleError(null, "password")}
               onChangeText={(text) => handleChanges(text, "password")}
@@ -333,9 +333,9 @@ const Signup = () => {
             />
 
             <Input
-              placeholder="Confirm Password"
+              placeholder="Xác nhận mật khẩu"
               icon="lock-outline"
-              label="Confirm Password"
+              label="Xác nhận mật khẩu"
               error={errors.confirmPassword}
               onFocus={() => handleError(null, "confirmPassword")}
               onChangeText={(text) => setConfirmpassword(text)}
@@ -385,7 +385,7 @@ const Signup = () => {
               )}
             </View> */}
 
-            <Button title="SIGN UP" onPress={validate} />
+            <Button title="Đăng kí" onPress={validate} />
           </View>
         </KeyboardAvoidingView>
       </SafeAreaView>

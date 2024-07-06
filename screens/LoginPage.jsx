@@ -50,7 +50,7 @@ const LoginPage = () => {
   const validate = () => {
     Keyboard.dismiss();
     let valid = true;
-    console.log("login", inputs);
+    // console.log("login", inputs);
     // if (!inputs.username) {
     //   handleError("Phone is required", "username");
     //   valid = false;
@@ -109,7 +109,7 @@ const LoginPage = () => {
 
   const handleRegister = () => {
     dispatch(resetCheckOtp());
-    navigation.navigate("CheckEmail");
+    navigation.navigate("Signup", { email: "linh@gmail.com" });
   };
 
   return (
@@ -139,7 +139,7 @@ const LoginPage = () => {
             Điền thông tin để đăng nhập vào HairHub
           </Text>
           <Input
-            placeholder="Enter your email"
+            placeholder="Nhập email của bạn"
             icon="email"
             label={"Email"}
             error={errors.username}
@@ -151,9 +151,9 @@ const LoginPage = () => {
           />
 
           <Input
-            placeholder="Password"
+            placeholder="Mật khẩu"
             icon="lock-outline"
-            label={"Password"}
+            label={"Mật khẩu"}
             error={errors.password}
             onFocus={() => {
               handleError(null, "password");
@@ -163,13 +163,13 @@ const LoginPage = () => {
           />
         </View>
         <View>
-          <Button title={"LOGIN"} onPress={validate} />
+          <Button title={"Đăng nhập"} onPress={validate} />
           <Text
             style={styles.registered}
             // onPress={() => navigation.navigate("Signup")}
             onPress={handleRegister}
           >
-            Don't have an account? Register
+            Bạn chưa có tài khoản ? Đăng kí ngay
           </Text>
         </View>
       </View>
@@ -221,6 +221,7 @@ const styles = StyleSheet.create({
   registered: {
     color: COLORS.black,
     textAlign: "center",
+    marginBottom: 5,
   },
   buttonClose: {
     marginTop: SIZES.small,
