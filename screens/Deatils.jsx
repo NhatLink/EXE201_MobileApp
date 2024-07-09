@@ -147,7 +147,7 @@ const Details = ({ navigation }) => {
     );
   }
 
-  if (salonDetail && salonDetail?.status !== "APPROVED") {
+  if (salonDetail.status !== "APPROVED") {
     return (
       <View style={styles.container}>
         <Modal
