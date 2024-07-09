@@ -252,16 +252,16 @@ const History = () => {
             justifyContent: "space-between",
           }}
         >
-          <View>
+          <View style={{ alignItems: "center", justifyContent: "center" }}>
             <Image
               source={require("../assets/images/error-in-calendar.png")}
               style={styles.searchImage}
             />
             <Text style={styles.emptyText}>
-              Không có báo cáo nào được tìm thấy
+              Không có báo cáo {selectedStatus} nào được tìm thấy
             </Text>
           </View>
-          {/* <View style={styles.buttonContain}>
+          {/* <View selectedStatus>
             <TouchableOpacity onPress={() => navigation.navigate("Search")}>
               <Text style={styles.button}>Tìm kiếm dịch vụ</Text>
             </TouchableOpacity>

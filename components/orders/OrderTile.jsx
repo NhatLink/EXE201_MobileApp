@@ -36,6 +36,19 @@ const OrderTile = ({ item }) => {
       appointmentId: item?.id,
     });
   };
+
+  const getStatusText = (status) => {
+    switch (status) {
+      case "SUCCESSED":
+        return "Thành công";
+      case "CANCEL_BY_CUSTOMER":
+        return "Đã hủy";
+      case "FAILED":
+        return "Thất bại";
+      default:
+        return "Không xác định";
+    }
+  };
   return (
     <>
       <View style={styles.container}>
@@ -48,6 +61,16 @@ const OrderTile = ({ item }) => {
           <View style={styles.line} />
         </View>
         <View>
+          <View style={styles.descriptionWrapper}>
+            <View style={styles.Storedescription}>
+              <Text style={styles.description2}>Trạng thái lịch hẹn: </Text>
+            </View>
+            <View style={styles.priceTime}>
+              <Text style={styles.descriptionPrice} numberOfLines={1}>
+                {getStatusText(item?.status)}
+              </Text>
+            </View>
+          </View>
           <View style={styles.descriptionWrapper}>
             <TouchableOpacity style={styles.imageContainer}>
               <Image
@@ -117,7 +140,7 @@ const OrderTile = ({ item }) => {
             <View style={styles.Storedescription}>
               <Text style={styles.description2}>Tổng tiền:</Text>
             </View>
-            <TouchableOpacity style={styles.priceTime}>
+            <View style={styles.priceTime}>
               {item?.discountedPrice > 0 ? (
                 <>
                   <Text
@@ -135,7 +158,7 @@ const OrderTile = ({ item }) => {
                   numberOfLines={1}
                 >{`${item?.totalPrice?.toLocaleString()} VND`}</Text>
               )}
-            </TouchableOpacity>
+            </View>
           </View>
         </View>
       </View>

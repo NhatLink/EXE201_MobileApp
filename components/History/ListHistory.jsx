@@ -92,7 +92,7 @@ const ListHistory = ({ item }) => {
             style={styles.bookButton}
             onPress={() => setModalVisible(true)}
           >
-            <Text style={styles.button}>Chi tiết</Text>
+            <Text style={styles.button}>Chi tiết Báo Cáo</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -142,7 +142,7 @@ const styles = StyleSheet.create({
     // paddingLeft: SIZES.small,
   },
   bookButton: {
-    flex: 2,
+    width: "auto",
     marginVertical: 10,
     justifyContent: "center",
     alignItems: "flex-end",
