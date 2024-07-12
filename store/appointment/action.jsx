@@ -85,10 +85,11 @@ export const CancelAppointmentByCustomer =
         id,
         data
       );
-      dispatch({ type: CANCEL_APPOINTMENT_SUCCESS, payload: response.data });
       dispatch(GetAppointmentByAccountId(currentPage, itemsPerPage, accountId));
+      dispatch(GetAppointmentById(id));
+      dispatch({ type: CANCEL_APPOINTMENT_SUCCESS, payload: response.data });
       ToastAndroid.show(response.data, ToastAndroid.SHORT);
-      navigation.navigate("Appointment schedule");
+      // navigation.navigate("Appointment schedule");
     } catch (error) {
       dispatch({ type: CANCEL_APPOINTMENT_FAILURE, payload: error.message });
       console.error("Failed to CancelAppointmentByCustomer:", error);

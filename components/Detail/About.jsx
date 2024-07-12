@@ -22,7 +22,7 @@ import MapView, { Polyline, Marker } from "react-native-maps";
 import { useDispatch, useSelector } from "react-redux";
 import * as Location from "expo-location";
 import axios from "axios";
-const GOOGLE_API_KEY = "AIzaSyCmAt2KHp7yJVDWMWlrd_uUMtvzhSExNaQ";
+const GOOGLE_API_KEY = "AIzaSyDlTsepg9uGzgzICoP-q9G8vQ5diNQTsYM";
 const About = (storeId) => {
   const navigation = useNavigation();
   const { salonService, salonDetail, salonEmployee } = useSelector(

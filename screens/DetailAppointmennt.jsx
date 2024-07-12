@@ -41,7 +41,7 @@ import { ReportAppointmentModal, StarRating } from "../components";
 import CancelAppointmentModal from "../components/DetailAppointment/CancelAppointmentModal";
 import FeedbackAppointmentModal from "../components/DetailAppointment/FeedbackAppointmentModal";
 
-const GOOGLE_API_KEY = "AIzaSyCmAt2KHp7yJVDWMWlrd_uUMtvzhSExNaQ";
+const GOOGLE_API_KEY = "AIzaSyDlTsepg9uGzgzICoP-q9G8vQ5diNQTsYM";
 const DetailAppointmennt = ({ navigation }) => {
   const route = useRoute();
   // const navigation = useNavigation();
@@ -58,7 +58,7 @@ const DetailAppointmennt = ({ navigation }) => {
   const [contentFeedback, setContentFeedback] = useState("");
   const [ratingFeedback, setRatingFeedback] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [itemsPerPage, setItemsPerPage] = useState(50);
   const { appointmentDetail, feedbackAppointment, loading } = useSelector(
     (state) => state.APPOINTMENT
   );
@@ -451,7 +451,7 @@ const DetailAppointmennt = ({ navigation }) => {
                 style={styles.checkoutBtn}
                 onPress={() => setModalVisible4(true)}
               >
-                <Text style={styles.checkOutText}>Xem đánh giá của bạn</Text>
+                <Text style={styles.checkOutText}>Xem đánh giá</Text>
               </TouchableOpacity>
             ) : appointmentDetail?.status === "SUCCESSED" ? (
               differenceInDays > 3 ? (
