@@ -78,7 +78,7 @@ export const GetAppointmentByHistoryCustomerId =
 export const CancelAppointmentByCustomer =
   (id, data, currentPage, itemsPerPage, accountId, navigation) =>
   async (dispatch) => {
-    dispatch({ type: CANCEL_APPOINTMENT_FAILURE });
+    dispatch({ type: CANCEL_APPOINTMENT_REQUEST });
     console.log("data CancelAppointment", data);
     try {
       const response = await AppointmentService.CancelAppointmentByCustomer(

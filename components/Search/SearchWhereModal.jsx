@@ -14,7 +14,7 @@ import { Ionicons, Feather } from "@expo/vector-icons";
 import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
 import * as Location from "expo-location";
 
-const GOOGLE_API_KEY = "AIzaSyCmAt2KHp7yJVDWMWlrd_uUMtvzhSExNaQ";
+const GOOGLE_API_KEY = "AIzaSyDlTsepg9uGzgzICoP-q9G8vQ5diNQTsYM";
 const SearchWhereModal = ({
   isVisible,
   onClose,
