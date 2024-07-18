@@ -22,7 +22,7 @@ import MapView, { Polyline, Marker } from "react-native-maps";
 import { useDispatch, useSelector } from "react-redux";
 import * as Location from "expo-location";
 import axios from "axios";
-const GOOGLE_API_KEY = "AIzaSyDlTsepg9uGzgzICoP-q9G8vQ5diNQTsYM";
+const GOOGLE_API_KEY = "AIzaSyCS8UxismntEBlETj9ZS85msU7bC35CyJM";
 const About = (storeId) => {
   const navigation = useNavigation();
   const { salonService, salonDetail, salonEmployee } = useSelector(
@@ -174,9 +174,6 @@ const About = (storeId) => {
                   longitudeDelta: 0.0421,
                 }}
               >
-                {/* {route.length > 0 && origin && (
-                  <Marker coordinate={origin} title="Your Location" />
-                )} */}
                 <Marker
                   coordinate={{
                     latitude: parseFloat(salonDetail?.latitude),
@@ -185,13 +182,6 @@ const About = (storeId) => {
                   title={salonDetail?.name}
                   description={salonDetail?.address}
                 />
-                {/* {route.length > 0 && (
-                  <Polyline
-                    coordinates={route}
-                    strokeWidth={5}
-                    strokeColor="blue"
-                  />
-                )} */}
               </MapView>
             )}
           </View>
