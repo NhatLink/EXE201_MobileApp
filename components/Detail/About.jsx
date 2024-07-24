@@ -22,9 +22,11 @@ import MapView, { Polyline, Marker } from "react-native-maps";
 import { useDispatch, useSelector } from "react-redux";
 import * as Location from "expo-location";
 import axios from "axios";
-const GOOGLE_API_KEY = "AIzaSyCS8UxismntEBlETj9ZS85msU7bC35CyJM";
+import CustomMarker from "../CustomMarker";
+const GOOGLE_API_KEY = "AIzaSyAs7hqe3ZUJTjrM7KbdVqkdxB__0eCcKgE";
 const About = (storeId) => {
   const navigation = useNavigation();
+  const mapRef = React.useRef(null);
   const { salonService, salonDetail, salonEmployee } = useSelector(
     (state) => state.SALON
   );
@@ -44,6 +46,20 @@ const About = (storeId) => {
     if (email) {
       const url = `mailto:${email}`;
       Linking.openURL(url).catch((err) => console.error("Error:", err));
+    }
+  };
+
+  const handleReturnToMarker = () => {
+    if (mapRef.current) {
+      mapRef.current.animateToRegion(
+        {
+          latitude: parseFloat(salonDetail?.latitude),
+          longitude: parseFloat(salonDetail?.longitude),
+          latitudeDelta: 0.0922,
+          longitudeDelta: 0.0421,
+        },
+        1000
+      ); // 1000 milliseconds to animate
     }
   };
 
@@ -165,6 +181,7 @@ const About = (storeId) => {
           <View style={styles.mapContainer}>
             {salonDetail && salonDetail?.latitude && salonDetail?.longitude && (
               <MapView
+                ref={mapRef}
                 style={styles.map}
                 provider={MapView.PROVIDER_GOOGLE}
                 initialRegion={{
@@ -174,16 +191,33 @@ const About = (storeId) => {
                   longitudeDelta: 0.0421,
                 }}
               >
-                <Marker
+                {/* <Marker
                   coordinate={{
                     latitude: parseFloat(salonDetail?.latitude),
                     longitude: parseFloat(salonDetail?.longitude),
                   }}
                   title={salonDetail?.name}
-                  description={salonDetail?.address}
+                  description={salonDetail?.description}
+                /> */}
+                <CustomMarker
+                  coordinate={{
+                    latitude: parseFloat(salonDetail?.latitude),
+                    longitude: parseFloat(salonDetail?.longitude),
+                  }}
+                  image={salonDetail?.img}
+                  title={salonDetail?.name}
+                  description={salonDetail?.description}
                 />
               </MapView>
             )}
+          </View>
+          <View style={styles.buttonContainer}>
+            <TouchableOpacity
+              style={styles.buttonMap}
+              onPress={handleReturnToMarker}
+            >
+              <Text style={styles.buttonTextMap}>Vị trí salon/barber</Text>
+            </TouchableOpacity>
           </View>
           {/* {route.length > 0 && (
             <View style={styles.distance}>
@@ -395,5 +429,21 @@ const styles = StyleSheet.create({
     width: "100%",
     height: 300,
     borderRadius: 10,
+  },
+  buttonContainer: {
+    position: "absolute",
+    bottom: 20,
+    width: "100%",
+    alignItems: "center",
+  },
+  buttonMap: {
+    backgroundColor: COLORS.secondary,
+    padding: 10,
+    borderRadius: 5,
+    alignSelf: "center",
+  },
+  buttonTextMap: {
+    color: COLORS.black,
+    textAlign: "center",
   },
 });

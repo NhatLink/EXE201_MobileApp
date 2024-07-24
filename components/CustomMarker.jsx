@@ -1,10 +1,11 @@
 import React from "react";
 import { View, Image, StyleSheet } from "react-native";
 import MapView, { Marker } from "react-native-maps";
+import { COLORS } from "../constants";
 
-const CustomMarker = ({ coordinate, image, title }) => {
+const CustomMarker = ({ coordinate, image, title, description }) => {
   return (
-    <Marker coordinate={coordinate} title={title}>
+    <Marker coordinate={coordinate} title={title} description={description}>
       <View style={styles.markerContainer}>
         <Image source={{ uri: image }} style={styles.markerImage} />
       </View>
@@ -15,13 +16,13 @@ const CustomMarker = ({ coordinate, image, title }) => {
 const styles = StyleSheet.create({
   markerContainer: {
     borderWidth: 2,
-    borderColor: "white",
+    borderColor: COLORS.secondary,
     borderRadius: 25,
     overflow: "hidden",
   },
   markerImage: {
-    width: 50,
-    height: 50,
+    width: 40,
+    height: 40,
   },
 });
 

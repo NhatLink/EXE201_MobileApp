@@ -17,6 +17,7 @@ import DetailProfile from "./DetailProfile";
 import CheckEmail from "./CheckEmail";
 import DetailAppointmennt from "./DetailAppointmennt";
 import QRScanner from "./QRScanner";
+import Chat from "./Chat";
 export {
   Home,
   Cart,
@@ -37,4 +38,5 @@ export {
   CheckEmail,
   DetailAppointmennt,
   QRScanner,
+  Chat,
 };

@@ -41,7 +41,7 @@ import { ReportAppointmentModal, StarRating } from "../components";
 import CancelAppointmentModal from "../components/DetailAppointment/CancelAppointmentModal";
 import FeedbackAppointmentModal from "../components/DetailAppointment/FeedbackAppointmentModal";
 
-const GOOGLE_API_KEY = "AIzaSyCS8UxismntEBlETj9ZS85msU7bC35CyJM";
+const GOOGLE_API_KEY = "AIzaSyAs7hqe3ZUJTjrM7KbdVqkdxB__0eCcKgE";
 const DetailAppointmennt = ({ navigation }) => {
   const route = useRoute();
   // const navigation = useNavigation();

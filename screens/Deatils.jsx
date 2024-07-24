@@ -51,7 +51,6 @@ const Details = ({ navigation }) => {
   const { setPaymentUrl } = usePayment();
   const dispatch = useDispatch();
   const { salonDetail, loading } = useSelector((state) => state.SALON);
-  console.log(salonDetail);
   const { user, accessToken, refreshToken, isAuthenticated, accountId } =
     useSelector((state) => state.USER);
   useFocusEffect(
@@ -240,17 +239,29 @@ const Details = ({ navigation }) => {
               </Text>
             )} */}
             {isAuthenticated && (
-              <TouchableOpacity onPress={addFavorites}>
-                {favorites ? (
-                  <Ionicons name="heart" size={40} color="red" />
-                ) : (
+              <View style={styles.authContainer}>
+                <TouchableOpacity onPress={addFavorites}>
+                  {favorites ? (
+                    <Ionicons name="heart" size={40} color="red" />
+                  ) : (
+                    <Ionicons
+                      name="heart-outline"
+                      size={40}
+                      color={COLORS.black}
+                    />
+                  )}
+                </TouchableOpacity>
+                {/* <TouchableOpacity
+                  style={{ marginLeft: 10 }}
+                  onPress={() => navigation.navigate("Chat")}
+                >
                   <Ionicons
-                    name="heart-outline"
-                    size={40}
+                    name="chatbox-ellipses-outline"
+                    size={35}
                     color={COLORS.black}
                   />
-                )}
-              </TouchableOpacity>
+                </TouchableOpacity> */}
+              </View>
             )}
           </View>
         </View>
@@ -400,6 +411,13 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     fontWeight: "bold",
     color: COLORS.lightWhite,
+  },
+  authContainer: {
+    // marginTop: SIZES.large,
+    // marginHorizontal: SIZES.large,
+    flexDirection: "row",
+    justifyContent: "flex-end",
+    alignItems: "center",
   },
 });
 

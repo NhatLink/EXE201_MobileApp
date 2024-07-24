@@ -147,6 +147,7 @@ import {
   CheckEmail,
   DetailAppointmennt,
   QRScanner,
+  Chat,
 } from "./screens";
 import Orders from "./screens/Orders";
 import { PaymentProvider } from "./hook/PaymentContext";
@@ -369,6 +370,11 @@ export default function App() {
               <Stack.Screen
                 name="QRScanner"
                 component={QRScanner}
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name="Chat"
+                component={Chat}
                 options={{ headerShown: false }}
               />
             </Stack.Navigator>
