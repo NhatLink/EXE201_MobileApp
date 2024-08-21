@@ -2,12 +2,16 @@ import { Dimensions } from "react-native";
 const { height, width } = Dimensions.get("window");
 
 const COLORS = {
-  primary: "#2A4D50",
-  secondary: "#DDF0FF",
+  // primary: "#2A4D50",
+  // secondary: "#DDF0FF",
+  primary: "#333333",
+  secondary: "#bf9456",
   tertiary: "#FF7754",
   banner: "#DDF0FF9A",
   gray: "#83829A",
   gray2: "#C1C0C8",
+  background: "#f4f2eb",
+  cardcolor: "#ece8de",
 
   offwhite: "#F3F4F8",
   white: "#FFFFFF",

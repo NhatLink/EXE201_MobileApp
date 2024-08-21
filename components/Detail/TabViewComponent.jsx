@@ -27,7 +27,7 @@ const TabViewComponent = ({ storeId }) => {
   };
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={styles.container}>
       <View style={styles.filtersContainer}>
         {["Dịch Vụ", "Đánh Giá", "Chi Tiết"].map((tab) => (
           <TouchableOpacity
@@ -67,6 +67,10 @@ const TabViewComponent = ({ storeId }) => {
 };
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: COLORS.background,
+  },
   scene: {
     flex: 1,
     alignItems: "center",
@@ -76,7 +80,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-around", // Dàn đều các nút tab
     paddingVertical: 5,
-    backgroundColor: COLORS.lightWhite,
+    backgroundColor: COLORS.background,
   },
   filterButton: {
     flex: 1, // Chia đều không gian giữa các nút tab
@@ -85,7 +89,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderColor: COLORS.gray2,
     borderRadius: 5,
-    backgroundColor: COLORS.lightWhite,
+    backgroundColor: COLORS.background,
     alignItems: "center", // Căn giữa nội dung bên trong nút tab
   },
   selectedFilterButton: {

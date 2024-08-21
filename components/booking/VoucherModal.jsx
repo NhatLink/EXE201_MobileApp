@@ -41,7 +41,7 @@ const VoucherModal = ({ isVisible, onClose }) => {
       visible={isVisible}
       onRequestClose={onClose}
     >
-      <ScrollView>
+      <ScrollView style={{ backgroundColor: "#f4f2eb" }}>
         <View style={styles.fullScreenModal}>
           <Text style={styles.modalTextTitle}>Thêm voucher</Text>
           <TouchableOpacity style={styles.buttonClose} onPress={onClose}>
@@ -84,7 +84,7 @@ const VoucherModal = ({ isVisible, onClose }) => {
                     <Text style={styles.serviceDescription} numberOfLines={1}>
                       {item?.description}
                     </Text>
-                    <Text style={styles.serviceDescription} numberOfLines={1}>
+                    <Text style={styles.serviceDescription} numberOfLines={2}>
                       {`Với lịch hẹn có giá trị ít nhất ${item?.minimumOrderAmount?.toLocaleString()} VND`}
                     </Text>
                     {/* <Text
@@ -146,7 +146,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginTop: 10,
     marginBottom: 20,
-    // backgroundColor: COLORS.lightWhite,
+    backgroundColor: COLORS.background,
     color: COLORS.lightWhite,
     paddingHorizontal: 20,
   },
@@ -201,6 +201,7 @@ const styles = StyleSheet.create({
 
   buttonNot: {
     backgroundColor: COLORS.gray2,
+    color: COLORS.gray,
     textAlign: "center",
     padding: 10,
     borderRadius: 10,

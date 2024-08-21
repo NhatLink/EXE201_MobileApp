@@ -94,7 +94,7 @@ const Home = () => {
     dispatch(fetchSalonInformation(currentPage, itemsPerPage));
   }, [currentPage, dispatch, itemsPerPage]);
   return (
-    <SafeAreaView>
+    <SafeAreaView style={styles.container}>
       <View style={styles.appBarWrapper}>
         <View style={styles.appBar}>
           <Ionicons name="location-outline" size={28} color="black" />
@@ -111,7 +111,7 @@ const Home = () => {
         </View>
       </View>
       <ScrollView>
-        <View style={{ marginHorizontal: 10, marginBottom: 120 }}>
+        <View style={{ marginHorizontal: 10 }}>
           <Welcome />
           <Carousel />
           <Headings />
@@ -127,7 +127,7 @@ export default Home;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.lightWhite,
+    backgroundColor: COLORS.background,
   },
   appBar: {
     flexDirection: "row",

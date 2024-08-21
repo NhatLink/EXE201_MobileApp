@@ -18,6 +18,8 @@ import CheckEmail from "./CheckEmail";
 import DetailAppointmennt from "./DetailAppointmennt";
 import QRScanner from "./QRScanner";
 import Chat from "./Chat";
+import Collection from "./Collection";
+import DetailCollection from "./DetailCollection";
 export {
   Home,
   Cart,
@@ -39,4 +41,6 @@ export {
   DetailAppointmennt,
   QRScanner,
   Chat,
+  Collection,
+  DetailCollection,
 };

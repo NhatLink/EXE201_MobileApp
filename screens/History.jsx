@@ -37,7 +37,7 @@ const History = () => {
   const { user, accessToken, refreshToken, isAuthenticated } = useSelector(
     (state) => state.USER
   );
-  console.log("customerReport:", customerReport);
+  // console.log("customerReport:", customerReport);
   const fetchData = async () => {
     // const userInfoJson = await SecureStore.getItemAsync("userInfo");
     // let userInfo = null;
@@ -125,13 +125,7 @@ const History = () => {
   };
   if (loading) {
     return (
-      <SafeAreaView
-        style={{
-          flex: 1,
-          color: COLORS.lightWhite,
-          marginTop: 10,
-        }}
-      >
+      <SafeAreaView style={styles.container}>
         {/* <Loader visible={loading} /> */}
         <View style={styles.upperRow}>
           <TouchableOpacity
@@ -189,13 +183,7 @@ const History = () => {
     );
   }
   return (
-    <SafeAreaView
-      style={{
-        flex: 1,
-        color: COLORS.lightWhite,
-        marginTop: 10,
-      }}
-    >
+    <SafeAreaView style={styles.container}>
       {/* <Loader visible={loading} /> */}
       <View style={styles.upperRow}>
         <TouchableOpacity
@@ -250,6 +238,7 @@ const History = () => {
             flex: 1,
             alignItems: "center",
             justifyContent: "space-between",
+            backgroundColor: COLORS.background,
           }}
         >
           <View style={{ alignItems: "center", justifyContent: "center" }}>
@@ -319,18 +308,22 @@ const History = () => {
 export default History;
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: COLORS.background,
+  },
   title: {
     fontWeight: "bold",
     fontSize: SIZES.large,
     textAlign: "center",
   },
   upperRow: {
+    marginVertical: 10,
+    marginHorizontal: 10,
     flexDirection: "row",
     justifyContent: "flex-start",
     alignItems: "center",
-    width: SIZES.width - 50,
-    marginBottom: SIZES.xSmall,
-    marginHorizontal: 20,
+    width: "auto",
   },
   searchImage: {
     resizeMode: "cover",
@@ -366,21 +359,22 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     paddingVertical: 10,
     paddingHorizontal: 5,
-    backgroundColor: "#f0f0f0",
+    backgroundColor: COLORS.background,
   },
 
   filterButton: {
     padding: 10,
     marginRight: 5,
     borderWidth: 1,
-    borderColor: "#ccc",
+    borderColor: COLORS.secondary,
     borderRadius: 10,
-    backgroundColor: "#fff",
+    backgroundColor: COLORS.cardcolor,
   },
 
   selectedFilterButton: {
-    borderColor: COLORS.primary,
+    borderColor: COLORS.cardcolor,
     backgroundColor: COLORS.secondary,
+    color: COLORS.white,
   },
   filterContent: {
     flexDirection: "row",

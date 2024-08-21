@@ -80,7 +80,7 @@ const Favorites = ({ navigation }) => {
               <TouchableOpacity
                 style={styles.favcontainer}
                 onPress={() =>
-                  navigation.navigate("Details", { product: item?.id })
+                  navigation.navigate("Details", { collection: item?.id })
                 }
               >
                 <TouchableOpacity style={styles.imageContainer}>
@@ -95,7 +95,7 @@ const Favorites = ({ navigation }) => {
                     {item.description}
                   </Text>
                   <Text style={styles.supplierTxt} numberOfLines={3}>
-                    {item.address}
+                    Địa chỉ: {item.address}
                   </Text>
                   {/* <Text style={styles.supplierTxt} numberOfLines={1}>
                     $ {item.price}
@@ -131,7 +131,9 @@ const Favorites = ({ navigation }) => {
           </View>
           <View>
             <TouchableOpacity onPress={() => navigation.navigate("Search")}>
-              <Text style={styles.button}>Tìm kiếm salon barber</Text>
+              <Text style={styles.button}>
+                Tìm kiếm các salon shop / barber
+              </Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -144,8 +146,10 @@ export default Favorites;
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: 20,
-    marginHorizontal: 20,
+    // marginTop: 20,
+    paddingHorizontal: 20,
+    flex: 1,
+    backgroundColor: COLORS.background,
   },
   upperRow: {
     flexDirection: "row",
@@ -155,9 +159,8 @@ const styles = StyleSheet.create({
     marginBottom: SIZES.xSmall,
   },
   title: {
-    fontSize: SIZES.xLarge,
+    fontSize: SIZES.large,
     fontWeight: "bold",
-    letterSpacing: 2,
   },
   favcontainer: {
     flex: 1,
@@ -167,7 +170,7 @@ const styles = StyleSheet.create({
     marginBottom: SIZES.xSmall,
     padding: SIZES.medium,
     borderRadius: SIZES.small,
-    backgroundColor: "#FFF",
+    backgroundColor: COLORS.cardcolor,
     ...SHADOWS.medium,
     shadowColor: COLORS.white,
   },

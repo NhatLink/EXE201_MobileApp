@@ -148,6 +148,8 @@ import {
   DetailAppointmennt,
   QRScanner,
   Chat,
+  Collection,
+  DetailCollection,
 } from "./screens";
 import Orders from "./screens/Orders";
 import { PaymentProvider } from "./hook/PaymentContext";
@@ -158,6 +160,7 @@ import { fetchUser2 } from "./store/user/action";
 import * as SecureStore from "expo-secure-store";
 import { AppState } from "react-native";
 import NetworkProvider from "./hook/NetworkProvider";
+import { COLORS } from "./constants";
 const Stack = createNativeStackNavigator();
 function RouterContent() {
   const dispatch = useDispatch();
@@ -279,7 +282,11 @@ export default function App() {
         <PaymentProvider>
           <RouterContent />
           <NavigationContainer onReady={onLayoutRootView}>
-            <Stack.Navigator>
+            <Stack.Navigator
+              screenOptions={{
+                cardStyle: { backgroundColor: "#f4f2eb" },
+              }}
+            >
               <Stack.Screen
                 name="Bottom Navigation"
                 component={BottomTabNavigation}
@@ -375,6 +382,16 @@ export default function App() {
               <Stack.Screen
                 name="Chat"
                 component={Chat}
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name="Collection"
+                component={Collection}
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name="DetailCollection"
+                component={DetailCollection}
                 options={{ headerShown: false }}
               />
             </Stack.Navigator>

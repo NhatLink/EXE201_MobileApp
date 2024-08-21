@@ -14,31 +14,25 @@ import { GetAppointmentByHistoryCustomerId } from "../store/appointment/action";
 
 const Orders = () => {
   // const { data, isLoading, error, refetch } = fetchOrders();
-  const dispatch = useDispatch();
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(100);
+  // const dispatch = useDispatch();
+  // const [currentPage, setCurrentPage] = useState(1);
+  // const [itemsPerPage, setItemsPerPage] = useState(100);
   const navigation = useNavigation();
-  const { user } = useSelector((state) => state.USER);
-  useEffect(() => {
-    async function fetchData() {
-      // const userInfoJson = await SecureStore.getItemAsync("userInfo");
-      // let userInfo = null;
-      // if (userInfoJson) {
-      //   try {
-      //     userInfo = JSON.parse(userInfoJson);
-      //   } catch (error) {
-      //     console.error("Error parsing userInfo", error);
-      //   }
-      // }
-      if (user && user?.id) {
-        dispatch(
-          GetAppointmentByHistoryCustomerId(currentPage, itemsPerPage, user?.id)
-        );
-      }
-      // console.log("accountId", userInfo);
-    }
-    fetchData();
-  }, []);
+  // const { user } = useSelector((state) => state.USER);
+  // const { historyAppointment, loading } = useSelector(
+  //   (state) => state.APPOINTMENT
+  // );
+  // useEffect(() => {
+  //   async function fetchData() {
+  //     if (user && user?.id) {
+  //       dispatch(
+  //         GetAppointmentByHistoryCustomerId(currentPage, itemsPerPage, user?.id)
+  //       );
+  //     }
+  //     // console.log("accountId", userInfo);
+  //   }
+  //   fetchData();
+  // }, []);
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.upperRow}>
@@ -48,7 +42,7 @@ const Orders = () => {
         >
           <Ionicons name="chevron-back-circle" size={30} color={COLORS.black} />
         </TouchableOpacity>
-        <Text style={styles.title}> Lịch sử lịch hẹn </Text>
+        <Text style={styles.title}> Lịch sử lịch hẹn</Text>
       </View>
 
       <OrdersList />
@@ -60,25 +54,24 @@ export default Orders;
 
 const styles = StyleSheet.create({
   container: {
-    width: "100%",
-    height: "100%",
-    backgroundColor: COLORS.lightWhite,
-    position: "relative",
+    flex: 1,
+    backgroundColor: COLORS.background,
   },
   upperRow: {
-    marginHorizontal: 20,
+    marginVertical: 10,
+    marginHorizontal: 10,
     flexDirection: "row",
     justifyContent: "flex-start",
     alignItems: "center",
-    width: SIZES.width - 50,
+    width: "auto",
   },
   title: {
-    fontSize: SIZES.xLarge,
-    fontFamily: "bold",
-    fontWeight: "500",
-    letterSpacing: 2,
-    paddingTop: SIZES.small,
+    fontSize: SIZES.large,
+    // fontFamily: "bold",
+    fontWeight: "bold",
+    // letterSpacing: 2,
+    // paddingTop: SIZES.small,
     // paddingLeft: SIZES.xLarge,
-    marginBottom: SIZES.xSmall,
+    // marginBottom: SIZES.xSmall,
   },
 });

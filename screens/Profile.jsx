@@ -251,6 +251,16 @@ const Profile = ({ navigation }) => {
                 <Text style={styles.menuItemText}>Salon/Barber yêu thích</Text>
               </View>
             </TouchableOpacity>
+            <TouchableOpacity onPress={() => navigation.navigate("Collection")}>
+              <View style={styles.menuItem}>
+                <MaterialCommunityIcons
+                  name="camera-image"
+                  color={COLORS.primary}
+                  size={25}
+                />
+                <Text style={styles.menuItemText}>Kho lưu trữ</Text>
+              </View>
+            </TouchableOpacity>
             <TouchableOpacity
               onPress={() => navigation.navigate("Appointment schedule")}
             >
@@ -332,8 +342,8 @@ export default Profile;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    color: COLORS.lightWhite,
-    marginBottom: 70,
+    backgroundColor: COLORS.background,
+    // marginBottom: 70,
   },
   title: {
     textAlign: "left",
@@ -375,15 +385,15 @@ const styles = StyleSheet.create({
     marginTop: SIZES.xLarge,
     width: "auto",
     marginHorizontal: 10,
-    backgroundColor: COLORS.lightWhite,
+    backgroundColor: COLORS.cardcolor,
     borderRadius: 12,
   },
   menuItem: {
     flexDirection: "row",
     paddingVertical: 15,
     paddingHorizontal: 30,
-    borderBottomColor: COLORS.gray,
-    borderBottomWidth: 0.5,
+    borderBottomColor: COLORS.background,
+    borderBottomWidth: 1.5,
   },
   menuItemText: {
     fontFamily: "regular",

@@ -20,12 +20,12 @@ const ProductSpecialViewCard = ({ item }) => {
             <Text style={styles.averageRatingText}>
               {item?.totalRating > 0
                 ? (item?.rate).toFixed(1) + "/5.0"
-                : "No ratings"}
+                : "Không có đánh giá"}
             </Text>
             <Text style={styles.averageRatingText}>
               {item?.totalReviewer
-                ? item?.totalReviewer + " reviews"
-                : "(0 review)"}
+                ? item?.totalReviewer + " đánh giá"
+                : "(0 đánh giá)"}
             </Text>
           </View>
         </View>
@@ -37,6 +37,9 @@ const ProductSpecialViewCard = ({ item }) => {
             {item?.description}
           </Text>
           <Text style={styles.supplier} numberOfLines={2}>
+            <Text style={styles.supplierStrong} numberOfLines={2}>
+              {"Địa chỉ: "}
+            </Text>
             {item?.address}
           </Text>
           {/* <Text style={styles.price} numberOfLines={1}>
@@ -63,7 +66,7 @@ const styles = StyleSheet.create({
     marginEnd: 10,
     marginVertical: SIZES.medium,
     borderRadius: SIZES.small,
-    backgroundColor: COLORS.secondary,
+    backgroundColor: COLORS.cardcolor,
   },
   imageContainer: {
     flex: 1,
@@ -82,7 +85,7 @@ const styles = StyleSheet.create({
     padding: SIZES.small,
   },
   name: {
-    fontSize: SIZES.large,
+    fontSize: SIZES.medium,
     fontFamily: "bold",
     color: COLORS.black,
     marginBottom: 1,
@@ -90,7 +93,13 @@ const styles = StyleSheet.create({
   supplier: {
     fontFamily: "regular",
     fontSize: SIZES.xSmall,
-    color: COLORS.gray,
+    color: COLORS.black,
+  },
+  supplierStrong: {
+    fontFamily: "regular",
+    fontSize: SIZES.xSmall,
+    color: COLORS.black,
+    fontWeight: "bold",
   },
   price: {
     fontSize: SIZES.medium,

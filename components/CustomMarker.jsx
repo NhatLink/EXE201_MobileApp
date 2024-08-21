@@ -21,8 +21,8 @@ const styles = StyleSheet.create({
     overflow: "hidden",
   },
   markerImage: {
-    width: 40,
-    height: 40,
+    width: 35,
+    height: 35,
   },
 });
 

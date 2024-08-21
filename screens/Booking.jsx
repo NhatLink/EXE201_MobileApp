@@ -9,7 +9,7 @@ import {
   ActivityIndicator,
   ToastAndroid,
 } from "react-native";
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import { COLORS, SIZES, SHADOWS } from "../constants";
 import { SimpleLineIcons, Ionicons } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -44,6 +44,7 @@ import * as SecureStore from "expo-secure-store";
 
 const Booking = ({ navigation }) => {
   const dispatch = useDispatch();
+  const scrollViewRef = useRef(null);
   const {
     storeId,
     dateBooking,
@@ -254,10 +255,25 @@ const Booking = ({ navigation }) => {
     }
   }, [voucher, bookAppoinment]);
   // console.log("totalPrice: ", totalPrice);
+
+  useEffect(() => {
+    if (availableTime && scrollViewRef.current) {
+      const index = availableTime.findIndex(
+        (item) => item.timeSlot === hourBooking
+      );
+      if (index !== -1) {
+        scrollViewRef.current.scrollTo({
+          x: index * 75, // Giá trị này có thể điều chỉnh tùy thuộc vào kích thước của mỗi item
+          animated: true,
+        });
+      }
+    }
+  }, [hourBooking, availableTime]);
+
   return (
     <>
       <Loader visible={loading} />
-      <ScrollView>
+      <ScrollView style={{ backgroundColor: "#f4f2eb" }}>
         <SafeAreaView style={styles.container}>
           <View style={styles.upperRow}>
             <TouchableOpacity style={{ paddingLeft: 0 }} onPress={handleGoBack}>
@@ -288,8 +304,8 @@ const Booking = ({ navigation }) => {
               },
             }}
             theme={{
-              backgroundColor: COLORS.gray,
-              calendarBackground: COLORS.lightWhite,
+              backgroundColor: "#bf9456",
+              calendarBackground: COLORS.background,
               textSectionTitleColor: "#00adf5",
               selectedDayBackgroundColor: COLORS.red,
               selectedDayTextColor: COLORS.black,
@@ -302,6 +318,7 @@ const Booking = ({ navigation }) => {
           />
           {availableTime && availableTime.length > 0 ? (
             <ScrollView
+              ref={scrollViewRef}
               horizontal
               showsHorizontalScrollIndicator={false}
               style={{
@@ -490,8 +507,9 @@ export default Booking;
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: 20,
+    // marginTop: 20,
     paddingHorizontal: 20,
+    backgroundColor: COLORS.background,
   },
   upperRow: {
     flexDirection: "row",
@@ -508,10 +526,11 @@ const styles = StyleSheet.create({
   },
   item: {
     alignItems: "center",
-    marginRight: 15,
+    marginRight: 10,
     borderRadius: 20,
     borderWidth: 2,
     borderColor: COLORS.gray2,
+    width: 65,
   },
   selectedItem: {
     backgroundColor: COLORS.secondary,
@@ -539,7 +558,7 @@ const styles = StyleSheet.create({
   },
   bookContainer: {
     padding: 5,
-    backgroundColor: COLORS.banner,
+    backgroundColor: COLORS.cardcolor,
   },
   bookPriceContainer: {
     flexDirection: "row",
@@ -613,6 +632,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginLeft: 5,
     fontWeight: "bold",
+    color: COLORS.cardcolor,
   },
   serviceName: {
     fontSize: SIZES.small,

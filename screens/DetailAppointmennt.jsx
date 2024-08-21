@@ -5,7 +5,6 @@ import {
   TouchableOpacity,
   Image,
   ScrollView,
-  SafeAreaView,
   Modal,
   TextInput,
   Alert,
@@ -22,6 +21,7 @@ import React, { useEffect, useState } from "react";
 import BackButton from "../components/auth/BackButton";
 import { COLORS, SIZES, images } from "../constants";
 import { useNavigation, useRoute } from "@react-navigation/native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { baseUrl } from "../utils/IP";
@@ -47,6 +47,7 @@ const DetailAppointmennt = ({ navigation }) => {
   // const navigation = useNavigation();
   const dispatch = useDispatch();
   const { appointmentId } = route.params;
+  const mapRef = React.useRef(null);
   const [data, setData] = useState({});
   const [load, setLoad] = useState(false);
   const [error, setError] = useState("");
@@ -250,6 +251,20 @@ const DetailAppointmennt = ({ navigation }) => {
     return d;
   };
 
+  const handleReturnToMarker = () => {
+    if (mapRef.current) {
+      mapRef.current.animateToRegion(
+        {
+          latitude: parseFloat(appointmentDetail?.salonInformation?.latitude),
+          longitude: parseFloat(appointmentDetail?.salonInformation?.longitude),
+          latitudeDelta: 0.0922,
+          longitudeDelta: 0.0421,
+        },
+        1000
+      ); // 1000 milliseconds to animate
+    }
+  };
+
   if (loading) {
     return (
       <SafeAreaView style={styles.container}>
@@ -405,7 +420,7 @@ const DetailAppointmennt = ({ navigation }) => {
                 }
                 // style={styles.checkoutBtn}
               >
-                <Text style={styles.checkOutText1}>Xem chi tiết</Text>
+                <Text style={styles.checkOutText1}>Xem cửa hàng</Text>
               </TouchableOpacity>
             </View>
             <View style={styles.line} />
@@ -413,10 +428,10 @@ const DetailAppointmennt = ({ navigation }) => {
               source={{ uri: appointmentDetail?.salonInformation?.img }}
               style={styles.ImageShop}
             />
-            <View style={styles.productRow}>
+            <View style={styles.productRow1}>
               <View style={styles.productInfo2}>
                 <Text style={styles.contentHeader}>
-                  Cửa hàng: {appointmentDetail?.salonInformation?.name}
+                  {appointmentDetail?.salonInformation?.name}
                 </Text>
                 <Text style={styles.content}>
                   Địa chỉ: {appointmentDetail?.salonInformation?.address}
@@ -426,12 +441,13 @@ const DetailAppointmennt = ({ navigation }) => {
                 style={styles.bookButton}
                 onPress={toggleModal3}
               >
-                <Ionicons
+                {/* <Ionicons
                   name="warning-outline"
                   size={20}
                   color={COLORS.tertiary}
                   style={styles.buttonReport}
-                />
+                /> */}
+                <Text style={styles.buttonReport}>Báo cáo</Text>
               </TouchableOpacity>
             </View>
 
@@ -640,6 +656,7 @@ const DetailAppointmennt = ({ navigation }) => {
               appointmentDetail?.salonInformation?.latitude &&
               appointmentDetail?.salonInformation?.longitude && (
                 <MapView
+                  ref={mapRef}
                   style={styles.map}
                   provider={MapView.PROVIDER_GOOGLE}
                   initialRegion={{
@@ -665,7 +682,7 @@ const DetailAppointmennt = ({ navigation }) => {
                     <CustomMarker
                       coordinate={origin}
                       image={user?.img}
-                      title="Your Location"
+                      title="Vị trí của bạn"
                     />
                   )}
                   <CustomMarker
@@ -695,6 +712,14 @@ const DetailAppointmennt = ({ navigation }) => {
             >
               <Text style={styles.buttonCloseMap}>Đóng</Text>
             </TouchableOpacity>
+            <View style={styles.buttonContainer}>
+              <TouchableOpacity
+                style={styles.buttonMap}
+                onPress={handleReturnToMarker}
+              >
+                <Text style={styles.buttonTextMap}>Vị trí salon/barber</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
       </Modal>
@@ -734,10 +759,10 @@ export default DetailAppointmennt;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.lightWhite,
+    backgroundColor: COLORS.background,
   },
   containerinfo: {
-    marginTop: 60,
+    marginTop: 10,
   },
   contentContainer: {
     justifyContent: "center",
@@ -749,17 +774,16 @@ const styles = StyleSheet.create({
   upperRow: {
     marginHorizontal: 10,
     flexDirection: "row",
-    justifyContent: "space-between",
+    justifyContent: "flex-start",
     alignItems: "center",
-    position: "absolute",
-    width: SIZES.width - 10,
-    top: SIZES.large,
-    zIndex: 999,
+    marginVertical: 10,
+    // position: "absolute",
+    // zIndex: 999,
   },
   title: {
-    fontSize: SIZES.xLarge,
+    fontSize: SIZES.large,
     fontWeight: "bold",
-    fontWeight: "500",
+    // fontWeight: "500",
     // letterSpacing: 2,
     // paddingTop: SIZES.small,
     // marginBottom: SIZES.xSmall,
@@ -769,7 +793,7 @@ const styles = StyleSheet.create({
   section: {
     marginBottom: 20,
     padding: 10,
-    backgroundColor: "#f8f9fa",
+    backgroundColor: COLORS.background,
     borderRadius: 8,
   },
   sectionRow: {
@@ -777,7 +801,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     marginBottom: 20,
     padding: 10,
-    backgroundColor: "#f8f9fa",
+    backgroundColor: COLORS.background,
     borderRadius: 8,
   },
   sectionRow1: {
@@ -807,6 +831,11 @@ const styles = StyleSheet.create({
   productRow: {
     flexDirection: "row",
     alignItems: "center",
+  },
+  productRow1: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: SIZES.medium,
   },
   productImage: {
     width: 60,
@@ -960,16 +989,16 @@ const styles = StyleSheet.create({
     marginLeft: 5,
     fontWeight: "bold",
   },
-  buttonReport: {
-    // backgroundColor: COLORS.tertiary,
-    textAlign: "center",
-    padding: 10,
-    borderRadius: 100,
-    marginLeft: 5,
-    fontWeight: "bold",
-    borderWidth: 2,
-    borderColor: COLORS.tertiary,
-  },
+  // buttonReport: {
+  //   // backgroundColor: COLORS.tertiary,
+  //   textAlign: "center",
+  //   padding: 10,
+  //   borderRadius: 100,
+  //   marginLeft: 5,
+  //   fontWeight: "bold",
+  //   borderWidth: 2,
+  //   borderColor: COLORS.tertiary,
+  // },
   serviceName: {
     fontSize: SIZES.small,
     fontWeight: "bold",
@@ -1095,6 +1124,13 @@ const styles = StyleSheet.create({
     width: SIZES.width,
     zIndex: 999,
   },
+  buttonReport: {
+    backgroundColor: COLORS.red,
+    padding: 10,
+    borderRadius: 10,
+    fontWeight: "bold",
+    color: COLORS.lightWhite,
+  },
   mapContainer: {
     borderRadius: 10,
     width: "100%",
@@ -1164,5 +1200,21 @@ const styles = StyleSheet.create({
     width: 100,
     height: 100,
     borderRadius: 10,
+  },
+  buttonContainer: {
+    position: "absolute",
+    bottom: 20,
+    width: "100%",
+    alignItems: "center",
+  },
+  buttonMap: {
+    backgroundColor: COLORS.secondary,
+    padding: 10,
+    borderRadius: 5,
+    alignSelf: "center",
+  },
+  buttonTextMap: {
+    color: COLORS.black,
+    textAlign: "center",
   },
 });

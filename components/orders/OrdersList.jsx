@@ -29,46 +29,34 @@ const OrdersList = () => {
   );
   const [filteredData, setFilteredData] = useState(historyAppointment);
   const [selectedStatus, setSelectedStatus] = useState(null);
-  // const [load, setLoad] = useState(false);
-  // useFocusEffect(
-  //   React.useCallback(() => {
-  //     refetch;
-  //   }, [data])
-  // );
-  // const [currentPage, setCurrentPage] = useState(1);
-  // const [itemsPerPage, setItemsPerPage] = useState(100);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const { user } = useSelector((state) => state.USER);
 
-  // useEffect(() => {
-  //   async function fetchData() {
-  //     setLoad(true);
-  //     const userInfoJson = await SecureStore.getItemAsync("userInfo");
-  //     let userInfo = null;
-  //     if (userInfoJson) {
-  //       try {
-  //         userInfo = JSON.parse(userInfoJson);
-  //       } catch (error) {
-  //         console.error("Error parsing userInfo", error);
-  //       }
-  //     }
-  //     if (userInfo && userInfo?.id) {
-  //       dispatch(
-  //         GetAppointmentByHistoryCustomerId(
-  //           currentPage,
-  //           itemsPerPage,
-  //           userInfo?.id
-  //         )
-  //       );
-  //     }
-  //     console.log("accountId", userInfo);
-  //     setLoad(false);
-  //   }
-  //   fetchData();
-  // }, []);
-  // console.log("datainOrder:", filteredData);
+  useEffect(() => {
+    async function fetchData() {
+      if (user && user?.id) {
+        dispatch(
+          GetAppointmentByHistoryCustomerId(currentPage, itemsPerPage, user?.id)
+        );
+      }
+      // console.log("accountId", userInfo);
+    }
+    fetchData();
+  }, []);
   useEffect(() => {
     setFilteredData(historyAppointment); // Cập nhật filteredData mỗi khi data thay đổi
   }, [historyAppointment]); // Phụ thuộc vào data
-
+  const Decrease = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+  const Increase = () => {
+    if (currentPage < searchSalon?.totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
   const filterOrder = (status) => {
     setSelectedStatus(status);
     if (status === null) {
@@ -104,42 +92,6 @@ const OrdersList = () => {
       </View>
     );
   }
-
-  // if (data.length === 0) {
-  //   return (
-  //     <View style={styles.emptyContainer}>
-  //       <Image
-  //         source={{
-  //           uri: "https://rsrc.easyeat.ai/mweb/no-orders2.webp",
-  //         }} // Đường dẫn tới ảnh bạn muốn hiển thị
-  //         style={styles.emptyImage}
-  //       />
-  //       <View style={styles.buttonContainer}>
-  //         <Button
-  //           title="Go to Shopping"
-  //           onPress={() => navigation.navigate("Bottom Navigation")} // Thay 'Home' bằng tên màn hình chính xác trong stack navigator của bạn
-  //         />
-  //       </View>
-  //     </View>
-  //   );
-  // }
-
-  // if (filteredData.length === 0) {
-  //   return (
-  //     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-  //       <Image
-  //         source={{ uri: "https://rsrc.easyeat.ai/mweb/no-orders2.webp" }}
-  //         style={styles.emptyFilterImage}
-  //       />
-  //       {/* <View style={styles.buttonContainer}>
-  //           <Button
-  //             title="Go to Shopping"
-  //             onPress={() => navigation.navigate("Bottom Navigation")}
-  //           />
-  //         </View> */}
-  //     </View>
-  //   );
-  // }
   return (
     <View style={{ flex: 1 }}>
       <View style={styles.filtersContainer}>
@@ -197,6 +149,29 @@ const OrdersList = () => {
           vertical={true}
           contentContainerStyle={styles.container}
           ItemSeparatorComponent={() => <View style={styles.separator} />}
+          ListFooterComponent={
+            <View style={styles.paging}>
+              {currentPage > 1 && (
+                <TouchableOpacity style={styles.pagingArrow} onPress={Decrease}>
+                  <Ionicons
+                    name="arrow-back-circle-outline"
+                    size={24}
+                    color={COLORS.primary}
+                  />
+                </TouchableOpacity>
+              )}
+              <Text style={styles.pagingArrow}>{historyAppointment?.page}</Text>
+              {currentPage < historyAppointment?.totalPages && (
+                <TouchableOpacity style={styles.pagingArrow} onPress={Increase}>
+                  <Ionicons
+                    name="arrow-forward-circle-outline"
+                    size={24}
+                    color={COLORS.primary}
+                  />
+                </TouchableOpacity>
+              )}
+            </View>
+          }
         />
       )}
     </View>
@@ -246,7 +221,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     paddingVertical: 10,
     paddingHorizontal: 5,
-    backgroundColor: "#f0f0f0",
+    backgroundColor: COLORS.background,
   },
 
   filterButton: {
@@ -255,7 +230,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#ccc",
     borderRadius: 10,
-    backgroundColor: "#fff",
+    backgroundColor: COLORS.cardcolor,
   },
 
   selectedFilterButton: {
@@ -273,6 +248,18 @@ const styles = StyleSheet.create({
     marginLeft: 5,
     textAlign: "center",
     fontWeight: "bold",
+  },
+  paging: {
+    // position: "absolute",
+    // bottom: 0,
+    // right: "50%",
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  pagingArrow: {
+    // marginVertical: 10,
+    padding: 10,
   },
 });
 

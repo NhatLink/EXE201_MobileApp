@@ -10,7 +10,7 @@ const StarRating = ({ rating }) => {
       <FontAwesome
         name={i <= rating ? "star" : "star-o"}
         size={SIZES.small}
-        color="gold"
+        color="#bf9456"
         key={i}
       />
     );

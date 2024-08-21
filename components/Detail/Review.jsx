@@ -83,7 +83,7 @@ const Review = (storeId) => {
         <Text style={styles.averageRatingText}>
           {salonDetail?.rate > 0
             ? (salonDetail?.rate).toFixed(1) + "/5.0"
-            : "No ratings"}
+            : "0 đánh giá"}
         </Text>
         <Text style={styles.totalFeedbackText}>
           {salonDetail?.totalReviewer > 0
@@ -212,7 +212,7 @@ const styles = StyleSheet.create({
   container: {
     width: "100%",
     height: "100%",
-    backgroundColor: COLORS.lightWhite,
+    backgroundColor: COLORS.background,
     position: "relative",
   },
   feedbackHeader: {
@@ -272,7 +272,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     paddingVertical: 5,
     paddingHorizontal: 5,
-    backgroundColor: COLORS.lightWhite,
+    backgroundColor: COLORS.background,
     paddingHorizontal: SIZES.medium,
   },
 
@@ -280,9 +280,9 @@ const styles = StyleSheet.create({
     padding: 10,
     marginRight: 5,
     borderWidth: 1,
-    borderColor: COLORS.gray2,
+    borderColor: COLORS.gray,
     borderRadius: 5,
-    backgroundColor: COLORS.lightWhite,
+    backgroundColor: COLORS.cardcolor,
   },
 
   selectedFilterButton: {
@@ -303,7 +303,7 @@ const styles = StyleSheet.create({
     fontSize: SIZES.xSmall,
   },
   ratingContainer: {
-    backgroundColor: COLORS.lightWhite,
+    backgroundColor: COLORS.background,
     paddingHorizontal: SIZES.medium,
     flexDirection: "row",
     alignItems: "center",

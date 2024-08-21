@@ -123,7 +123,6 @@ const Details = ({ navigation }) => {
         );
       } else {
         favoritesObj[shopId] = productObj;
-        console.log(`Added key: ${shopId}`);
         setFavorites(true);
         ToastAndroid.show(
           "Được thêm vào danh sách yêu thích",
@@ -139,16 +138,16 @@ const Details = ({ navigation }) => {
 
   if (loading) {
     return (
-      <View style={styles.loadingContainer}>
+      <SafeAreaView style={styles.loadingContainer}>
         <ActivityIndicator size="large" color={COLORS.primary} />
         <Text>Đang lấy dữ liệu, xin chờ</Text>
-      </View>
+      </SafeAreaView>
     );
   }
 
   if (salonDetail.status !== "APPROVED") {
     return (
-      <View style={styles.container}>
+      <SafeAreaView style={styles.container}>
         <Modal
           // visible={checkInStatus}
           transparent={true}
@@ -175,12 +174,12 @@ const Details = ({ navigation }) => {
             </View>
           </View>
         </Modal>
-      </View>
+      </SafeAreaView>
     );
   }
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       {/* <Loader visible={loading} /> */}
       <ScrollView style={styles.wrapper}>
         <View style={styles.upperRow}>
@@ -232,7 +231,9 @@ const Details = ({ navigation }) => {
             <Text style={styles.descriptionText}>
               {salonDetail?.description}
             </Text>
-            <Text style={styles.descriptionText}>{salonDetail?.address}</Text>
+            <Text style={styles.descriptionText}>
+              Địa chỉ: {salonDetail?.address}
+            </Text>
             {/* {StoreDetail?.saleUp && (
               <Text style={styles.sale} numberOfLines={1}>
                 SALE
@@ -267,14 +268,14 @@ const Details = ({ navigation }) => {
         </View>
         <TabViewComponent storeId={salonDetail?.id} />
       </ScrollView>
-    </View>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
+    backgroundColor: COLORS.background,
   },
   webView: {
     height: "100%",
@@ -282,8 +283,8 @@ const styles = StyleSheet.create({
   },
   wrapper: {
     flex: 1,
-    backgroundColor: COLORS.lightWhite,
-    marginTop: SIZES.small,
+    // backgroundColor: COLORS.lightWhite,
+    // marginTop: SIZES.small,
   },
   location: {
     flexDirection: "row",
@@ -294,18 +295,17 @@ const styles = StyleSheet.create({
     borderRadius: SIZES.xLarge,
   },
   upperRow: {
-    marginHorizontal: 20,
+    marginHorizontal: 10,
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
     position: "absolute",
     width: SIZES.width - 30,
-    top: 10,
+    top: 5,
     zIndex: 999,
   },
   details: {
     marginTop: -SIZES.large,
-    backgroundColor: COLORS.lightWhite,
     width: SIZES.width,
     borderTopLeftRadius: SIZES.medium,
     borderTopRightRadius: SIZES.medium,
@@ -374,6 +374,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     alignContent: "center",
+    backgroundColor: COLORS.background,
   },
   modalContainer: {
     flex: 1,

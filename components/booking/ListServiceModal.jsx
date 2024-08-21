@@ -8,6 +8,7 @@ import {
   Keyboard,
   TextInput,
   ScrollView,
+  Image,
 } from "react-native";
 import { COLORS, SIZES } from "../../constants";
 import { Ionicons, Feather } from "@expo/vector-icons";
@@ -39,7 +40,7 @@ const ListServiceModal = ({ isVisible, onClose }) => {
       visible={isVisible}
       onRequestClose={onClose}
     >
-      <ScrollView>
+      <ScrollView style={{ backgroundColor: "#f4f2eb" }}>
         <View style={styles.fullScreenModal}>
           <Text style={styles.modalTextTitle}>Thêm dịch vụ</Text>
           {/* <View style={styles.searchContainer}>
@@ -86,6 +87,9 @@ const ListServiceModal = ({ isVisible, onClose }) => {
                   // Handle navigation or other actions
                 }}
               >
+                <View style={styles.imgService}>
+                  <Image source={{ uri: item?.img }} style={styles.image} />
+                </View>
                 <View style={styles.serviceInfo}>
                   <Text style={styles.serviceName} numberOfLines={1}>
                     {item?.serviceName}
@@ -154,7 +158,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginTop: 10,
     marginBottom: 20,
-    backgroundColor: COLORS.lightWhite,
+    backgroundColor: COLORS.background,
     color: COLORS.lightWhite,
     paddingHorizontal: 20,
   },
@@ -185,8 +189,13 @@ const styles = StyleSheet.create({
     marginVertical: 5,
     // marginHorizontal: SIZES.xSmall,
   },
+  imgService: {
+    flex: 2, // 1 part
+    height: "100%",
+    marginRight: 5,
+  },
   serviceInfo: {
-    flex: 6, // 7 parts
+    flex: 5, // 7 parts
     flexDirection: "column",
   },
   pricingInfo: {
@@ -196,6 +205,11 @@ const styles = StyleSheet.create({
   },
   bookButton: {
     flex: 2, // 1 part
+  },
+  image: {
+    aspectRatio: 1,
+    resizeMode: "cover",
+    borderRadius: SIZES.small,
   },
   button: {
     backgroundColor: COLORS.secondary,

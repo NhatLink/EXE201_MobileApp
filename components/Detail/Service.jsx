@@ -216,7 +216,7 @@ const styles = StyleSheet.create({
   container: {
     width: "100%",
     height: "100%",
-    backgroundColor: COLORS.lightWhite,
+    backgroundColor: COLORS.background,
     position: "relative",
   },
   upperRow: {

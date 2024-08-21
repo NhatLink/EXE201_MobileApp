@@ -205,13 +205,13 @@ const ModalDetailHistoryReport = ({ isVisible, onClose, data }) => {
 const styles = StyleSheet.create({
   fullScreenModal: {
     flex: 1,
-    backgroundColor: COLORS.lightWhite,
+    backgroundColor: COLORS.background,
   },
   modalContent: {
     flex: 1,
     justifyContent: "flex-start",
     // alignItems: "flex-start",
-    backgroundColor: COLORS.lightWhite,
+    backgroundColor: COLORS.background,
   },
   modalTitle: {
     fontSize: 20,
@@ -317,7 +317,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   container: {
-    backgroundColor: "#FFF",
+    backgroundColor: COLORS.background,
     // ...SHADOWS.medium,
     position: "relative",
     borderRadius: 10,

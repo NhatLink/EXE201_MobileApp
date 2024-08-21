@@ -9,7 +9,7 @@
     "splash": {
       "image": "./assets/HairSplash.jpg",
       "resizeMode": "contain",
-      "backgroundColor": "#DDF0FF"
+      "backgroundColor": "#f4f2eb"
     },
     "assetBundlePatterns": [
       "**/*"
@@ -21,7 +21,7 @@
       "usesCleartextTraffic": true,
       "adaptiveIcon": {
         "foregroundImage": "./assets/LogoHair.jpg",
-        "backgroundColor": "#DDF0FF"
+        "backgroundColor": "#f4f2eb"
       },
       "config": {
         "googleMaps": {

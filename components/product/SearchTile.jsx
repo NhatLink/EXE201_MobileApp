@@ -80,12 +80,14 @@ const SearchTile = ({ item }) => {
           <View style={styles.ratingContainer}>
             {/* <StarRating rating={item?.avgRating} /> */}
             <Text style={styles.averageRatingText}>
-              {item?.rate > 0 ? (item?.rate).toFixed(1) + "/5.0" : "No ratings"}
+              {item?.rate > 0
+                ? (item?.rate).toFixed(1) + "/5.0"
+                : "Không có đánh giá"}
             </Text>
             <Text style={styles.averageRatingText}>
               {item?.totalReviewer
-                ? item?.totalReviewer + " reviews"
-                : "(0 review)"}
+                ? item?.totalReviewer + " đánh giá"
+                : "(0 đánh giá)"}
             </Text>
           </View>
         </View>
@@ -235,7 +237,7 @@ const styles = StyleSheet.create({
   container: {
     width: "auto",
     height: "auto",
-    marginBottom: SIZES.medium,
+    // marginBottom: SIZES.medium,
     borderBottomWidth: 1,
     borderBottomColor: "#ccc",
   },
@@ -247,6 +249,7 @@ const styles = StyleSheet.create({
     marginTop: SIZES.medium / 2,
     borderRadius: SIZES.small,
     overflow: "hidden",
+    justifyContent: "center",
   },
   image: {
     aspectRatio: 1,

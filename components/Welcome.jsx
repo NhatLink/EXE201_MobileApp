@@ -75,15 +75,14 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     flexDirection: "row",
-    backgroundColor: COLORS.secondary,
+    backgroundColor: COLORS.cardcolor,
     borderRadius: SIZES.medium,
-    marginVertical: SIZES.medium,
     height: 50,
   },
 
   searchWrapper: {
     flex: 1,
-    backgroundColor: COLORS.secondary,
+    backgroundColor: COLORS.cardcolor,
     marginRight: SIZES.small,
     justifyContent: "center",
     alignItems: "center",
@@ -94,7 +93,7 @@ const styles = StyleSheet.create({
     fontFamily: "regular",
     width: "100%",
     height: "100%",
-    paddingHorizontal: SIZES.medium,
+    // paddingHorizontal: SIZES.medium,
   },
   searchBtn: {
     width: 50,

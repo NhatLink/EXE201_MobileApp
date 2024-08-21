@@ -1,0 +1,342 @@
+import React, { useEffect, useState } from "react";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  Modal,
+  ScrollView,
+  Image,
+  TextInput,
+  ActivityIndicator,
+  Alert,
+  ToastAndroid,
+} from "react-native";
+import ButtonCustom from "../auth/Button";
+import { COLORS, SIZES } from "../../constants";
+import {
+  MaterialCommunityIcons,
+  SimpleLineIcons,
+  AntDesign,
+  Ionicons,
+} from "react-native-vector-icons";
+import * as ImagePicker from "expo-image-picker";
+import { CreateReport } from "../../store/report/action";
+import { useDispatch } from "react-redux";
+import Loader from "../auth/Loader";
+import { Rating } from "react-native-ratings";
+import { Feather } from "@expo/vector-icons";
+import { CreateFeedback } from "../../store/feedback/action";
+
+const AddPictureCollection = ({ isVisible, onClose, data }) => {
+  const [selectedImages, setSelectedImages] = useState([]);
+  const [loader, setLoader] = useState(false);
+
+  const pickImage = async () => {
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      //   allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+    if (!result.canceled) {
+      setSelectedImages((prev) =>
+        [...prev, result.assets[0].uri].slice(0, 10 - data.length)
+      );
+    }
+  };
+
+  //   const takePhoto = async () => {
+  //     const result = await ImagePicker.launchCameraAsync({
+  //       allowsEditing: true,
+  //       aspect: [4, 3],
+  //       quality: 1,
+  //     });
+  //     if (!result.canceled) {
+  //       const imageSize = await ImagePicker.getMediaLibraryPermissionsAsync(
+  //         result.assets[0].uri
+  //       );
+  //       if (imageSize.size / 1024 / 1024 > 10) {
+  //         Alert.alert("Error", "Hình ảnh không được quá 10MB");
+  //         return;
+  //       }
+  //       setSelectedImages((prev) =>
+  //         [...prev, result.assets[0].uri].slice(0, 10 - data.length)
+  //       );
+  //     }
+  //   };
+
+  const takePhoto = async () => {
+    const result = await ImagePicker.launchCameraAsync({
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+    if (!result.canceled) {
+      setSelectedImages((prev) =>
+        [...prev, result.assets[0].uri].slice(0, 10 - data.length)
+      );
+    }
+  };
+
+  const removeImage = (uri) => {
+    setSelectedImages((prev) => prev.filter((image) => image !== uri));
+  };
+
+  const createCollection = () => {
+    if (selectedImages.length === 0) {
+      // Alert.alert("Lỗi", "Vui lòng chọn ít nhất một hình ảnh");
+      ToastAndroid.show(
+        "Vui lòng chọn ít nhất một hình ảnh",
+        ToastAndroid.SHORT
+      );
+      return;
+    }
+
+    // Lưu logic cho việc tạo bộ sưu tập ở đây...
+  };
+
+  return (
+    <Modal
+      animationType="slide"
+      transparent={true}
+      visible={isVisible}
+      onRequestClose={onClose}
+    >
+      <ScrollView style={styles.fullScreenModal}>
+        <Loader visible={loader} />
+        <View style={styles.modalContent}>
+          <Text style={styles.modalTitle}>Thêm ảnh</Text>
+          <View style={styles.line} />
+
+          <Text style={styles.modalText}>
+            Hình ảnh (Tối đa {10 - data.length}):
+          </Text>
+          <View style={styles.line} />
+
+          {selectedImages.length < 10 - data.length && (
+            <View style={styles.buttonContainer}>
+              <TouchableOpacity style={styles.buttonleft} onPress={takePhoto}>
+                <Text style={styles.buttonText}>Chụp ảnh</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.buttonrright} onPress={pickImage}>
+                <Text style={styles.buttonText}>Chọn ảnh</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+
+          <View style={styles.imageContainer}>
+            {selectedImages.map((image, index) => (
+              <View key={index} style={styles.imageWrapper}>
+                <Image source={{ uri: image }} style={styles.image} />
+                <TouchableOpacity
+                  style={styles.removeButton}
+                  onPress={() => removeImage(image)}
+                >
+                  <Ionicons name="close-circle-outline" size={25} color="red" />
+                </TouchableOpacity>
+              </View>
+            ))}
+          </View>
+        </View>
+      </ScrollView>
+      <View style={styles.submitButton}>
+        <ButtonCustom
+          title={"Thêm ảnh vào bộ sưu tập"}
+          onPress={createCollection}
+        />
+      </View>
+    </Modal>
+  );
+};
+
+const styles = StyleSheet.create({
+  fullScreenModal: {
+    flex: 1,
+    backgroundColor: COLORS.background,
+  },
+  modalContent: {
+    flex: 1,
+    justifyContent: "flex-start",
+    // alignItems: "flex-start",
+    backgroundColor: COLORS.background,
+    borderWidth: 1,
+    borderColor: COLORS.gray2,
+  },
+  modalTitle: {
+    fontSize: 20,
+    marginTop: 10,
+    textAlign: "center",
+    fontWeight: "bold",
+  },
+  modalText: {
+    fontSize: 18,
+    textAlign: "left",
+    marginHorizontal: 5,
+    fontWeight: "bold",
+  },
+  modalSubText: {
+    fontSize: 14,
+    textAlign: "left",
+    marginHorizontal: 5,
+  },
+  buttonContainer: {
+    flexDirection: "row",
+    justifyContent: "center",
+    width: "100%",
+    marginVertical: 20,
+  },
+  buttonrright: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignContent: "center",
+    textAlign: "center",
+    backgroundColor: COLORS.secondary,
+    padding: 10,
+    borderLeftWidth: 0.5,
+    borderBottomRightRadius: 5,
+    borderTopRightRadius: 5,
+    borderWidth: 1,
+    borderColor: COLORS.cardcolor,
+  },
+  buttonleft: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignContent: "center",
+    textAlign: "center",
+    backgroundColor: COLORS.secondary,
+    padding: 10,
+    borderBottomLeftRadius: 5,
+    borderTopLeftRadius: 5,
+    borderWidth: 1,
+    borderRightWidth: 0.5,
+    borderColor: COLORS.cardcolor,
+  },
+  //   button: {
+  //     flexDirection: "row",
+  //     justifyContent: "center",
+  //     alignContent: "center",
+  //     textAlign: "center",
+  //     backgroundColor: COLORS.secondary,
+  //     padding: 10,
+  //     borderRadius: 15,
+  //     borderWidth: 2,
+  //     borderColor: COLORS.primary,
+  //   },
+  buttonText: {
+    color: COLORS.cardcolor,
+    fontSize: 15,
+  },
+  imageContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap", // Cho phép các hình ảnh tự động xuống dòng khi quá 3 tấm
+    justifyContent: "flex-start", // Căn các ảnh về đầu hàng
+    alignItems: "center",
+    marginVertical: 10,
+  },
+  imageWrapper: {
+    position: "relative",
+    marginHorizontal: 5,
+    marginBottom: 10, // Thêm khoảng cách giữa các hàng
+    width: "30%", // Đặt chiều rộng cho mỗi hình ảnh để chia đều trong 3 hàng
+  },
+  image: {
+    width: "100%", // Đảm bảo hình ảnh chiếm hết chiều rộng của imageWrapper
+    height: 100,
+    borderRadius: 10,
+  },
+  removeButton: {
+    position: "absolute",
+    top: 5,
+    right: 5,
+    borderRadius: 15,
+    width: 25,
+    height: 25,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  removeButtonText: {
+    color: "white",
+    fontSize: 16,
+  },
+  line: {
+    padding: 1,
+    backgroundColor: COLORS.gray2,
+    marginVertical: 10,
+  },
+  searchContainer: {
+    justifyContent: "center",
+    alignItems: "flex-start",
+    flexDirection: "row",
+    backgroundColor: COLORS.cardcolor,
+    borderRadius: SIZES.small,
+    height: 150,
+    paddingVertical: 5,
+    marginVertical: 10,
+    marginHorizontal: 20,
+    borderWidth: 1,
+    borderColor: COLORS.black,
+  },
+  searchContainerTitle: {
+    justifyContent: "center",
+    alignItems: "flex-start",
+    flexDirection: "row",
+    backgroundColor: COLORS.cardcolor,
+    borderRadius: SIZES.small,
+    marginVertical: 10,
+    paddingVertical: 5,
+    marginHorizontal: 20,
+    borderWidth: 1,
+    borderColor: COLORS.black,
+  },
+  searchWrapper: {
+    flex: 1,
+    marginRight: SIZES.xSmall,
+    // justifyContent: "flex-start",
+    // alignItems: "flex-start",
+    borderRadius: SIZES.small,
+    // height: "100%",
+  },
+  searchInput: {
+    fontWeight: "normal",
+    color: COLORS.black,
+    paddingHorizontal: SIZES.xSmall,
+  },
+  searchIcon: {
+    marginLeft: 10,
+    color: "gray",
+  },
+  deleteIcon: {
+    // position: "absolute",
+    // top: 12,
+    // right: 10,
+    marginRight: 5,
+    color: "gray",
+  },
+  button: {
+    backgroundColor: COLORS.secondary,
+    textAlign: "center",
+    padding: 10,
+    borderRadius: 10,
+    marginHorizontal: 20,
+    marginVertical: 10,
+    fontWeight: "bold",
+  },
+  submitButton: {
+    position: "absolute",
+    bottom: 5,
+    width: SIZES.width - 40,
+    marginHorizontal: 20,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  loadingContainer: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    alignContent: "center",
+    backgroundColor: "#f5f5f5",
+  },
+});
+
+export default AddPictureCollection;

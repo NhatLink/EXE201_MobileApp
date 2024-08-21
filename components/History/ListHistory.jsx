@@ -76,12 +76,18 @@ const ListHistory = ({ item }) => {
           </TouchableOpacity>
         </View>
         <View style={styles.descriptionWrapper2}>
-          <View style={styles.Storedescription}>
+          <View style={styles.descriptionWrapper}>
             <Text style={styles.description2}>Lý do:</Text>
-            <Text style={styles.descriptionText2}>Trạng thái đơn:</Text>
+
+            <Text style={styles.descriptionPrice} numberOfLines={1}>
+              {item?.reasonReport}
+            </Text>
           </View>
-          <TouchableOpacity style={styles.priceTime} onPress={() => {}}>
-            <Text style={styles.descriptionPrice}>{item?.reasonReport}</Text>
+          <TouchableOpacity
+            style={styles.descriptionWrapper}
+            onPress={() => {}}
+          >
+            <Text style={styles.descriptionText2}>Trạng thái đơn:</Text>
             <Text style={styles.descriptionTextTime}>
               {getStatusText(item?.status)}
             </Text>
@@ -109,7 +115,7 @@ export default ListHistory;
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "#FFF",
+    backgroundColor: COLORS.cardcolor,
     ...SHADOWS.medium,
     position: "relative",
     borderRadius: 10,
@@ -182,6 +188,7 @@ const styles = StyleSheet.create({
   descriptionWrapper: {
     // marginTop: SIZES.medium,
     // marginHorizontal: SIZES.large,
+    display: "flex",
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
@@ -209,35 +216,35 @@ const styles = StyleSheet.create({
     borderRadius: SIZES.small,
   },
   description2: {
-    fontFamily: "bold",
+    fontWeight: "bold",
     textAlign: "left",
     fontSize: SIZES.large - 2,
   },
   descriptionWrapper2: {
     marginTop: 5,
     // marginHorizontal: SIZES.large,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    // flexDirection: "row",
+    // justifyContent: "space-between",
+    // alignItems: "center",
     borderTopWidth: 0.5,
     borderTopColor: COLORS.black,
   },
   descriptionText2: {
-    fontFamily: "regular",
+    // fontFamily: "regular",
     fontSize: SIZES.small,
-    textAlign: "justify",
-    marginBottom: SIZES.small,
+    textAlign: "center",
+    // marginBottom: SIZES.small,
   },
   descriptionPrice: {
-    fontFamily: "bold",
+    fontWeight: "bold",
     textAlign: "right",
-    fontSize: SIZES.medium - 2,
+    fontSize: SIZES.large - 2,
   },
   descriptionTextTime: {
-    fontFamily: "regular",
+    // fontFamily: "regular",
     fontSize: SIZES.small,
-    textAlign: "right",
-    marginBottom: SIZES.small,
+    // textAlign: "right",
+    // marginBottom: SIZES.small,
   },
   containerDate: {
     flexDirection: "row",

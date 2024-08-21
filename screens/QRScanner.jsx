@@ -76,7 +76,9 @@ export default function QRScanner({ navigation }) {
   if (loader) {
     return (
       <View style={styles.loadingContainer}>
+        Đang xư
         <ActivityIndicator size="large" color={COLORS.primary} />
+        <Text>Đang lấy dữ liệu, xin chờ</Text>
       </View>
     );
   }

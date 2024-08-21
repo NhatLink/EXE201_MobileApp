@@ -66,7 +66,7 @@ const Report2AppointmentModal = ({
         ...data,
         ImgeReportRequest: selectedImages,
       };
-      console.log("CreateReport:", dataSubmit);
+      // console.log("CreateReport:", dataSubmit);
 
       for (let key in dataSubmit) {
         if (key === "ImgeReportRequest") {
@@ -85,7 +85,7 @@ const Report2AppointmentModal = ({
         }
       }
 
-      console.log("CreateReport formData:", formData);
+      // console.log("CreateReport formData:", formData);
       await dispatch(CreateReport(formData));
     } catch (error) {
       console.error("CreateReport error:", error);

@@ -179,7 +179,7 @@ const About = (storeId) => {
         <Text style={styles.title}>Map</Text>
         <View style={styles.AboutUsContanner}>
           <View style={styles.mapContainer}>
-            {salonDetail && salonDetail?.latitude && salonDetail?.longitude && (
+            {salonDetail && salonDetail?.latitude && salonDetail?.longitude ? (
               <MapView
                 ref={mapRef}
                 style={styles.map}
@@ -209,6 +209,10 @@ const About = (storeId) => {
                   description={salonDetail?.description}
                 />
               </MapView>
+            ) : (
+              <Text style={styles.serviceDescription} numberOfLines={3}>
+                Map hiện không khả dụng
+              </Text>
             )}
           </View>
           <View style={styles.buttonContainer}>
@@ -320,7 +324,7 @@ const styles = StyleSheet.create({
   container: {
     width: "100%",
     height: "100%",
-    backgroundColor: COLORS.lightWhite,
+    backgroundColor: COLORS.background,
     position: "relative",
   },
   upperRow: {

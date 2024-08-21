@@ -119,77 +119,80 @@ const Schedule = () => {
     );
   };
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <SafeAreaView
-        style={{
-          flex: 1,
-          color: COLORS.lightWhite,
-          marginBottom: 70,
-          marginTop: 10,
-        }}
-      >
-        <Loader visible={loading} />
-        <Text style={styles.title}>Lịch hẹn của bạn</Text>
-        {!isAuthenticated && appointment && appointment?.length === 0 ? (
-          <View
-            style={{
-              flex: 1,
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <View>
-              <Image
-                source={require("../assets/images/error-in-calendar.png")}
-                style={styles.searchImage}
-              />
-              <Text style={styles.emptyText}>
-                Không có lịch hẹn nào được tìm thấy
-              </Text>
-            </View>
-            <View style={{ marginTop: 10 }}>
-              <TouchableOpacity onPress={() => navigation.navigate("Search")}>
-                <Text style={styles.button}>Tìm kiếm dịch vụ</Text>
-              </TouchableOpacity>
-              {!isAuthenticated && (
-                <>
-                  <Text style={styles.emptyText2}>
-                    ---------------Đã sử dụng HairHub---------------
-                  </Text>
-                  <TouchableOpacity
-                    onPress={() => navigation.navigate("Profile")}
-                  >
-                    <Text style={styles.button}>Đăng Nhập</Text>
-                  </TouchableOpacity>
-                </>
-              )}
-            </View>
+    // <GestureHandlerRootView style={{ flex: 1 }}>
+    <SafeAreaView style={styles.container}>
+      <Loader visible={loading} />
+      <Text style={styles.title}>Lịch hẹn của bạn</Text>
+      {!isAuthenticated && appointment && appointment?.length === 0 ? (
+        <View
+          style={{
+            flex: 1,
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <View>
+            <Image
+              source={require("../assets/images/error-in-calendar.png")}
+              style={styles.searchImage}
+            />
+            <Text style={styles.emptyText}>
+              Không có lịch hẹn nào được tìm thấy
+            </Text>
           </View>
-        ) : (
-          <Agenda
-            items={items}
-            renderItem={renderItem}
-            renderEmptyData={renderEmptyDate}
-            // onRefresh={() => onRefresh}
-            // refreshing={loading}
-            refreshControl={
-              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-            }
-            // onDayPress={handleDayPress}
+          <View style={{ marginTop: 10 }}>
+            <TouchableOpacity onPress={() => navigation.navigate("Search")}>
+              <Text style={styles.button}>Tìm kiếm dịch vụ</Text>
+            </TouchableOpacity>
+            {!isAuthenticated && (
+              <>
+                <Text style={styles.emptyText2}>
+                  ---------------Đã sử dụng HairHub---------------
+                </Text>
+                <TouchableOpacity
+                  onPress={() => navigation.navigate("Profile")}
+                >
+                  <Text style={styles.button}>Đăng Nhập</Text>
+                </TouchableOpacity>
+              </>
+            )}
+          </View>
+        </View>
+      ) : (
+        <Agenda
+          items={items}
+          renderItem={renderItem}
+          renderEmptyData={renderEmptyDate}
+          // onRefresh={() => onRefresh}
+          // refreshing={loading}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
+          // onDayPress={handleDayPress}
 
-            theme={{
-              agendaTodayColor: COLORS.red,
-            }}
-          />
-        )}
-      </SafeAreaView>
-    </GestureHandlerRootView>
+          theme={{
+            agendaTodayColor: COLORS.secondary, // Màu sắc của ngày hôm nay
+            agendaKnobColor: COLORS.secondary, // Màu sắc của nút kéo lên/xuống
+            backgroundColor: COLORS.background, // Màu nền của lịch
+            calendarBackground: "#f0f0f0", // Màu nền của lịch khi mở ra
+            selectedDayBackgroundColor: "#bf9456", // Màu nền của ngày được chọn
+            dayTextColor: COLORS.black, // Màu chữ của các ngày trong lịch
+            textSectionTitleColor: COLORS.secondary, // Màu chữ tiêu đề các ngày
+          }}
+        />
+      )}
+    </SafeAreaView>
+    // </GestureHandlerRootView>
   );
 };
 
 export default Schedule;
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: COLORS.background,
+  },
   title: {
     fontWeight: "bold",
     fontSize: SIZES.large,

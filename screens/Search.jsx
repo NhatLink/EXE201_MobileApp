@@ -103,14 +103,7 @@ const Search = () => {
   };
 
   return (
-    <SafeAreaView
-      style={{
-        flex: 1,
-        color: COLORS.lightWhite,
-        // paddingHorizontal: 20,
-        marginBottom: 70,
-      }}
-    >
+    <SafeAreaView style={styles.container}>
       <Loader visible={loader} />
       <View style={styles.wrapper}>
         <View style={styles.searchContainer}>
@@ -229,8 +222,37 @@ const Search = () => {
             data={searchSalon.items}
             keyExtractor={(item) => item?.id}
             renderItem={({ item }) => <SearchTile item={item} />}
+            ListFooterComponent={
+              <View style={styles.paging}>
+                {currentPage > 1 && (
+                  <TouchableOpacity
+                    style={styles.pagingArrow}
+                    onPress={Decrease}
+                  >
+                    <Ionicons
+                      name="arrow-back-circle-outline"
+                      size={24}
+                      color={COLORS.primary}
+                    />
+                  </TouchableOpacity>
+                )}
+                <Text style={styles.pagingArrow}>{searchSalon?.page}</Text>
+                {currentPage < searchSalon?.totalPages && (
+                  <TouchableOpacity
+                    style={styles.pagingArrow}
+                    onPress={Increase}
+                  >
+                    <Ionicons
+                      name="arrow-forward-circle-outline"
+                      size={24}
+                      color={COLORS.primary}
+                    />
+                  </TouchableOpacity>
+                )}
+              </View>
+            }
           />
-          <View style={styles.paging}>
+          {/* <View style={styles.paging}>
             {currentPage > 1 && (
               <TouchableOpacity style={styles.pagingArrow} onPress={Decrease}>
                 <Ionicons
@@ -250,7 +272,7 @@ const Search = () => {
                 />
               </TouchableOpacity>
             )}
-          </View>
+          </View> */}
         </>
       )}
       <SearchStoreModal
@@ -278,12 +300,16 @@ const Search = () => {
 export default Search;
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: COLORS.background,
+  },
   wrapper: { paddingHorizontal: 20 },
   searchContainer: {
     justifyContent: "center",
     alignItems: "center",
     flexDirection: "row",
-    backgroundColor: COLORS.secondary,
+    backgroundColor: COLORS.cardcolor,
     borderRadius: SIZES.medium,
     marginTop: SIZES.medium,
     height: 50,
@@ -292,7 +318,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     flexDirection: "row",
-    backgroundColor: COLORS.secondary,
+    backgroundColor: COLORS.cardcolor,
     borderRadius: SIZES.medium,
     marginTop: SIZES.small,
     marginBottom: SIZES.medium,
@@ -304,7 +330,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     flexDirection: "row",
-    backgroundColor: COLORS.secondary,
+    backgroundColor: COLORS.cardcolor,
     borderRadius: SIZES.medium,
     marginTop: SIZES.small,
     marginBottom: SIZES.medium,
@@ -329,7 +355,7 @@ const styles = StyleSheet.create({
 
   searchWrapper: {
     flex: 1,
-    backgroundColor: COLORS.secondary,
+    backgroundColor: COLORS.cardcolor,
     marginRight: SIZES.xSmall,
     justifyContent: "center",
     alignItems: "center",

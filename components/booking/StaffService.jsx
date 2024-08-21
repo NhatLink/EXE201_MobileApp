@@ -96,7 +96,7 @@ const StaffService = ({ isVisible, onClose, Service }) => {
       visible={isVisible}
       onRequestClose={onClose}
     >
-      <ScrollView>
+      <ScrollView style={{ backgroundColor: "#f4f2eb" }}>
         <View style={styles.fullScreenModal}>
           <Text style={styles.modalTextTitle}>Thay đổi nhân viên</Text>
           <TouchableOpacity style={styles.buttonClose} onPress={onClose}>
@@ -202,7 +202,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginTop: 10,
     marginBottom: 20,
-    backgroundColor: COLORS.lightWhite,
+    backgroundColor: COLORS.background,
     color: COLORS.lightWhite,
     paddingHorizontal: 20,
   },
@@ -253,6 +253,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginLeft: 5,
     fontWeight: "bold",
+    color: COLORS.lightWhite,
   },
   serviceName: {
     fontSize: SIZES.small,

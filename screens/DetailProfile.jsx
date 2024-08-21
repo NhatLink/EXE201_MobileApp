@@ -7,7 +7,6 @@ import {
   Alert,
   TouchableOpacity,
   ScrollView,
-  SafeAreaView,
   TextInput,
   Modal,
 } from "react-native";
@@ -26,6 +25,7 @@ import { Picker } from "@react-native-picker/picker";
 import { updateUserById } from "../store/user/action";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigation } from "@react-navigation/native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import * as SecureStore from "expo-secure-store";
 import Loader from "../components/auth/Loader";
 const DetailProfile = ({ navigation }) => {
@@ -230,7 +230,7 @@ const DetailProfile = ({ navigation }) => {
   return (
     <SafeAreaView style={styles.container}>
       <Loader visible={loader} />
-      <Text style={styles.modalTextTitle}>Chỉnh sửa thông tin người dùng</Text>
+      <Text style={styles.title}>Chỉnh sửa thông tin người dùng</Text>
       <TouchableOpacity
         style={styles.maiImag2}
         onPress={() => {
@@ -286,32 +286,30 @@ const DetailProfile = ({ navigation }) => {
             </Text>
           </View>
         </TouchableOpacity>
-        <View>
-          <View style={styles.menuItem1}>
-            <View style={styles.menuItem2}>
-              <MaterialCommunityIcons
-                name="gender-male-female"
-                color={COLORS.primary}
-                size={25}
-              />
-              <Text style={styles.menuItemText}>Giới tính</Text>
-            </View>
-            <View style={styles.menuItem2}>
-              <Text style={styles.menuItemText}>
-                {userData?.gender ?? "trống"}
-              </Text>
-              <Picker
-                selectedValue={userData?.gender}
-                onValueChange={(itemValue, itemIndex) =>
-                  handleChanges(itemValue, "gender")
-                }
-                style={styles.picker}
-              >
-                <Picker.Item label="Male" value="Male" />
-                <Picker.Item label="Female" value="Female" />
-                <Picker.Item label="Orther" value="Orther" />
-              </Picker>
-            </View>
+        <View style={styles.menuItem1}>
+          <View style={styles.menuItem2}>
+            <MaterialCommunityIcons
+              name="gender-male-female"
+              color={COLORS.primary}
+              size={25}
+            />
+            <Text style={styles.menuItemText}>Giới tính</Text>
+          </View>
+          <View style={styles.menuItem2}>
+            <Text style={styles.menuItemText}>
+              {userData?.gender ?? "trống"}
+            </Text>
+            <Picker
+              selectedValue={userData?.gender}
+              onValueChange={(itemValue, itemIndex) =>
+                handleChanges(itemValue, "gender")
+              }
+              style={styles.picker}
+            >
+              <Picker.Item label="Nam" value="Nam" />
+              <Picker.Item label="Nữ" value="Nữ" />
+              <Picker.Item label="Khác" value="Khác" />
+            </Picker>
           </View>
         </View>
         <TouchableOpacity
@@ -569,14 +567,13 @@ export default DetailProfile;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.lightWhite,
-    paddingTop: 20,
+    backgroundColor: COLORS.background,
   },
   title: {
     textAlign: "center",
     fontWeight: "bold",
     fontSize: SIZES.medium,
-    marginHorizontal: 10,
+    marginVertical: 10,
   },
   subtitle: {
     fontWeight: "normal",
@@ -585,6 +582,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.gray2,
   },
   containerUser: {
+    display: "flex",
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
@@ -599,24 +597,24 @@ const styles = StyleSheet.create({
   },
   maiImag2: {
     height: 200,
-    width: "100%",
+    width: "auto",
     backgroundColor: COLORS.secondary,
   },
   menuWrapper: {
     marginTop: SIZES.xLarge,
     width: "auto",
     marginHorizontal: 10,
-    backgroundColor: COLORS.offwhite,
+    backgroundColor: COLORS.cardcolor,
     borderRadius: 12,
   },
   menuItem: {
     flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
     paddingVertical: 15,
     paddingHorizontal: 30,
-    borderBottomColor: COLORS.gray,
-    borderBottomWidth: 0.5,
+    borderBottomColor: COLORS.background,
+    justifyContent: "space-between",
+    alignItems: "center",
+    borderBottomWidth: 1.5,
   },
   menuItem1: {
     flexDirection: "row",
@@ -624,12 +622,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingRight: 10,
     paddingLeft: 30,
-    borderBottomColor: COLORS.gray,
-    borderBottomWidth: 0.5,
+    borderBottomColor: COLORS.background,
+    borderBottomWidth: 1.5,
   },
   menuItem2: {
     flexDirection: "row",
-    justifyContent: "flex-start",
+    justifyContent: "space-between",
     alignItems: "center",
   },
   menuItemText: {
@@ -681,13 +679,13 @@ const styles = StyleSheet.create({
   },
   buttonClose: {
     position: "absolute",
-    top: 20,
+    top: 30,
     left: 10,
     padding: 10,
   },
   buttonConfirm: {
     position: "absolute",
-    top: 20,
+    top: 30,
     right: 10,
     padding: 10,
     // backgroundColor: COLORS.red,
@@ -711,12 +709,13 @@ const styles = StyleSheet.create({
     borderRadius: 20,
   },
   picker: {
-    backgroundColor: COLORS.offwhite,
+    backgroundColor: COLORS.cardcolor,
     height: 15,
     flexDirection: "row",
     paddingHorizontal: 15,
     alignItems: "center",
     marginLeft: 10,
+    // width: "100%",
   },
   searchContainer: {
     justifyContent: "center",
