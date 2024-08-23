@@ -22,13 +22,15 @@ import {
 } from "react-native-vector-icons";
 import * as ImagePicker from "expo-image-picker";
 import { CreateReport } from "../../store/report/action";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Loader from "../auth/Loader";
 import { Rating } from "react-native-ratings";
 import { Feather } from "@expo/vector-icons";
 import { CreateFeedback } from "../../store/feedback/action";
+import { SaveAsCustomerImageHistory } from "../../store/collection/action";
 
-const NewCollectionModal = ({ isVisible, onClose }) => {
+const NewCollectionModal = ({ isVisible, onClose, data }) => {
+  const dispatch = useDispatch();
   const [selectedImages, setSelectedImages] = useState([]);
   const [loader, setLoader] = useState(false);
   const [title, setTitle] = useState(new Date().toLocaleDateString());
@@ -37,7 +39,7 @@ const NewCollectionModal = ({ isVisible, onClose }) => {
   );
   const [titleError, setTitleError] = useState("");
   const [notesError, setNotesError] = useState("");
-
+  const { user } = useSelector((state) => state.USER);
   const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -65,7 +67,7 @@ const NewCollectionModal = ({ isVisible, onClose }) => {
     setSelectedImages((prev) => prev.filter((image) => image !== uri));
   };
 
-  const createCollection = () => {
+  const createCollection = async () => {
     if (!title) {
       setTitleError("Tiêu đề không được để trống");
       return;
@@ -91,7 +93,55 @@ const NewCollectionModal = ({ isVisible, onClose }) => {
       return;
     }
 
-    // Lưu logic cho việc tạo bộ sưu tập ở đây...
+    setLoader(true);
+    try {
+      let formData = new FormData();
+      let dataSubmit = {
+        ...data,
+        Title: title,
+        Description: notes,
+        ImageStyles: selectedImages,
+      };
+
+      for (let key in dataSubmit) {
+        if (key === "ImageStyles") {
+          dataSubmit[key].forEach((imageUri, index) => {
+            const uriParts = imageUri.split(".");
+            const fileType = uriParts[uriParts.length - 1];
+
+            formData.append(key, {
+              uri: imageUri,
+              name: `image${index}.${fileType}`,
+              type: `image/${fileType}`,
+            });
+          });
+        } else {
+          formData.append(key, dataSubmit[key]);
+        }
+      }
+      if (user && user.id) {
+        await dispatch(SaveAsCustomerImageHistory(user.id, formData));
+      } else {
+        ToastAndroid.show(
+          "Có lỗi xảy ra, vui lòng thử lại sau",
+          ToastAndroid.SHORT
+        );
+        return;
+      }
+    } catch (error) {
+      console.error("CreateFeedback error:", error);
+      Alert.alert("Lỗi", "Oops, có lỗi xảy ra, vui lòng thử lại sau");
+    } finally {
+      setLoader(false);
+      onClose();
+      setNotesError("");
+      setTitleError("");
+      setSelectedImages([]);
+      setTitle(new Date().toLocaleDateString());
+      setNotes(
+        `Bộ sưu tập lưu trữ vào ngày ${new Date().toLocaleDateString()}`
+      );
+    }
   };
 
   return (
@@ -99,10 +149,11 @@ const NewCollectionModal = ({ isVisible, onClose }) => {
       animationType="slide"
       transparent={true}
       visible={isVisible}
-      onRequestClose={onClose}
+      // onRequestClose={onClose}
+      onRequestClose={loader ? null : onClose}
     >
+      <Loader visible={loader} />
       <ScrollView style={styles.fullScreenModal}>
-        <Loader visible={loader} />
         <View style={styles.modalContent}>
           <Text style={styles.modalTitle}>Tạo bộ sưu tập</Text>
           <View style={styles.line} />

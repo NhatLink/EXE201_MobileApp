@@ -22,21 +22,36 @@ import {
 } from "react-native-vector-icons";
 import * as ImagePicker from "expo-image-picker";
 import { CreateReport } from "../../store/report/action";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Loader from "../auth/Loader";
 import { Rating } from "react-native-ratings";
 import { Feather } from "@expo/vector-icons";
 import { CreateFeedback } from "../../store/feedback/action";
+import { UpdateCustomerImageHistory } from "../../store/collection/action";
 
 const UpdateInfoCollectionModal = ({ isVisible, onClose, data }) => {
-  const [selectedImages, setSelectedImages] = useState([]);
+  const dispatch = useDispatch();
   const [loader, setLoader] = useState(false);
-  const [title, setTitle] = useState(data?.title);
-  const [notes, setNotes] = useState(data?.note);
+  const [title, setTitle] = useState(data?.Title);
+  const [notes, setNotes] = useState(data?.Description);
   const [titleError, setTitleError] = useState("");
   const [notesError, setNotesError] = useState("");
+  const { user } = useSelector((state) => state.USER);
+  const { collection, loading } = useSelector((state) => state.COLLECTION);
 
-  const createCollection = () => {
+  useEffect(() => {
+    // Tìm kiếm khi data hoặc idToFind thay đổi
+    const result = collection?.items?.find((item) => item.id === data.id);
+    if (result) {
+      setTitle(result.title);
+      setNotes(result.description);
+    } else {
+      setTitle("");
+      setNotes("");
+    }
+  }, [collection, data]);
+
+  const updateCollection = async () => {
     if (!title) {
       setTitleError("Tiêu đề không được để trống");
       return;
@@ -53,7 +68,56 @@ const UpdateInfoCollectionModal = ({ isVisible, onClose, data }) => {
       setNotesError("Ghi chú không được quá 300 kí tự");
       return;
     }
-    // Lưu logic cho việc tạo bộ sưu tập ở đây...
+    setLoader(true);
+    try {
+      // let formData = new FormData();
+      let dataSubmit = {
+        Title: title,
+        Description: notes,
+        // ImageStyles: data.selectedImages,
+        // RemoveImageStyleIds: [],
+      };
+
+      // for (let key in dataSubmit) {
+      //   if (key === "ImageStyles") {
+      //     dataSubmit[key].forEach((imageUri, index) => {
+      //       const uriParts = imageUri.split(".");
+      //       const fileType = uriParts[uriParts.length - 1];
+
+      //       formData.append(key, {
+      //         uri: imageUri,
+      //         name: `image${index}.${fileType}`,
+      //         type: `image/${fileType}`,
+      //       });
+      //     });
+      //   } else {
+      //     formData.append(key, dataSubmit[key]);
+      //   }
+      // }
+      if (user && user.id && data.id) {
+        await dispatch(
+          UpdateCustomerImageHistory(data.id, dataSubmit, user.id)
+        );
+      } else {
+        ToastAndroid.show(
+          "Có lỗi xảy ra, vui lòng thử lại sau",
+          ToastAndroid.SHORT
+        );
+        return;
+      }
+    } catch (error) {
+      console.error("CreateFeedback error:", error);
+      Alert.alert("Lỗi", "Oops, có lỗi xảy ra, vui lòng thử lại sau");
+    } finally {
+      setLoader(false);
+      onClose();
+      setNotesError("");
+      setTitleError("");
+      // setTitle(new Date().toLocaleDateString());
+      // setNotes(
+      //   `Bộ sưu tập lưu trữ vào ngày ${new Date().toLocaleDateString()}`
+      // );
+    }
   };
 
   return (
@@ -61,10 +125,11 @@ const UpdateInfoCollectionModal = ({ isVisible, onClose, data }) => {
       animationType="slide"
       transparent={true}
       visible={isVisible}
-      onRequestClose={onClose}
+      // onRequestClose={onClose}
+      onRequestClose={loader ? null : onClose}
     >
+      <Loader visible={loader} />
       <ScrollView style={styles.fullScreenModal}>
-        <Loader visible={loader} />
         <View style={styles.modalContent}>
           <Text style={styles.modalTitle}>Chỉnh sửa thông tin bộ sưu tập</Text>
           <View style={styles.line} />
@@ -147,7 +212,7 @@ const UpdateInfoCollectionModal = ({ isVisible, onClose, data }) => {
       <View style={styles.submitButton}>
         <ButtonCustom
           title={"Cập nhật bộ sưu tập"}
-          onPress={createCollection}
+          onPress={updateCollection}
         />
       </View>
     </Modal>

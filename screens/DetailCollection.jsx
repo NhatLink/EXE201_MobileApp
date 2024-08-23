@@ -8,6 +8,7 @@ import {
   ToastAndroid,
   Modal,
   Button,
+  Alert,
 } from "react-native";
 import React, { useEffect, useState, useCallback } from "react";
 import { COLORS, SIZES, SHADOWS } from "../constants";
@@ -17,17 +18,21 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useFocusEffect, useRoute } from "@react-navigation/native";
 import AddPictureCollection from "../components/Collection/AddPictureCollection";
 import UpdateInfoCollectionModal from "../components/Collection/UpdateInfoCollectionModal";
+import { useDispatch, useSelector } from "react-redux";
+import Loader from "../components/auth/Loader";
+import { UpdateCustomerImageHistory } from "../store/collection/action";
 const DetailCollection = ({ navigation }) => {
+  const dispatch = useDispatch();
   const route = useRoute();
-  const { collection, nameCollection } = route.params;
-  const selectedImages = [
-    "https://m.yodycdn.com/blog/cac-kieu-uon-toc-nu-yody-vn.jpg",
-    "https://media.vneconomy.vn/images/upload/2021/04/21/1-1605855863607646708689.jpg",
-    "https://lavo.com.vn/wp-content/uploads/2021/11/f3c63023bd013c4668bf45d4a92cdde4-min.jpg",
-    "https://gcs.tripi.vn/public-tripi/tripi-feed/img/473668Seo/kieu-toc-dai-xoan-gon-song-1008270.jpg",
-    "https://images2.thanhnien.vn/528068263637045248/2023/11/1/kieu-toc-hime-20-16988370729041030195237.jpg",
-    "https://japana.vn/uploads/detail/2021/09/images/mai-toc-dep-duoc-xem-la-trang-suc-long-lay-nhat-cua-phu-nu-01.jpg",
-  ];
+  const { collectionId, nameCollection, imgCollection } = route.params;
+  // const selectedImages = [
+  //   "https://m.yodycdn.com/blog/cac-kieu-uon-toc-nu-yody-vn.jpg",
+  //   "https://media.vneconomy.vn/images/upload/2021/04/21/1-1605855863607646708689.jpg",
+  //   "https://lavo.com.vn/wp-content/uploads/2021/11/f3c63023bd013c4668bf45d4a92cdde4-min.jpg",
+  //   "https://gcs.tripi.vn/public-tripi/tripi-feed/img/473668Seo/kieu-toc-dai-xoan-gon-song-1008270.jpg",
+  //   "https://images2.thanhnien.vn/528068263637045248/2023/11/1/kieu-toc-hime-20-16988370729041030195237.jpg",
+  //   "https://japana.vn/uploads/detail/2021/09/images/mai-toc-dep-duoc-xem-la-trang-suc-long-lay-nhat-cua-phu-nu-01.jpg",
+  // ];
 
   const [isModalVisible, setModalVisible] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
@@ -35,6 +40,38 @@ const DetailCollection = ({ navigation }) => {
   const [isSelectionMode, setSelectionMode] = useState(false);
   const [modalVisible1, setModalVisible1] = useState(false);
   const [modalVisible2, setModalVisible2] = useState(false);
+  const [title, setTitle] = useState(nameCollection?.title);
+  const [loader, setLoader] = useState(false);
+
+  // const [notes, setNotes] = useState(nameCollection?.note);
+  const [selectedImages, setSelectedImages] = useState(
+    imgCollection.map((image) => image.urlImage)
+  );
+  // const selectedImages = imgCollection.map((image) => image.urlImage);
+  const { collection, loading } = useSelector((state) => state.COLLECTION);
+  const { user } = useSelector((state) => state.USER);
+
+  useEffect(() => {
+    // Tìm kiếm khi data hoặc idToFind thay đổi
+    const result = collection?.items?.find((item) => item.id === collectionId);
+    if (result) {
+      setTitle(result.title);
+    } else {
+      setTitle("");
+    }
+  }, [collection, collectionId]);
+
+  useEffect(() => {
+    const foundItem = collection?.items?.find(
+      (item) => item.id === collectionId
+    );
+    if (foundItem) {
+      const imageUrls = foundItem.imageStyles.map((image) => image.urlImage);
+      setSelectedImages(imageUrls);
+    } else {
+      setSelectedImages([]);
+    }
+  }, [collectionId, collection]);
 
   const openImageModal = (image) => {
     if (!isSelectionMode) {
@@ -77,11 +114,60 @@ const DetailCollection = ({ navigation }) => {
     toggleSelectImage(image);
   };
 
-  const handleDelete = () => {
-    console.log("Selected images for deletion:", selectedForDeletion);
+  const deleteConfirm = () => {
+    if (selectedForDeletion.length === selectedImages.length) {
+      // Alert.alert("Lỗi", "Vui lòng chọn ít nhất một hình ảnh");
+      ToastAndroid.show(
+        "Bộ sưu tập phải có ít nhất một hình ảnh",
+        ToastAndroid.SHORT
+      );
+      return;
+    }
+    Alert.alert(
+      `Xóa ${selectedForDeletion.length} ảnh`,
+      "Bạn chắc chắn muốn xóa?",
+      [
+        { text: "Đóng", onPress: () => console.log("Cancel pressed") },
+        {
+          text: "Tiếp tục xóa",
+          onPress: () => {
+            handleDelete();
+          },
+        },
+      ],
+      { defaultIndex: 1 } // Index 1 corresponds to the "Delete" button
+    );
+  };
+
+  const handleDelete = async () => {
     // Thực hiện xóa ảnh hoặc các xử lý khác
-    setSelectedForDeletion([]);
-    setSelectionMode(false);
+    setLoader(true);
+    const idsToDelete = imgCollection
+      .filter((img) => selectedForDeletion.includes(img.urlImage))
+      .map((img) => img.id);
+    try {
+      let dataSubmit = {
+        RemoveImageStyleIds: idsToDelete,
+      };
+
+      if (user && user.id && collectionId) {
+        await dispatch(
+          UpdateCustomerImageHistory(collectionId, dataSubmit, user.id)
+        );
+      } else {
+        ToastAndroid.show(
+          "Có lỗi xảy ra, vui lòng thử lại sau",
+          ToastAndroid.SHORT
+        );
+        return;
+      }
+    } catch (error) {
+      Alert.alert("Lỗi", "Oops, có lỗi xảy ra, vui lòng thử lại sau");
+    } finally {
+      setLoader(false);
+      setSelectedForDeletion([]);
+      setSelectionMode(false);
+    }
   };
 
   const handleCancel = () => {
@@ -91,6 +177,7 @@ const DetailCollection = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
+      <Loader visible={loader} />
       <View style={styles.upperRow}>
         <TouchableOpacity
           style={{ paddingLeft: 0 }}
@@ -99,7 +186,7 @@ const DetailCollection = ({ navigation }) => {
           <Ionicons name="chevron-back-circle" size={30} color={COLORS.black} />
         </TouchableOpacity>
         <Text style={styles.title} numberOfLines={1}>
-          Kho lưu trữ {nameCollection.title}
+          Kho lưu trữ {title}
         </Text>
       </View>
       {!isSelectionMode && (
@@ -158,7 +245,7 @@ const DetailCollection = ({ navigation }) => {
       {isSelectionMode && (
         <View style={styles.bottomTab}>
           {isSelectionMode && selectedForDeletion.length > 0 && (
-            <TouchableOpacity onPress={handleDelete} style={styles.button}>
+            <TouchableOpacity onPress={deleteConfirm} style={styles.button}>
               <Ionicons name="trash-outline" size={20} color={COLORS.black} />
               <Text>Xóa ảnh</Text>
             </TouchableOpacity>
@@ -201,6 +288,7 @@ const DetailCollection = ({ navigation }) => {
         }}
         data={{
           length: selectedImages?.length,
+          id: collectionId,
         }}
       />
       <UpdateInfoCollectionModal
@@ -209,8 +297,9 @@ const DetailCollection = ({ navigation }) => {
           setModalVisible2(!modalVisible2);
         }}
         data={{
-          title: nameCollection?.title,
-          note: nameCollection?.note,
+          id: collectionId,
+          Title: nameCollection?.title,
+          Description: nameCollection?.note,
         }}
       />
     </SafeAreaView>

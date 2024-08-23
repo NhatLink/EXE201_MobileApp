@@ -22,15 +22,19 @@ import {
 } from "react-native-vector-icons";
 import * as ImagePicker from "expo-image-picker";
 import { CreateReport } from "../../store/report/action";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Loader from "../auth/Loader";
 import { Rating } from "react-native-ratings";
 import { Feather } from "@expo/vector-icons";
 import { CreateFeedback } from "../../store/feedback/action";
+import { UpdateCustomerImageHistory } from "../../store/collection/action";
 
 const AddPictureCollection = ({ isVisible, onClose, data }) => {
+  const dispatch = useDispatch();
   const [selectedImages, setSelectedImages] = useState([]);
   const [loader, setLoader] = useState(false);
+  const { user } = useSelector((state) => state.USER);
+  const { collection, loading } = useSelector((state) => state.COLLECTION);
 
   const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -83,7 +87,7 @@ const AddPictureCollection = ({ isVisible, onClose, data }) => {
     setSelectedImages((prev) => prev.filter((image) => image !== uri));
   };
 
-  const createCollection = () => {
+  const addPictureCollection = async () => {
     if (selectedImages.length === 0) {
       // Alert.alert("Lỗi", "Vui lòng chọn ít nhất một hình ảnh");
       ToastAndroid.show(
@@ -94,6 +98,46 @@ const AddPictureCollection = ({ isVisible, onClose, data }) => {
     }
 
     // Lưu logic cho việc tạo bộ sưu tập ở đây...
+    setLoader(true);
+    try {
+      let formData = new FormData();
+      let dataSubmit = {
+        ImageStyles: selectedImages,
+      };
+
+      for (let key in dataSubmit) {
+        if (key === "ImageStyles") {
+          dataSubmit[key].forEach((imageUri, index) => {
+            const uriParts = imageUri.split(".");
+            const fileType = uriParts[uriParts.length - 1];
+
+            formData.append(key, {
+              uri: imageUri,
+              name: `image${index}.${fileType}`,
+              type: `image/${fileType}`,
+            });
+          });
+        } else {
+          formData.append(key, dataSubmit[key]);
+        }
+      }
+      if (user && user.id && data.id) {
+        await dispatch(UpdateCustomerImageHistory(data.id, formData, user.id));
+      } else {
+        ToastAndroid.show(
+          "Có lỗi xảy ra, vui lòng thử lại sau",
+          ToastAndroid.SHORT
+        );
+        return;
+      }
+    } catch (error) {
+      console.error("CreateFeedback error:", error);
+      Alert.alert("Lỗi", "Oops, có lỗi xảy ra, vui lòng thử lại sau");
+    } finally {
+      setLoader(false);
+      onClose();
+      setSelectedImages([]);
+    }
   };
 
   return (
@@ -101,10 +145,10 @@ const AddPictureCollection = ({ isVisible, onClose, data }) => {
       animationType="slide"
       transparent={true}
       visible={isVisible}
-      onRequestClose={onClose}
+      onRequestClose={loader ? null : onClose}
     >
+      <Loader visible={loader} />
       <ScrollView style={styles.fullScreenModal}>
-        <Loader visible={loader} />
         <View style={styles.modalContent}>
           <Text style={styles.modalTitle}>Thêm ảnh</Text>
           <View style={styles.line} />
@@ -143,7 +187,7 @@ const AddPictureCollection = ({ isVisible, onClose, data }) => {
       <View style={styles.submitButton}>
         <ButtonCustom
           title={"Thêm ảnh vào bộ sưu tập"}
-          onPress={createCollection}
+          onPress={addPictureCollection}
         />
       </View>
     </Modal>

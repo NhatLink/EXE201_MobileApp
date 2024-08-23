@@ -6,6 +6,7 @@ import {
   Image,
   FlatList,
   ToastAndroid,
+  Alert,
 } from "react-native";
 import React, { useEffect, useState, useCallback } from "react";
 import { COLORS, SIZES, SHADOWS } from "../constants";
@@ -14,11 +15,21 @@ import * as SecureStore from "expo-secure-store";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useFocusEffect } from "@react-navigation/native";
 import NewCollectionModal from "../components/Collection/NewCollectionModal";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  DeleteCustomerImageHistory,
+  GetCustomerImageHistoryByCustomerId,
+} from "../store/collection/action";
+import Loader from "../components/auth/Loader";
+import formatDate from "../utils/helper";
 const Collection = ({ navigation }) => {
-  // const [favoritesData, setFavoritesData] = useState([]);
+  const dispatch = useDispatch();
   const [modalVisible, setModalVisible] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
   const { user } = useSelector((state) => state.USER);
+  const { collection, loading } = useSelector((state) => state.COLLECTION);
+
   const CollectionData = [
     {
       id: "a",
@@ -34,8 +45,40 @@ const Collection = ({ navigation }) => {
     },
   ];
 
+  useEffect(() => {
+    if (user && user.id) {
+      dispatch(
+        GetCustomerImageHistoryByCustomerId(currentPage, itemsPerPage, user.id)
+      );
+    }
+  }, [currentPage, itemsPerPage, user]);
+
+  const deleteCollection = (id) => {
+    if (id && user && user.id) {
+      dispatch(DeleteCustomerImageHistory(id, user.id));
+    }
+  };
+
+  const deleteCollectionConfirm = (name, id) => {
+    Alert.alert(
+      `Xóa bộ sưu tập ${name}`,
+      "Bạn chắc chắn muốn xóa?",
+      [
+        { text: "Đóng", onPress: () => console.log("Cancel pressed") },
+        {
+          text: "Tiếp tục xóa",
+          onPress: () => {
+            deleteCollection(id);
+          },
+        },
+      ],
+      { defaultIndex: 1 } // Index 1 corresponds to the "Delete" button
+    );
+  };
+
   return (
     <SafeAreaView style={styles.container}>
+      <Loader visible={loading} />
       <View style={styles.upperRow}>
         <TouchableOpacity
           style={{ paddingLeft: 0 }}
@@ -45,15 +88,17 @@ const Collection = ({ navigation }) => {
         </TouchableOpacity>
         <Text style={styles.title}> Kho lưu trữ</Text>
       </View>
-      <TouchableOpacity
-        style={styles.newCollection}
-        onPress={() => setModalVisible(true)}
-      >
-        <Text>+ Thêm bộ sưu tập</Text>
-      </TouchableOpacity>
-      {CollectionData?.length > 0 ? (
+      {collection?.items?.length > 0 && (
+        <TouchableOpacity
+          style={styles.newCollection}
+          onPress={() => setModalVisible(true)}
+        >
+          <Text>+ Thêm bộ sưu tập</Text>
+        </TouchableOpacity>
+      )}
+      {collection?.items?.length > 0 ? (
         <FlatList
-          data={CollectionData}
+          data={collection?.items}
           renderItem={({ item }) => (
             // Render your favorite item here
             <View>
@@ -61,17 +106,18 @@ const Collection = ({ navigation }) => {
                 style={styles.favcontainer}
                 onPress={() =>
                   navigation.navigate("DetailCollection", {
-                    collection: item?.id,
+                    collectionId: item?.id,
                     nameCollection: {
                       title: item.title,
-                      note: item.note,
+                      note: item.description,
                     },
+                    imgCollection: item.imageStyles,
                   })
                 }
               >
                 <TouchableOpacity style={styles.imageContainer}>
                   <Image
-                    source={{ uri: item?.img }}
+                    source={{ uri: item?.imageStyles[0]?.urlImage }}
                     resizeMode="cover"
                     style={styles.productImg}
                   />
@@ -81,13 +127,20 @@ const Collection = ({ navigation }) => {
                     {item.title}
                   </Text>
                   <Text style={styles.supplierTxt} numberOfLines={3}>
-                    {item.note}
+                    {item.description}
+                  </Text>
+                  <Text style={styles.supplierTxt} numberOfLines={3}>
+                    Ngày tạo: {formatDate(item.createdDate)}
                   </Text>
                   {/* <Text style={styles.supplierTxt} numberOfLines={1}>
                       $ {item.price}
                     </Text> */}
                 </View>
-                <TouchableOpacity onPress={() => {}}>
+                <TouchableOpacity
+                  onPress={() => {
+                    deleteCollectionConfirm(item.title, item.id);
+                  }}
+                >
                   <SimpleLineIcons name="trash" size={24} color="red" />
                 </TouchableOpacity>
               </TouchableOpacity>
@@ -120,6 +173,12 @@ const Collection = ({ navigation }) => {
               <Text style={styles.button}>
                 Tìm kiếm các salon shop / barber
               </Text>
+            </TouchableOpacity>
+            <Text style={styles.emptyText2}>
+              ---------------Hoặc---------------
+            </Text>
+            <TouchableOpacity onPress={() => setModalVisible(true)}>
+              <Text style={styles.button}>Tạo bộ sưu tập mới</Text>
             </TouchableOpacity>
           </View>
         </View>
