@@ -23,9 +23,16 @@ export const SalonInfomationService = {
   getSalonById(id) {
     return API.get(`/api/v1/saloninformations/GetSalonInformationById/${id}`);
   },
-  GetSalonEmployeeBySalonInformationId(id) {
+  GetSalonEmployeeBySalonInformationId(id, page, size, nameEmployee) {
     return API.get(
-      `/api/v1/salonemployees/GetSalonEmployeeBySalonInformationId/${id}`
+      `/api/v1/salonemployees/GetSalonEmployeeBySalonInformationId/${id}`,
+      {
+        params: {
+          page,
+          size,
+          nameEmployee,
+        },
+      }
     );
   },
   GetServiceHairBySalonInformationId(id) {
@@ -36,9 +43,9 @@ export const SalonInfomationService = {
   GetFeedBackBySalonId(id, page, size, rating) {
     return API.get(`/api/v1/feedbacks/GetFeedBackBySalonId/${id}`, {
       params: {
-        rating,
         page,
         size,
+        rating,
       },
     });
   },

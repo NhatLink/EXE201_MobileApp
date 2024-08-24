@@ -48,7 +48,7 @@ const reducer = (state = initialState, action) => {
     case GET_SALON_EMPPLOYEE_BY_SALON_ID:
       return {
         ...state,
-        salonEmployee: action.payload.items,
+        salonEmployee: action.payload,
       };
     case GET_SALON_SERVICE_BY_SALON_ID:
       return {

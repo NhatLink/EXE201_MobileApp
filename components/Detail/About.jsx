@@ -30,6 +30,7 @@ const About = (storeId) => {
   const { salonService, salonDetail, salonEmployee } = useSelector(
     (state) => state.SALON
   );
+
   const handleCallPress = (phoneNumber) => {
     if (phoneNumber && phoneNumber.match(/^[0-9]{10}$/)) {
       Linking.openURL(`tel:${phoneNumber}`);
@@ -63,107 +64,29 @@ const About = (storeId) => {
     }
   };
 
-  // const [destination, setDestination] = useState({
-  //   latitude: 10.875123789279687,
-  //   longitude: 106.79814847509016,
-  // });
-  // const [origin, setOrigin] = useState({
-  //   latitude: 10.762622, // Vị trí mặc định tại TP Hồ Chí Minh
-  //   longitude: 106.660172,
-  // });
-  const [route, setRoute] = useState([]);
-  const [distance, setDistance] = useState("");
-  const [duration, setDuration] = useState("");
-  const [startAddress, setStartAddress] = useState("");
-  const [endAddress, setEndAddress] = useState("");
-  // useEffect(() => {
-  //   (async () => {
-  //     let { status } = await Location.requestForegroundPermissionsAsync();
-  //     if (status !== "granted") {
-  //       Alert.alert("Permission to access location was denied");
-  //       return;
-  //     }
+  const daysOfWeekMap = {
+    Monday: "Thứ Hai",
+    Tuesday: "Thứ Ba",
+    Wednesday: "Thứ Tư",
+    Thursday: "Thứ Năm",
+    Friday: "Thứ Sáu",
+    Saturday: "Thứ Bảy",
+    Sunday: "Chủ Nhật",
+  };
 
-  //     let { coords } = await Location.getCurrentPositionAsync({});
-  //     setOrigin({
-  //       latitude: coords.latitude,
-  //       longitude: coords.longitude,
-  //     });
-  //   })();
-  // }, []);
-  // useEffect(() => {
-  //   if (salonDetail) {
-  //     setDestination({
-  //       latitude: parseFloat(salonDetail?.latitude),
-  //       longitude: parseFloat(salonDetail?.longitude),
-  //     });
-  //   }
-  // }, [salonDetail]);
+  const daysOrder = [
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+    "Sunday",
+  ];
 
-  // const getDirections = async () => {
-  //   if (!origin) return;
-
-  //   const originString = `${origin.latitude},${origin.longitude}`;
-  //   const destinationString = `${destination.latitude},${destination.longitude}`;
-
-  //   try {
-  //     const response = await axios.get(
-  //       `https://maps.googleapis.com/maps/api/directions/json?origin=${originString}&destination=${destinationString}&key=${GOOGLE_API_KEY}`
-  //     );
-
-  //     const route = response.data.routes[0];
-  //     const leg = route.legs[0];
-
-  //     setDistance(leg.distance.text);
-  //     setDuration(leg.duration.text);
-  //     setStartAddress(leg.start_address);
-  //     setEndAddress(leg.end_address);
-
-  //     const points = decode(route.overview_polyline.points);
-  //     console.log("points", points);
-  //     const validPoints = points.filter(
-  //       (point) => !isNaN(point.latitude) && !isNaN(point.longitude)
-  //     );
-  //     setRoute(validPoints);
-  //   } catch (error) {
-  //     console.error("Error getting directions:", error);
-  //     Alert.alert("Error", "Unable to retrieve directions. Please try again.");
-  //   }
-  // };
-
-  // const decode = (t, e) => {
-  //   let d = [];
-  //   let index = 0,
-  //     len = t.length;
-  //   let lat = 0,
-  //     lng = 0;
-
-  //   while (index < len) {
-  //     let b,
-  //       shift = 0,
-  //       result = 0;
-  //     do {
-  //       b = t.charCodeAt(index++) - 63;
-  //       result |= (b & 0x1f) << shift;
-  //       shift += 5;
-  //     } while (b >= 0x20);
-  //     let dlat = result & 1 ? ~(result >> 1) : result >> 1;
-  //     lat += dlat;
-
-  //     shift = 0;
-  //     result = 0;
-  //     do {
-  //       b = t.charCodeAt(index++) - 63;
-  //       result |= (b & 0x1f) << shift;
-  //       shift += 5;
-  //     } while (b >= 0x20);
-  //     let dlng = result & 1 ? ~(result >> 1) : result >> 1;
-  //     lng += dlng;
-
-  //     d.push({ latitude: lat / 1e5, longitude: lng / 1e5 });
-  //   }
-  //   return d;
-  // };
+  const sortedSchedules = salonDetail?.schedules?.sort(
+    (a, b) => daysOrder.indexOf(a.dayOfWeek) - daysOrder.indexOf(b.dayOfWeek)
+  );
 
   return (
     <SafeAreaView style={styles.container}>
@@ -176,7 +99,7 @@ const About = (storeId) => {
         </View>
       </View>
       <View>
-        <Text style={styles.title}>Map</Text>
+        <Text style={styles.title}>Bản đồ</Text>
         <View style={styles.AboutUsContanner}>
           <View style={styles.mapContainer}>
             {salonDetail && salonDetail?.latitude && salonDetail?.longitude ? (
@@ -191,14 +114,6 @@ const About = (storeId) => {
                   longitudeDelta: 0.0421,
                 }}
               >
-                {/* <Marker
-                  coordinate={{
-                    latitude: parseFloat(salonDetail?.latitude),
-                    longitude: parseFloat(salonDetail?.longitude),
-                  }}
-                  title={salonDetail?.name}
-                  description={salonDetail?.description}
-                /> */}
                 <CustomMarker
                   coordinate={{
                     latitude: parseFloat(salonDetail?.latitude),
@@ -211,7 +126,7 @@ const About = (storeId) => {
               </MapView>
             ) : (
               <Text style={styles.serviceDescription} numberOfLines={3}>
-                Map hiện không khả dụng
+                Bản đồ hiện không khả dụng
               </Text>
             )}
           </View>
@@ -220,26 +135,12 @@ const About = (storeId) => {
               style={styles.buttonMap}
               onPress={handleReturnToMarker}
             >
-              <Text style={styles.buttonTextMap}>Vị trí salon/barber</Text>
+              <Text style={styles.buttonTextMap}>
+                Quay lại vị trí salon/barber
+              </Text>
             </TouchableOpacity>
           </View>
-          {/* {route.length > 0 && (
-            <View style={styles.distance}>
-              <Text style={styles.textDistance}>Bắt đầu: {startAddress}</Text>
-              <Text style={styles.textDistance}>Kết thúc: {endAddress}</Text>
-              <Text style={styles.textDistance}>Khoảng cách: {distance}</Text>
-              <Text style={styles.textDistance}>Thời gian: {duration}</Text>
-            </View>
-          )} */}
         </View>
-
-        {/* <Button title="Get Directions" onPress={getDirections} /> */}
-
-        {/* {route.length === 0 && (
-          <TouchableOpacity style={styles.bookButton2} onPress={getDirections}>
-            <Text style={styles.button}>Chỉ vị trí</Text>
-          </TouchableOpacity>
-        )} */}
       </View>
       <View>
         <Text style={styles.title}>Liên Hệ</Text>
@@ -285,34 +186,30 @@ const About = (storeId) => {
       </View>
       <View>
         <Text style={styles.title}>Giờ Làm Việc</Text>
-        {salonDetail &&
-          salonDetail?.schedules &&
-          salonDetail?.schedules?.map((item) => (
-            <View
-              key={item.dayOfWeek}
-              style={styles.serviceItem}
-              onPress={() => {
-                // Handle navigation or other actions
-              }}
-            >
-              <View style={styles.serviceInfo}>
-                <Text style={styles.serviceName} numberOfLines={1}>
-                  {item.dayOfWeek}
-                </Text>
-              </View>
-              <View style={styles.pricingInfo}>
-                {item?.isActive ? (
-                  <Text style={styles.servicePrice} numberOfLines={2}>
-                    {item.startTime} - {item.endTime}
-                  </Text>
-                ) : (
-                  <Text style={styles.servicePrice} numberOfLines={1}>
-                    Đóng cửa
-                  </Text>
-                )}
-              </View>
+        {sortedSchedules?.map((item) => (
+          <View
+            key={item.id} // Sử dụng id thay vì dayOfWeek để đảm bảo key là duy nhất
+            style={styles.serviceItem}
+          >
+            <View style={styles.serviceInfo}>
+              <Text style={styles.serviceName} numberOfLines={1}>
+                {daysOfWeekMap[item.dayOfWeek]}{" "}
+                {/* Chuyển đổi ngày từ tiếng Anh sang tiếng Việt */}
+              </Text>
             </View>
-          ))}
+            <View style={styles.pricingInfo}>
+              {item.isActive ? (
+                <Text style={styles.servicePrice} numberOfLines={2}>
+                  {item.startTime} - {item.endTime}
+                </Text>
+              ) : (
+                <Text style={styles.servicePrice} numberOfLines={1}>
+                  Đóng cửa
+                </Text>
+              )}
+            </View>
+          </View>
+        ))}
       </View>
     </SafeAreaView>
   );

@@ -92,7 +92,7 @@ export const fetchSalonInformationById = (id) => async (dispatch) => {
   dispatch({ type: ACT_SALON_INFORMATION_BY_ID_REQUEST });
   try {
     const response = await SalonInfomationService.getSalonById(id);
-    dispatch(fetchSalonEmployeeBySalonInformationId(id));
+    // dispatch(fetchSalonEmployeeBySalonInformationId(id, 1, 5));
     dispatch(fetchServiceHairBySalonInformationId(id));
     dispatch(fetchFeedbackBySalonInformationId(id, 1, 5));
     dispatch({
@@ -110,11 +110,21 @@ export const fetchSalonInformationById = (id) => async (dispatch) => {
   }
 };
 
-export function fetchSalonEmployeeBySalonInformationId(id) {
+export function fetchSalonEmployeeBySalonInformationId(
+  id,
+  page,
+  size,
+  nameEmployee
+) {
   return async (dispatch) => {
     try {
       const response =
-        await SalonInfomationService.GetSalonEmployeeBySalonInformationId(id);
+        await SalonInfomationService.GetSalonEmployeeBySalonInformationId(
+          id,
+          page,
+          size,
+          nameEmployee
+        );
       dispatch({
         type: GET_SALON_EMPPLOYEE_BY_SALON_ID,
         payload: response.data,

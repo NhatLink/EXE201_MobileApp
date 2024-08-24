@@ -100,7 +100,7 @@ const styles = StyleSheet.create({
     marginTop: 100,
     justifyContent: "flex-start",
     // alignItems: "flex-start",
-    backgroundColor: "#f5f5f5",
+    backgroundColor: COLORS.cardcolor,
     marginTop: 100,
     borderWidth: 2,
     borderColor: COLORS.gray2,

@@ -5,6 +5,7 @@ import Service from "./Service";
 import Review from "./Review";
 import About from "./About";
 import { COLORS } from "../../constants";
+import Employee from "./Employee";
 
 const TabViewComponent = ({ storeId }) => {
   const [selectedTab, setSelectedTab] = useState("Dịch Vụ");
@@ -17,6 +18,8 @@ const TabViewComponent = ({ storeId }) => {
     switch (selectedTab) {
       case "Dịch Vụ":
         return <Service storeId={storeId} />;
+      case "Nhân Viên":
+        return <Employee storeId={storeId} />;
       case "Đánh Giá":
         return <Review storeId={storeId} />;
       case "Chi Tiết":
@@ -29,7 +32,7 @@ const TabViewComponent = ({ storeId }) => {
   return (
     <View style={styles.container}>
       <View style={styles.filtersContainer}>
-        {["Dịch Vụ", "Đánh Giá", "Chi Tiết"].map((tab) => (
+        {["Dịch Vụ", "Nhân Viên", "Đánh Giá", "Chi Tiết"].map((tab) => (
           <TouchableOpacity
             key={tab}
             style={[
@@ -50,6 +53,11 @@ const TabViewComponent = ({ storeId }) => {
           style={selectedTab === "Dịch Vụ" ? styles.visible : styles.hidden}
         >
           <Service storeId={storeId} />
+        </View>
+        <View
+          style={selectedTab === "Nhân Viên" ? styles.visible : styles.hidden}
+        >
+          <Employee storeId={storeId} />
         </View>
         <View
           style={selectedTab === "Đánh Giá" ? styles.visible : styles.hidden}
@@ -94,7 +102,7 @@ const styles = StyleSheet.create({
   },
   selectedFilterButton: {
     borderBottomWidth: 1,
-    borderColor: COLORS.black,
+    borderColor: COLORS.secondary,
   },
   filterContent: {
     flexDirection: "row",
@@ -105,7 +113,7 @@ const styles = StyleSheet.create({
     marginLeft: 5,
     textAlign: "center",
     fontWeight: "bold",
-    fontSize: 14,
+    fontSize: 12,
   },
   visible: {
     flex: 1,
