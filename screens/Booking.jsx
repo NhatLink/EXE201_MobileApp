@@ -41,9 +41,11 @@ import Loader from "../components/auth/Loader";
 import { GetVoucherBySalonId } from "../store/voucher/action";
 import VoucherModal from "../components/booking/VoucherModal";
 import * as SecureStore from "expo-secure-store";
+import { useNotificationScheduler } from "../hook/useNotificationScheduler";
 
 const Booking = ({ navigation }) => {
   const dispatch = useDispatch();
+  const { scheduleNotification, expoPushToken } = useNotificationScheduler();
   const scrollViewRef = useRef(null);
   const {
     storeId,
@@ -129,13 +131,17 @@ const Booking = ({ navigation }) => {
 
       const appointmentObject = createAppointmentObject();
       console.log(JSON.stringify(appointmentObject));
+      console.log(
+        JSON.stringify(appointmentObject.appointmentDetails[0].startTime)
+      );
       dispatch(
         CreateAppointment(
           appointmentObject,
           navigation,
           currentPage,
           itemsPerPage,
-          accountId
+          accountId,
+          scheduleNotification
         )
       );
     } else {

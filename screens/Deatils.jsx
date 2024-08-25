@@ -10,6 +10,7 @@ import {
   TextInput,
   ActivityIndicator,
   ToastAndroid,
+  Button,
 } from "react-native";
 import { baseUrl } from "../utils/IP";
 import React, { useState, useEffect, useCallback } from "react";
@@ -42,7 +43,10 @@ import {
 } from "../store/salon/action";
 import * as SecureStore from "expo-secure-store";
 import Loader from "../components/auth/Loader";
+// import { useNotificationScheduler } from "../hook/useNotificationScheduler";
+
 const Details = ({ navigation }) => {
+  // const { scheduleNotification, expoPushToken } = useNotificationScheduler();
   const route = useRoute();
   const { product } = route.params;
   const [favorites, setFavorites] = useState(false);
@@ -178,6 +182,15 @@ const Details = ({ navigation }) => {
     );
   }
 
+  // const handleScheduleNotification = () => {
+  //   scheduleNotification({
+  //     title: "Thông báo mẫu",
+  //     body: "Đây là nội dung thông báo.",
+  //     data: { key: "value" },
+  //     triggerInSeconds: 10, // Thông báo sẽ được gửi sau 10 giây
+  //   });
+  // };
+
   return (
     <SafeAreaView style={styles.container}>
       {/* <Loader visible={loading} /> */}
@@ -227,6 +240,15 @@ const Details = ({ navigation }) => {
         </View>
         <View style={styles.descriptionWrapper}>
           <View>
+            {/* <View>
+              <Button
+                title="Lên lịch thông báo"
+                onPress={handleScheduleNotification}
+              />
+              {expoPushToken ? (
+                <Text>Expo Push Token: {expoPushToken}</Text>
+              ) : null}
+            </View> */}
             <Text style={styles.description}>{salonDetail?.name}</Text>
             <Text style={styles.descriptionText}>
               {salonDetail?.description}

@@ -1,6 +1,8 @@
 import { BookingService } from "../../services/bookingService";
 import { ToastAndroid } from "react-native";
 import { GetAppointmentByAccountId } from "../appointment/action";
+import * as Notifications from "expo-notifications";
+import { COLORS } from "../../constants";
 
 export const GET_AVAILABLE_TIME_REQUEST = "GET_AVAILABLE_TIME_REQUEST";
 export const GET_AVAILABLE_TIME_SUCCESS = "GET_AVAILABLE_TIME_SUCCESS";
@@ -69,18 +71,72 @@ export const CalculatePrice = (data) => async (dispatch) => {
   }
 };
 
+// export const CreateAppointment =
+//   (data, navigation, currentPage, itemsPerPage, accountId) =>
+//   async (dispatch) => {
+//     dispatch({ type: CREATE_APPOINTMENT_REQUEST });
+//     console.log("CreateAppointment data:", data);
+//     console.log("CreateAppointment data:", accountId);
+//     try {
+//       const response = await BookingService.CreateAppointment(data);
+//       ToastAndroid.show(response.data, ToastAndroid.SHORT);
+//       dispatch({ type: CREATE_APPOINTMENT_SUCCESS, payload: response.data });
+//       navigation.navigate("Appointment schedule");
+//       dispatch(GetAppointmentByAccountId(currentPage, itemsPerPage, accountId));
+//     } catch (error) {
+//       const errorMessage = error.response?.data?.message || error.message;
+//       dispatch({ type: CREATE_APPOINTMENT_FAILURE, payload: errorMessage });
+//       ToastAndroid.show("Tạo lịch hẹn thất bại", ToastAndroid.SHORT);
+//       console.log("error CreateAppointment", errorMessage);
+//     }
+//   };
+
 export const CreateAppointment =
-  (data, navigation, currentPage, itemsPerPage, accountId) =>
+  (
+    data,
+    navigation,
+    currentPage,
+    itemsPerPage,
+    accountId,
+    scheduleNotification
+  ) =>
   async (dispatch) => {
     dispatch({ type: CREATE_APPOINTMENT_REQUEST });
     console.log("CreateAppointment data:", data);
-    console.log("CreateAppointment data:", accountId);
+    console.log("CreateAppointment accountId:", accountId);
     try {
       const response = await BookingService.CreateAppointment(data);
       ToastAndroid.show(response.data, ToastAndroid.SHORT);
       dispatch({ type: CREATE_APPOINTMENT_SUCCESS, payload: response.data });
       navigation.navigate("Appointment schedule");
       dispatch(GetAppointmentByAccountId(currentPage, itemsPerPage, accountId));
+
+      // Thông báo ngay lập tức khi đặt lịch thành công
+      scheduleNotification({
+        title: "Lịch hẹn thành công",
+        body: "Lịch hẹn của bạn đã được đặt thành công.",
+        triggerInSeconds: 1, // Thông báo ngay lập tức
+        importance: Notifications.AndroidImportance.DEFAULT, // Mức độ quan trọng cao
+        vibrationPattern: [0, 250, 250, 250], // Mẫu rung
+        lightColor: COLORS.secondary, // Màu đèn sáng
+      });
+
+      // Đặt lịch thông báo trước 1 giờ
+      const startTime = new Date(data.appointmentDetails[0].startTime);
+      const notificationTime = new Date(startTime.getTime() - 60 * 60 * 1000); // Trừ 1 giờ
+
+      scheduleNotification({
+        title: "Nhắc nhở lịch hẹn",
+        body: "Bạn có một lịch hẹn sắp tới trong 1 giờ nữa.",
+        data: { appointmentId: response.data.id },
+        triggerInSeconds: Math.max(
+          (notificationTime.getTime() - Date.now()) / 1000,
+          1
+        ),
+        importance: Notifications.AndroidImportance.MAX, // Đặt mức độ quan trọng cao
+        vibrationPattern: [0, 250, 250, 250], // Mẫu rung
+        lightColor: COLORS.secondary, // Màu đèn sáng
+      });
     } catch (error) {
       const errorMessage = error.response?.data?.message || error.message;
       dispatch({ type: CREATE_APPOINTMENT_FAILURE, payload: errorMessage });
