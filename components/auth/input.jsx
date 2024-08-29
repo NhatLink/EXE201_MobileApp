@@ -105,7 +105,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   inputWrapper: {
-    backgroundColor: COLORS.secondary,
+    backgroundColor: COLORS.cardcolor,
     height: 55,
     borderRadius: 12,
     flexDirection: "row",

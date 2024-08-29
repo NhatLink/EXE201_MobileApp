@@ -156,20 +156,41 @@ import { PaymentProvider } from "./hook/PaymentContext";
 import { Provider, useDispatch } from "react-redux";
 import store from "./store";
 import Toast from "react-native-toast-message";
-import { fetchUser2 } from "./store/user/action";
+import { FETCH_TOKEN_FAIL, fetchToken, fetchUser2 } from "./store/user/action";
 import * as SecureStore from "expo-secure-store";
-import { AppState } from "react-native";
+import { AppState, ToastAndroid } from "react-native";
 import NetworkProvider from "./hook/NetworkProvider";
 import { COLORS } from "./constants";
+import { UserServices } from "./services/userServices";
 const Stack = createNativeStackNavigator();
 function RouterContent() {
   const dispatch = useDispatch();
   // useEffect(() => {
   //   const handleUserFetch = async () => {
-  //     console.log("fetch");
+  //     console.log("fetchToken");
   //     try {
+  //       const refreshToken = await SecureStore.getItemAsync("refreshToken");
   //       const accessToken = await SecureStore.getItemAsync("accessToken");
 
+  //       console.log("old accessToken", accessToken);
+
+  //       if (refreshToken) {
+  //         await dispatch(fetchToken({ refreshToken: refreshToken }));
+  //       }
+  //     } catch (error) {
+  //       console.error("Lỗi khi lấy accessToken", error);
+  //     }
+  //   };
+
+  //   handleUserFetch();
+  // }, []);
+
+  // useEffect(() => {
+  //   const handleUserFetch = async () => {
+  //     console.log("fetchToken2");
+  //     try {
+  //       const accessToken = await SecureStore.getItemAsync("accessToken");
+  //       console.log("accessToken to fetchUser2", accessToken);
   //       if (accessToken) {
   //         await dispatch(fetchUser2(accessToken));
   //       }
@@ -181,35 +202,146 @@ function RouterContent() {
   //   handleUserFetch();
   // }, []);
 
+  //   useEffect(() => {
+  //     const handleUserFetch = async () => {
+  //       console.log("fetchUser2");
+
+  //       try {
+  //         const accessToken = await SecureStore.getItemAsync("accessToken");
+
+  //         if (accessToken) {
+  //           await dispatch(fetchUser2(accessToken));
+  //         }
+  //       } catch (error) {
+  //         console.error("Failed to fetch accessToken", error);
+  //       }
+  //     };
+
+  //     const appStateSubscription = AppState.addEventListener(
+  //       "change",
+  //       (nextAppState) => {
+  //         if (nextAppState === "active") {
+  //           handleUserFetch();
+  //         }
+  //       }
+  //     );
+
+  //     handleUserFetch(); // Fetch user data when the app starts
+
+  //     return () => {
+  //       appStateSubscription.remove();
+  //     };
+  //   }, []);
   useEffect(() => {
-    const handleUserFetch = async () => {
+    const fetchTokensAndUser = async () => {
       try {
+        const refreshToken = await SecureStore.getItemAsync("refreshToken");
         const accessToken = await SecureStore.getItemAsync("accessToken");
 
-        if (accessToken) {
-          await dispatch(fetchUser2(accessToken));
+        console.log("old accessToken", accessToken);
+        console.log("refreshToken to fetch", refreshToken);
+
+        if (!refreshToken) {
+          console.log("Refresh token không tồn tại");
+          return; // Ngừng thực thi nếu không có refresh token
         }
-      } catch (error) {
-        console.error("Failed to fetch accessToken", error);
+        // Fetch a new access token using the refresh token
+        const res = await UserServices.fetchToken({ refreshToken });
+        const newAccessToken = res.data.accessToken;
+        console.log("new accessToken", newAccessToken);
+
+        // Save the new access token
+        await SecureStore.setItemAsync("accessToken", newAccessToken);
+
+        // Fetch user data with the new access token
+        await dispatch(fetchUser2(newAccessToken));
+      } catch (err) {
+        if (err.response && err.response.status === 400) {
+          console.log("Refresh token expired");
+          await SecureStore.deleteItemAsync("accessToken");
+          await SecureStore.deleteItemAsync("refreshToken");
+          await SecureStore.deleteItemAsync("userInfo");
+          await SecureStore.deleteItemAsync("accountId");
+          dispatch({
+            type: FETCH_TOKEN_FAIL,
+            payload: err.response.data,
+          });
+          ToastAndroid.show(
+            "Phiên đăng nhập hết hạn !!! Vui lòng đăng nhập lại",
+            ToastAndroid.SHORT
+          );
+        } else {
+          console.log("Error fetching token or user data:", err);
+          ToastAndroid.show(
+            "Lỗi khi fetch dữ liệu người dùng!!!",
+            ToastAndroid.SHORT
+          );
+        }
+      }
+    };
+    fetchTokensAndUser();
+  }, [dispatch]);
+
+  useEffect(() => {
+    const fetchTokensAndUser = async () => {
+      try {
+        const refreshToken = await SecureStore.getItemAsync("refreshToken");
+        const accessToken = await SecureStore.getItemAsync("accessToken");
+
+        console.log("old accessToken", accessToken);
+        console.log("refreshToken to fetch", refreshToken);
+
+        // Kiểm tra xem refreshToken có tồn tại không
+        if (!refreshToken) {
+          console.log("Refresh token không tồn tại");
+          ToastAndroid.show(
+            "Refresh token không tồn tại. Vui lòng đăng nhập lại.",
+            ToastAndroid.SHORT
+          );
+          return; // Ngừng thực thi nếu không có refresh token
+        }
+
+        // Fetch a new access token using the refresh token
+        const res = await UserServices.fetchToken({ refreshToken });
+        const newAccessToken = res.data.accessToken;
+        console.log("new accessToken", newAccessToken);
+
+        // Save the new access token
+        await SecureStore.setItemAsync("accessToken", newAccessToken);
+
+        // Fetch user data with the new access token
+        await dispatch(fetchUser2(newAccessToken));
+      } catch (err) {
+        if (err.response && err.response.status === 400) {
+          console.log("Refresh token expired");
+          await SecureStore.deleteItemAsync("accessToken");
+          await SecureStore.deleteItemAsync("refreshToken");
+          await SecureStore.deleteItemAsync("userInfo");
+          await SecureStore.deleteItemAsync("accountId");
+          dispatch({
+            type: FETCH_TOKEN_FAIL,
+            payload: err.response.data,
+          });
+          ToastAndroid.show(
+            "Phiên đăng nhập hết hạn !!! Vui lòng đăng nhập lại",
+            ToastAndroid.SHORT
+          );
+        } else {
+          console.log("Error fetching token or user data:", err);
+          ToastAndroid.show(
+            "Lỗi khi fetch dữ liệu người dùng!!!",
+            ToastAndroid.SHORT
+          );
+        }
       }
     };
 
-    const appStateSubscription = AppState.addEventListener(
-      "change",
-      (nextAppState) => {
-        if (nextAppState === "active") {
-          handleUserFetch();
-        }
-      }
-    );
+    const intervalId = setInterval(fetchTokensAndUser, 480000); // 8 phút
 
-    handleUserFetch(); // Fetch user data when the app starts
-
-    return () => {
-      appStateSubscription.remove();
-    };
-  }, []);
+    return () => clearInterval(intervalId);
+  }, [dispatch]);
 }
+
 export default function App() {
   // useEffect(() => {
   //   const handleUserFetch = async () => {

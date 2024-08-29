@@ -277,8 +277,37 @@ const History = () => {
             }
             keyExtractor={(item) => item?.id}
             renderItem={({ item }) => <ListHistory item={item} />}
+            ListFooterComponent={
+              <View style={styles.paging}>
+                {currentPage > 1 && (
+                  <TouchableOpacity
+                    style={styles.pagingArrow}
+                    onPress={Decrease}
+                  >
+                    <Ionicons
+                      name="arrow-back-circle-outline"
+                      size={24}
+                      color={COLORS.primary}
+                    />
+                  </TouchableOpacity>
+                )}
+                <Text style={styles.pagingArrow}>{customerReport?.page}</Text>
+                {currentPage < customerReport?.totalPages && (
+                  <TouchableOpacity
+                    style={styles.pagingArrow}
+                    onPress={Increase}
+                  >
+                    <Ionicons
+                      name="arrow-forward-circle-outline"
+                      size={24}
+                      color={COLORS.primary}
+                    />
+                  </TouchableOpacity>
+                )}
+              </View>
+            }
           />
-          <View style={styles.paging}>
+          {/* <View style={styles.paging}>
             {currentPage > 1 && (
               <TouchableOpacity style={styles.pagingArrow} onPress={Decrease}>
                 <Ionicons
@@ -298,7 +327,7 @@ const History = () => {
                 />
               </TouchableOpacity>
             )}
-          </View>
+          </View> */}
         </>
       )}
     </SafeAreaView>

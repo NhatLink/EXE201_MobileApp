@@ -43,7 +43,7 @@ const OrdersList = () => {
       // console.log("accountId", userInfo);
     }
     fetchData();
-  }, []);
+  }, [user, currentPage, itemsPerPage]);
   useEffect(() => {
     setFilteredData(historyAppointment); // Cập nhật filteredData mỗi khi data thay đổi
   }, [historyAppointment]); // Phụ thuộc vào data
@@ -58,32 +58,34 @@ const OrdersList = () => {
     }
   };
   const filterOrder = (status) => {
-    setSelectedStatus(status);
-    if (status === null) {
-      setFilteredData(historyAppointment);
-    } else if (status === "Thành công") {
-      setFilteredData(
-        historyAppointment.filter((item) => item?.status === "SUCCESSED")
-      );
-    } else if (status === "Thất bại") {
-      setFilteredData(
-        historyAppointment.filter((item) => item?.status === "FAILED")
-      );
-    } else if (status === "Hủy bởi khách hàng") {
-      setFilteredData(
-        historyAppointment.filter(
-          (item) => item?.status === "CANCEL_BY_CUSTOMER"
-        )
-      );
+    if (historyAppointment?.length > 0) {
+      setSelectedStatus(status);
+      if (status === null) {
+        setFilteredData(historyAppointment);
+      } else if (status === "Thành công") {
+        setFilteredData(
+          historyAppointment.filter((item) => item?.status === "SUCCESSED")
+        );
+      } else if (status === "Thất bại") {
+        setFilteredData(
+          historyAppointment.filter((item) => item?.status === "FAILED")
+        );
+      } else if (status === "Hủy bởi khách hàng") {
+        setFilteredData(
+          historyAppointment.filter(
+            (item) => item?.status === "CANCEL_BY_CUSTOMER"
+          )
+        );
+      }
+      // else {
+      //   setFilteredData(
+      //     data.filter(
+      //       (item) =>
+      //         item?.delivery?.status?.toLowerCase() === status.toLowerCase()
+      //     )
+      //   );
+      // }
     }
-    // else {
-    //   setFilteredData(
-    //     data.filter(
-    //       (item) =>
-    //         item?.delivery?.status?.toLowerCase() === status.toLowerCase()
-    //     )
-    //   );
-    // }
   };
   if (loading) {
     return (

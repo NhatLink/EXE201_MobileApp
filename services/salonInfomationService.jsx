@@ -9,6 +9,11 @@ export const SalonInfomationService = {
       },
     });
   },
+
+  GetSalonSuggestion() {
+    return API.get(`/api/v1/saloninformations/GetSalonSuggestion`);
+  },
+
   searchSalon(serviceName, salonAddress, salonName, page, size) {
     return API.get(`/api/v1/saloninformations/GetSalonByServiceNameAddress`, {
       params: {

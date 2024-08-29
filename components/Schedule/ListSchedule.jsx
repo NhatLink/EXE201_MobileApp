@@ -204,7 +204,7 @@ export default memo(ListSchedule);
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "#FFF",
+    backgroundColor: COLORS.cardcolor,
     // ...SHADOWS.medium,
     position: "relative",
     borderRadius: 10,

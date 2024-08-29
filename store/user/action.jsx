@@ -54,8 +54,12 @@ export const loginUser = (credentials) => async (dispatch) => {
 
 // Fetch user action
 export const fetchToken = (data) => async (dispatch) => {
+  console.log("fetchTokendata", data);
+
   try {
     const response = await UserServices.fetchToken(data);
+    console.log("accessToken new", response.data.accessToken);
+
     SecureStore.setItemAsync("accessToken", response.data.accessToken);
     SecureStore.setItemAsync("refreshToken", response.data.refreshToken);
     dispatch({ type: FETCH_TOKEN_SUCCESS, payload: response.data });
@@ -120,6 +124,17 @@ export const updateUserById = (id, data) => async (dispatch) => {
   }
 };
 
+export const updatePasswordUserById = (id, data) => async (dispatch) => {
+  try {
+    const response = await UserServices.updatePasswordUserById(id, data);
+    dispatch(getUserById(id));
+    // SecureStore.setItemAsync("userInfo", JSON.stringify(response.data));
+    ToastAndroid.show(response.data, ToastAndroid.SHORT);
+  } catch (error) {
+    console.error("update Password User By Id error:", error);
+  }
+};
+
 export const fetchUser = (accessToken) => async (dispatch) => {
   try {
     const response = await UserServices.fetchUser(accessToken);
@@ -172,6 +187,8 @@ export const fetchUser = (accessToken) => async (dispatch) => {
 export const fetchUser2 = (accessToken) => async (dispatch, getState) => {
   try {
     // const { accessToken } = getState().USER;
+    // const refreshToken = await SecureStore.getItemAsync("refreshToken");
+    // await dispatch(fetchToken({ refreshToken: refreshToken }));
     const response = await UserServices.fetchUser(accessToken);
     SecureStore.setItemAsync("accountId", response.data.accountId);
     SecureStore.setItemAsync(
@@ -182,10 +199,11 @@ export const fetchUser2 = (accessToken) => async (dispatch, getState) => {
     // ToastAndroid.show("Chào mừng trở lại", ToastAndroid.SHORT);
   } catch (error) {
     if (error.response.status === 401) {
-      console.log("Access token expired");
+      console.log("Access token expired 2");
       const refreshToken = await SecureStore.getItemAsync("refreshToken");
-      await dispatch(fetchToken(refreshToken));
-      const { accessToken } = getState().USER;
+      await dispatch(fetchToken({ refreshToken: refreshToken }));
+      // const { accessToken } = getState().USER;
+      const accessToken = await SecureStore.getItemAsync("accessToken");
       if (accessToken) {
         const response = await UserServices.fetchUser(accessToken);
         SecureStore.setItemAsync("accountId", response.data.accountId);

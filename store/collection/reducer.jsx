@@ -7,6 +7,10 @@ import {
   GET_COLECTION_SUCCESS,
   UPDATE_COLECTION_REQUEST,
   UPDATE_COLECTION_SUCCESS,
+  CREATE_COLECTION_FAILURE,
+  DELETE_COLECTION_FAILURE,
+  GET_COLECTION_FAILURE,
+  UPDATE_COLECTION_FAILURE,
 } from "./action";
 
 const initialState = {
@@ -24,6 +28,13 @@ const userReducer = (state = initialState, action) => {
       return {
         ...state,
         loading: true,
+      };
+    case CREATE_COLECTION_FAILURE:
+    case DELETE_COLECTION_FAILURE:
+    case GET_COLECTION_FAILURE:
+    case UPDATE_COLECTION_FAILURE:
+      return {
+        ...initialState,
       };
     case GET_COLECTION_SUCCESS:
       return {

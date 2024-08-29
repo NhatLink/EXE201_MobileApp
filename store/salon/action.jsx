@@ -39,10 +39,10 @@ export function actSalonInformation(list) {
 //     payload: list,
 //   };
 // }
-export function fetchSalonInformation(page, size) {
+export function fetchSalonInformation() {
   return async (dispatch) => {
     try {
-      const response = await SalonInfomationService.getAllSalon(page, size);
+      const response = await SalonInfomationService.GetSalonSuggestion();
       dispatch(actSalonInformation(response.data)); // Giả sử response.data là danh sách salon
     } catch (error) {
       console.error("Failed to fetch salon information:", error);
@@ -165,10 +165,7 @@ export function fetchFeedbackBySalonInformationId(id, page, size, rating) {
         payload: response.data,
       });
     } catch (error) {
-      console.error(
-        "Failed to fetch ServiceHair By SalonInformationId:",
-        error
-      );
+      console.error("Failed to fetch Feedback By SalonInformationId:", error);
     }
   };
 }

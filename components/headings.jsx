@@ -101,7 +101,7 @@ const Headings = () => {
           <Text>Something went south</Text>
         ) : ( */}
         <FlatList
-          data={salonInformation?.items}
+          data={salonInformation}
           renderItem={({ item }) => <ProductSpecialViewCard item={item} />}
           keyExtractor={(item) => item.id}
           contentContainerStyle={{ columnGap: SIZES.medium }}

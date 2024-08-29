@@ -26,6 +26,9 @@ export const UserServices = {
       },
     });
   },
+  updatePasswordUserById(id, data) {
+    return API.put(`/api/v1/accounts/ChangePassword/${id}`, data);
+  },
   checkInByUser(data) {
     return API.put(`/api/v1/customers/CheckInByCustomer`, data);
   },

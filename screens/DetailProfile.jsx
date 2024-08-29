@@ -9,6 +9,7 @@ import {
   ScrollView,
   TextInput,
   Modal,
+  ToastAndroid,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
@@ -22,16 +23,21 @@ import { Ionicons, Feather } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { Picker } from "@react-native-picker/picker";
-import { updateUserById } from "../store/user/action";
+import { GET_USER_BY_ID, updateUserById } from "../store/user/action";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigation } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import * as SecureStore from "expo-secure-store";
 import Loader from "../components/auth/Loader";
+import { UserServices } from "../services/userServices";
+import ChangePasswordModal from "../components/DetailProfile/ChangePasswordModal";
 const DetailProfile = ({ navigation }) => {
   // const user = useSelector((state) => state.USER.user);
   const { user, accountId } = useSelector((state) => state.USER);
-  const [idUser, setIdUser] = useState(null);
+  const [idUser, setIdUser] = useState(accountId);
+  console.log("accountId", accountId);
+  console.log("user", user);
+
   // const navigation = useNavigation();
   // const [userData, setUserData] = useState({
   //   roleId: userInfo?.roleId,
@@ -56,30 +62,45 @@ const DetailProfile = ({ navigation }) => {
   const [phone, setPhone] = useState(user?.phone);
   const [errors, setErrors] = useState({});
   const [loader, setLoader] = useState(false);
+  const [modalChangepassVisible, setModalChangepassVisible] = useState(false);
   const dispatch = useDispatch();
-  console.log(userData);
-  useEffect(() => {
-    async function fetchData() {
-      setLoader(true);
-      const accountId = await SecureStore.getItemAsync("accountId");
-      const userInfoJson = await SecureStore.getItemAsync("userInfo");
-      let userInfo = null;
-      if (userInfoJson) {
-        try {
-          userInfo = JSON.parse(userInfoJson);
-        } catch (error) {
-          console.error("Error parsing userInfo", error);
-        }
-      }
-      setUserData(userInfo);
-      // setFullname(userInfo?.fullName);
-      // setPhone(userInfo?.phone);
-      setIdUser(accountId);
-      setLoader(false);
-    }
+  // console.log("userData", userData);
+  // console.log("accountId", accountId);
+  // useEffect(() => {
+  //   async function fetchData() {
+  //     setLoader(true);
+  //     const accountId = await SecureStore.getItemAsync("accountId");
+  //     const userInfoJson = await SecureStore.getItemAsync("userInfo");
+  //     let userInfo = null;
+  //     if (userInfoJson) {
+  //       try {
+  //         userInfo = JSON.parse(userInfoJson);
+  //       } catch (error) {
+  //         console.error("Error parsing userInfo", error);
+  //       }
+  //     }
+  //     setUserData(userInfo);
+  //     setIdUser(accountId);
+  //     setLoader(false);
+  //   }
 
-    fetchData();
-  }, []);
+  //   fetchData();
+  // }, []);
+  useEffect(() => {
+    UserServices.getUserById(accountId)
+      .then((res) => {
+        setUserData(res.data);
+        dispatch({ type: GET_USER_BY_ID, payload: res.data });
+        SecureStore.setItemAsync("userInfo", JSON.stringify(res.data));
+      })
+      .catch((err) => {
+        console.log(err);
+        ToastAndroid.show(
+          "Lỗi khi lấy dữ liệu người dùng!!!",
+          ToastAndroid.SHORT
+        );
+      });
+  }, [accountId]);
   const pickImageFromGallery = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== "granted") {
@@ -124,6 +145,14 @@ const DetailProfile = ({ navigation }) => {
       setModalAvatar(false);
     }
   };
+
+  const maskPassword = (password) => {
+    if (password && password.length > 2) {
+      return "*".repeat(password.length - 2) + password.slice(-2);
+    }
+    return password;
+  };
+
   const handleChanges = (text, input) => {
     setUserData((prevState) => ({ ...prevState, [input]: text }));
   };
@@ -167,8 +196,8 @@ const DetailProfile = ({ navigation }) => {
   };
   const isDifferent = JSON.stringify(user) !== JSON.stringify(userData);
 
-  console.log("userData:", JSON.stringify(userData));
-  console.log("user:", JSON.stringify(user));
+  // console.log("userData:", JSON.stringify(userData));
+  // console.log("user:", JSON.stringify(user));
   console.log("isDifferent", isDifferent);
   const handlePressBack = () => {
     if (isDifferent) {
@@ -214,9 +243,9 @@ const DetailProfile = ({ navigation }) => {
           formData.append(key, userData[key]);
         }
       }
-      console.log("userformdataUpdate:", formData);
+      // console.log("userformdataUpdate:", formData);
       // Dispatching the loginUser action with formData
-      await dispatch(updateUserById(idUser, formData));
+      await dispatch(updateUserById(accountId, formData));
       // Handling post-login logic can be done within the loginUser action or here
     } catch (error) {
       console.error("updateUserById error:", error);
@@ -364,6 +393,35 @@ const DetailProfile = ({ navigation }) => {
             </Text>
           </View>
         </View>
+
+        <View>
+          <View style={styles.menuItem}>
+            <View style={styles.menuItem2}>
+              <MaterialCommunityIcons
+                name="account-lock"
+                size={24}
+                color={COLORS.primary}
+              />
+              <Text style={styles.menuItemText}>Mật khẩu</Text>
+            </View>
+            <View style={styles.menuItem2}>
+              <Text style={styles.menuItemText}>
+                {userData?.password ? maskPassword(userData.password) : "trống"}
+              </Text>
+              <TouchableOpacity
+                style={{ marginLeft: 5, paddingHorizontal: 5 }}
+                onPress={() => setModalChangepassVisible(true)}
+              >
+                <MaterialCommunityIcons
+                  name="key-variant"
+                  size={24}
+                  color={COLORS.primary}
+                />
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+
         <Modal
           animationType="slide"
           transparent={true}
@@ -558,6 +616,13 @@ const DetailProfile = ({ navigation }) => {
           />
         </TouchableOpacity>
       )}
+      <ChangePasswordModal
+        isVisible={modalChangepassVisible}
+        onClose={() => {
+          setModalChangepassVisible(!modalChangepassVisible);
+        }}
+        data={{}}
+      />
     </SafeAreaView>
   );
 };
@@ -679,13 +744,13 @@ const styles = StyleSheet.create({
   },
   buttonClose: {
     position: "absolute",
-    top: 30,
+    top: 10,
     left: 10,
     padding: 10,
   },
   buttonConfirm: {
     position: "absolute",
-    top: 30,
+    top: 10,
     right: 10,
     padding: 10,
     // backgroundColor: COLORS.red,

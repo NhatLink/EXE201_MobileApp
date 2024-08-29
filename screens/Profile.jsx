@@ -98,44 +98,44 @@ const Profile = ({ navigation }) => {
   //   fetchData();
   // }, []);
 
-  useEffect(() => {
-    async function fetchDataTokenAndThenData() {
-      const refreshToken = await SecureStore.getItemAsync("refreshToken");
-      if (refreshToken) {
-        await dispatch(
-          fetchToken({
-            refreshToken: refreshToken,
-          })
-        );
-        fetchData();
-      }
-    }
-    fetchDataTokenAndThenData();
-  }, [isAuthenticated]);
+  // useEffect(() => {
+  //   async function fetchDataTokenAndThenData() {
+  //     const refreshToken = await SecureStore.getItemAsync("refreshToken");
+  //     if (refreshToken) {
+  //       await dispatch(
+  //         fetchToken({
+  //           refreshToken: refreshToken,
+  //         })
+  //       );
+  //       fetchData();
+  //     }
+  //   }
+  //   fetchDataTokenAndThenData();
+  // }, [isAuthenticated]);
 
-  async function fetchData() {
-    setLoader(true);
-    const accessToken = await SecureStore.getItemAsync("accessToken");
-    const refreshToken = await SecureStore.getItemAsync("refreshToken");
-    const userInfoJson = await SecureStore.getItemAsync("userInfo");
-    const accountId = await SecureStore.getItemAsync("accountId");
-    let userInfo = null;
-    if (userInfoJson) {
-      try {
-        userInfo = JSON.parse(userInfoJson);
-      } catch (error) {
-        console.error("Error parsing userInfo", error);
-      }
-    }
-    // setAccessToken(accessToken);
-    // setRefreshToken(refreshToken);
-    setUserInfo(userInfo);
-    setIdUser(accountId);
-    if (accessToken) {
-      await dispatch(fetchUser(accessToken));
-    }
-    setLoader(false);
-  }
+  // async function fetchData() {
+  //   setLoader(true);
+  //   const accessToken = await SecureStore.getItemAsync("accessToken");
+  //   const refreshToken = await SecureStore.getItemAsync("refreshToken");
+  //   const userInfoJson = await SecureStore.getItemAsync("userInfo");
+  //   const accountId = await SecureStore.getItemAsync("accountId");
+  //   let userInfo = null;
+  //   if (userInfoJson) {
+  //     try {
+  //       userInfo = JSON.parse(userInfoJson);
+  //     } catch (error) {
+  //       console.error("Error parsing userInfo", error);
+  //     }
+  //   }
+  //   // setAccessToken(accessToken);
+  //   // setRefreshToken(refreshToken);
+  //   setUserInfo(userInfo);
+  //   setIdUser(accountId);
+  //   if (accessToken) {
+  //     await dispatch(fetchUser(accessToken));
+  //   }
+  //   setLoader(false);
+  // }
 
   const QRScaner = async () => {
     dispatch(resetCheckInStatus());

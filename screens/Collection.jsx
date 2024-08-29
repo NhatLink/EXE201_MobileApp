@@ -7,6 +7,7 @@ import {
   FlatList,
   ToastAndroid,
   Alert,
+  ActivityIndicator,
 } from "react-native";
 import React, { useEffect, useState, useCallback } from "react";
 import { COLORS, SIZES, SHADOWS } from "../constants";
@@ -29,6 +30,7 @@ const Collection = ({ navigation }) => {
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const { user } = useSelector((state) => state.USER);
   const { collection, loading } = useSelector((state) => state.COLLECTION);
+  console.log("user", user);
 
   const CollectionData = [
     {
@@ -51,7 +53,7 @@ const Collection = ({ navigation }) => {
         GetCustomerImageHistoryByCustomerId(currentPage, itemsPerPage, user.id)
       );
     }
-  }, [currentPage, itemsPerPage, user]);
+  }, [currentPage, itemsPerPage, user, user.id]);
 
   const deleteCollection = (id) => {
     if (id && user && user.id) {
@@ -76,9 +78,32 @@ const Collection = ({ navigation }) => {
     );
   };
 
+  if (loading) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={styles.upperRow}>
+          <TouchableOpacity
+            style={{ paddingLeft: 0 }}
+            onPress={() => navigation.goBack()}
+          >
+            <Ionicons
+              name="chevron-back-circle"
+              size={30}
+              color={COLORS.black}
+            />
+          </TouchableOpacity>
+          <Text style={styles.title}> Kho lưu trữ</Text>
+        </View>
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={COLORS.primary} />
+        </View>
+      </SafeAreaView>
+    );
+  }
+
   return (
     <SafeAreaView style={styles.container}>
-      <Loader visible={loading} />
+      {/* <Loader visible={loading} /> */}
       <View style={styles.upperRow}>
         <TouchableOpacity
           style={{ paddingLeft: 0 }}
@@ -211,6 +236,13 @@ const styles = StyleSheet.create({
     alignItems: "center",
     width: SIZES.width - 50,
     marginVertical: SIZES.xSmall,
+  },
+  loadingContainer: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    alignContent: "center",
+    backgroundColor: COLORS.background,
   },
   newCollection: {
     flexDirection: "row",

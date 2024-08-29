@@ -35,21 +35,21 @@ const Home = () => {
   }, []);
 
   const dispatch = useDispatch();
-  useEffect(() => {
-    const handleUserFetch = async () => {
-      try {
-        console.log("fetchUser2");
-        const accessToken = await SecureStore.getItemAsync("accessToken");
-        if (accessToken) {
-          await dispatch(fetchUser2(accessToken));
-        }
-      } catch (error) {
-        console.error("Lỗi khi lấy accessToken", error);
-      }
-    };
+  // useEffect(() => {
+  //   const handleUserFetch = async () => {
+  //     try {
+  //       console.log("fetchUser2");
+  //       const accessToken = await SecureStore.getItemAsync("accessToken");
+  //       if (accessToken) {
+  //         await dispatch(fetchUser2(accessToken));
+  //       }
+  //     } catch (error) {
+  //       console.error("Lỗi khi lấy accessToken", error);
+  //     }
+  //   };
 
-    handleUserFetch();
-  }, []);
+  //   handleUserFetch();
+  // }, []);
 
   const handlePress = () => {
     if (userLoggedIn) {
@@ -91,8 +91,8 @@ const Home = () => {
   };
 
   useEffect(() => {
-    dispatch(fetchSalonInformation(currentPage, itemsPerPage));
-  }, [currentPage, dispatch, itemsPerPage]);
+    dispatch(fetchSalonInformation());
+  }, [dispatch]);
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.appBarWrapper}>

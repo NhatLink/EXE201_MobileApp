@@ -216,7 +216,7 @@ const Search = () => {
       ) : (
         <>
           <Text style={styles.searchResultText}>
-            {`Kết quả tìm kiếm (${searchSalon?.items?.length})`}
+            {`Kết quả tìm kiếm (${searchSalon?.items?.length ?? 0})`}
           </Text>
           <FlatList
             data={searchSalon.items}

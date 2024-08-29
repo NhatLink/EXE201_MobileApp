@@ -16,11 +16,12 @@ import {
   ScrollView,
   Animated,
   RefreshControl,
+  ActivityIndicator,
 } from "react-native";
 import axios from "axios";
 import { baseUrl } from "../utils/IP";
 import { useNavigation } from "@react-navigation/native";
-import { Agenda } from "react-native-calendars";
+import { Agenda, LocaleConfig } from "react-native-calendars";
 import { useDispatch, useSelector } from "react-redux";
 import { GetAppointmentByAccountId } from "../store/appointment/action";
 import Loader from "../components/auth/Loader";
@@ -31,21 +32,64 @@ const timeToString = (time) => {
   const date = new Date(time);
   return date.toISOString().split("T")[0];
 };
+
+LocaleConfig.locales["vi"] = {
+  monthNames: [
+    "Tháng 1",
+    "Tháng 2",
+    "Tháng 3",
+    "Tháng 4",
+    "Tháng 5",
+    "Tháng 6",
+    "Tháng 7",
+    "Tháng 8",
+    "Tháng 9",
+    "Tháng 10",
+    "Tháng 11",
+    "Tháng 12",
+  ],
+  monthNamesShort: [
+    "Th.1",
+    "Th.2",
+    "Th.3",
+    "Th.4",
+    "Th.5",
+    "Th.6",
+    "Th.7",
+    "Th.8",
+    "Th.9",
+    "Th.10",
+    "Th.11",
+    "Th.12",
+  ],
+  dayNames: [
+    "Chủ nhật",
+    "Thứ hai",
+    "Thứ ba",
+    "Thứ tư",
+    "Thứ năm",
+    "Thứ sáu",
+    "Thứ bảy",
+  ],
+  dayNamesShort: ["CN", "T2", "T3", "T4", "T5", "T6", "T7"],
+  today: "Hôm nay",
+};
+LocaleConfig.defaultLocale = "vi";
+
 const Schedule = () => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(20);
+  // const todayDate = new Date().toISOString().split("T")[0];
+  // const [selectedDate, setSelectedDate] = useState(todayDate);
   const { appointment, loading } = useSelector((state) => state.APPOINTMENT);
   const { user, accessToken, refreshToken, isAuthenticated, accountId } =
     useSelector((state) => state.USER);
-  // console.log(appointment);
-  // console.log(isAuthenticated);
   const [refreshing, setRefreshing] = useState(false);
+  console.log("1", appointment);
 
   const fetchData = async () => {
-    // const accountId = await SecureStore.getItemAsync("accountId");
-    // console.log(accountId);
     if (accountId) {
       dispatch(GetAppointmentByAccountId(currentPage, itemsPerPage, accountId));
     }
@@ -63,7 +107,7 @@ const Schedule = () => {
   }, []);
 
   const [items, setItems] = useState({});
-  // const [selectedDate, setSelectedDate] = useState(null);
+  console.log("2", items);
   useEffect(() => {
     const newItems = {};
     if (appointment && appointment.length > 0) {
@@ -81,49 +125,68 @@ const Schedule = () => {
   const renderItem = (item) => {
     return <ListSchedule item={item} />;
   };
-  // const renderItem = ({ item }) => <ListSchedule item={item} />;
-  // const handleDayPress = (day) => {
-  //   setSelectedDate(day.dateString);
-  //   console.log('Selected date:', day.dateString);
-  // };
 
   const renderEmptyDate = () => {
     return (
-      <View style={styles.Imgcontainer}>
-        <Image
-          source={require("../assets/images/error-in-calendar.png")}
-          resizeMode="cover"
-          style={styles.img}
-        />
-        {!isAuthenticated && <Text>Không có lịch hẹn nào vào ngày này</Text>}
-        {appointment && appointment?.length === 0 && (
-          <View style={{ marginTop: 10 }}>
-            <TouchableOpacity onPress={() => navigation.navigate("Search")}>
-              <Text style={styles.button}>Tìm kiếm dịch vụ</Text>
-            </TouchableOpacity>
-            {!isAuthenticated && (
-              <>
-                <Text style={styles.emptyText2}>
-                  ---------------Đã sử dụng HairHub---------------
-                </Text>
-                <TouchableOpacity
-                  onPress={() => navigation.navigate("Profile")}
-                >
-                  <Text style={styles.button}>Đăng Nhập</Text>
-                </TouchableOpacity>
-              </>
-            )}
-          </View>
-        )}
-      </View>
+      <ScrollView
+        style={{ flex: 1, backgroundColor: COLORS.background }}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+      >
+        <View style={styles.Imgcontainer}>
+          <Image
+            source={require("../assets/images/error-in-calendar.png")}
+            resizeMode="cover"
+            style={styles.img}
+          />
+          {isAuthenticated && <Text>Không có lịch hẹn nào vào ngày này</Text>}
+          {appointment && appointment?.length === 0 && (
+            <View style={{ marginTop: 10 }}>
+              <TouchableOpacity onPress={() => navigation.navigate("Search")}>
+                <Text style={styles.button}>Tìm kiếm dịch vụ</Text>
+              </TouchableOpacity>
+              {!isAuthenticated && (
+                <>
+                  <Text style={styles.emptyText2}>
+                    ---------------Đã sử dụng HairHub---------------
+                  </Text>
+                  <TouchableOpacity
+                    onPress={() => navigation.navigate("Profile")}
+                  >
+                    <Text style={styles.button}>Đăng Nhập</Text>
+                  </TouchableOpacity>
+                </>
+              )}
+            </View>
+          )}
+        </View>
+      </ScrollView>
     );
   };
+
+  if (loading) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <Text style={styles.title}>Lịch hẹn của bạn</Text>
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={COLORS.primary} />
+        </View>
+      </SafeAreaView>
+    );
+  }
+
   return (
-    // <GestureHandlerRootView style={{ flex: 1 }}>
     <SafeAreaView style={styles.container}>
       <Loader visible={loading} />
       <Text style={styles.title}>Lịch hẹn của bạn</Text>
-      {!isAuthenticated && appointment && appointment?.length === 0 ? (
+      {/* <TouchableOpacity
+        onPress={() => setSelectedDate(todayDate)}
+        style={styles.todayButton}
+      >
+        <Text style={styles.todayButtonText}>Hôm nay</Text>
+      </TouchableOpacity> */}
+      {!isAuthenticated ? (
         <View
           style={{
             flex: 1,
@@ -161,28 +224,33 @@ const Schedule = () => {
       ) : (
         <Agenda
           items={items}
+          // selected={selectedDate}
+          // hideKnob={true}
           renderItem={renderItem}
           renderEmptyData={renderEmptyDate}
-          // onRefresh={() => onRefresh}
-          // refreshing={loading}
+          pastScrollRange={1}
+          futureScrollRange={1}
+          // onDayPress={(day) => setSelectedDate(day.dateString)}
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
           }
-          // onDayPress={handleDayPress}
-
           theme={{
-            agendaTodayColor: COLORS.secondary, // Màu sắc của ngày hôm nay
-            agendaKnobColor: COLORS.secondary, // Màu sắc của nút kéo lên/xuống
-            backgroundColor: COLORS.background, // Màu nền của lịch
-            calendarBackground: "#f0f0f0", // Màu nền của lịch khi mở ra
-            selectedDayBackgroundColor: "#bf9456", // Màu nền của ngày được chọn
-            dayTextColor: COLORS.black, // Màu chữ của các ngày trong lịch
-            textSectionTitleColor: COLORS.secondary, // Màu chữ tiêu đề các ngày
+            agendaTodayColor: COLORS.red,
+            todayTextColor: COLORS.red,
+            agendaKnobColor: COLORS.secondary,
+            backgroundColor: COLORS.background,
+            agendaBackgroundColor: COLORS.background,
+            agendaEventBackgroundColor: COLORS.background,
+            calendarBackground: COLORS.background,
+            selectedDayBackgroundColor: "#bf9456",
+            // dayTextColor: COLORS.secondary,
+            textSectionTitleColor: COLORS.secondary,
+            // monthTextColor: COLORS.secondary,
           }}
+          rowHasChanged={(r1, r2) => r1.name !== r2.name}
         />
       )}
     </SafeAreaView>
-    // </GestureHandlerRootView>
   );
 };
 
@@ -200,6 +268,13 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     // borderBottomWidth: 1,
     // borderBottomColor: COLORS.black,
+  },
+  loadingContainer: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    alignContent: "center",
+    backgroundColor: COLORS.background,
   },
   searchImage: {
     resizeMode: "cover",
@@ -232,9 +307,26 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+    backgroundColor: COLORS.background,
   },
   img: {
     width: 200,
     height: 200,
+  },
+  todayButton: {
+    backgroundColor: COLORS.secondary,
+    padding: 10,
+    borderRadius: 5,
+    alignSelf: "center",
+    marginVertical: 10,
+    position: "absolute",
+    bottom: 10,
+    left: 10,
+    zIndex: 1,
+  },
+  todayButtonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "bold",
   },
 });
