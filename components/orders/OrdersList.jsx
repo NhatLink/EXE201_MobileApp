@@ -27,55 +27,55 @@ const OrdersList = () => {
   const { historyAppointment, loading } = useSelector(
     (state) => state.APPOINTMENT
   );
-  const [filteredData, setFilteredData] = useState(historyAppointment);
-  const [selectedStatus, setSelectedStatus] = useState(null);
+  const [filteredData, setFilteredData] = useState("SUCCESSED");
+  const [selectedStatus, setSelectedStatus] = useState("Thành công");
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [itemsPerPage, setItemsPerPage] = useState(4);
   const { user } = useSelector((state) => state.USER);
 
   useEffect(() => {
     async function fetchData() {
       if (user && user?.id) {
         dispatch(
-          GetAppointmentByHistoryCustomerId(currentPage, itemsPerPage, user?.id)
+          GetAppointmentByHistoryCustomerId(
+            currentPage,
+            itemsPerPage,
+            user?.id,
+            filteredData
+          )
         );
       }
       // console.log("accountId", userInfo);
     }
     fetchData();
-  }, [user, currentPage, itemsPerPage]);
-  useEffect(() => {
-    setFilteredData(historyAppointment); // Cập nhật filteredData mỗi khi data thay đổi
-  }, [historyAppointment]); // Phụ thuộc vào data
+  }, [user, currentPage, itemsPerPage, filteredData]);
+
+  // useEffect(() => {
+  //   setFilteredData(historyAppointment.items);
+  // }, [historyAppointment]);
   const Decrease = () => {
     if (currentPage > 1) {
       setCurrentPage(currentPage - 1);
     }
   };
   const Increase = () => {
-    if (currentPage < searchSalon?.totalPages) {
+    if (currentPage < historyAppointment?.totalPages) {
       setCurrentPage(currentPage + 1);
     }
   };
   const filterOrder = (status) => {
-    if (historyAppointment?.length > 0) {
+    console.log(status);
+
+    if (historyAppointment && historyAppointment.items) {
       setSelectedStatus(status);
       if (status === null) {
-        setFilteredData(historyAppointment);
+        setFilteredData("");
       } else if (status === "Thành công") {
-        setFilteredData(
-          historyAppointment.filter((item) => item?.status === "SUCCESSED")
-        );
+        setFilteredData("SUCCESSED");
       } else if (status === "Thất bại") {
-        setFilteredData(
-          historyAppointment.filter((item) => item?.status === "FAILED")
-        );
+        setFilteredData("FAILED");
       } else if (status === "Hủy bởi khách hàng") {
-        setFilteredData(
-          historyAppointment.filter(
-            (item) => item?.status === "CANCEL_BY_CUSTOMER"
-          )
-        );
+        setFilteredData("CANCEL_BY_CUSTOMER");
       }
       // else {
       //   setFilteredData(
@@ -89,16 +89,10 @@ const OrdersList = () => {
   };
   if (loading) {
     return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={COLORS.primary} />
-      </View>
-    );
-  }
-  return (
-    <View style={{ flex: 1 }}>
-      <View style={styles.filtersContainer}>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-          <TouchableOpacity
+      <View style={{ flex: 1 }}>
+        <View style={styles.filtersContainer}>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+            {/* <TouchableOpacity
             style={styles.filterButton}
             onPress={() => filterOrder(null)}
           >
@@ -106,7 +100,47 @@ const OrdersList = () => {
               <MaterialCommunityIcons name="history" size={16} color="gray" />
               <Text style={styles.filterText}>Tất cả</Text>
             </View>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
+            {["Thành công", "Thất bại", "Hủy bởi khách hàng"].map((status) => (
+              <TouchableOpacity
+                key={status}
+                style={[
+                  styles.filterButton,
+                  selectedStatus === status && styles.selectedFilterButton,
+                ]}
+                onPress={() => filterOrder(status)}
+              >
+                <View style={styles.filterContent}>
+                  <MaterialCommunityIcons
+                    name="history"
+                    size={16}
+                    color="gray"
+                  />
+                  <Text style={styles.filterText}>{status}</Text>
+                </View>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+        </View>
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={COLORS.primary} />
+        </View>
+      </View>
+    );
+  }
+  return (
+    <View style={{ flex: 1 }}>
+      <View style={styles.filtersContainer}>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+          {/* <TouchableOpacity
+            style={styles.filterButton}
+            onPress={() => filterOrder(null)}
+          >
+            <View style={styles.filterContent}>
+              <MaterialCommunityIcons name="history" size={16} color="gray" />
+              <Text style={styles.filterText}>Tất cả</Text>
+            </View>
+          </TouchableOpacity> */}
           {["Thành công", "Thất bại", "Hủy bởi khách hàng"].map((status) => (
             <TouchableOpacity
               key={status}
@@ -125,7 +159,7 @@ const OrdersList = () => {
         </ScrollView>
       </View>
 
-      {filteredData && filteredData?.length === 0 ? (
+      {historyAppointment && historyAppointment?.items?.length === 0 ? (
         <View
           style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
         >
@@ -145,34 +179,42 @@ const OrdersList = () => {
         </View>
       ) : (
         <FlatList
-          data={filteredData}
+          data={historyAppointment.items}
           keyExtractor={(item) => item?.id}
           renderItem={({ item }) => <OrderTile item={item} />}
           vertical={true}
           contentContainerStyle={styles.container}
           ItemSeparatorComponent={() => <View style={styles.separator} />}
           ListFooterComponent={
-            <View style={styles.paging}>
-              {currentPage > 1 && (
-                <TouchableOpacity style={styles.pagingArrow} onPress={Decrease}>
-                  <Ionicons
-                    name="arrow-back-circle-outline"
-                    size={24}
-                    color={COLORS.primary}
-                  />
-                </TouchableOpacity>
-              )}
-              <Text style={styles.pagingArrow}>{historyAppointment?.page}</Text>
-              {currentPage < historyAppointment?.totalPages && (
-                <TouchableOpacity style={styles.pagingArrow} onPress={Increase}>
-                  <Ionicons
-                    name="arrow-forward-circle-outline"
-                    size={24}
-                    color={COLORS.primary}
-                  />
-                </TouchableOpacity>
-              )}
-            </View>
+            // <View style={styles.paging}>
+            //   {currentPage > 1 && (
+            //     <TouchableOpacity style={styles.pagingArrow} onPress={Decrease}>
+            //       <Ionicons
+            //         name="arrow-back-circle-outline"
+            //         size={24}
+            //         color={COLORS.primary}
+            //       />
+            //     </TouchableOpacity>
+            //   )}
+            //   <Text style={styles.pagingArrow}>{historyAppointment?.page}</Text>
+            //   {currentPage < historyAppointment?.totalPages && (
+            //     <TouchableOpacity style={styles.pagingArrow} onPress={Increase}>
+            //       <Ionicons
+            //         name="arrow-forward-circle-outline"
+            //         size={24}
+            //         color={COLORS.primary}
+            //       />
+            //     </TouchableOpacity>
+            //   )}
+            // </View>
+
+            historyAppointment?.total > historyAppointment?.size && (
+              <TouchableOpacity
+                onPress={() => setItemsPerPage(itemsPerPage + 4)}
+              >
+                <Text style={styles.loadmoreButton}>Hiện thị thêm</Text>
+              </TouchableOpacity>
+            )
           }
         />
       )}
@@ -184,7 +226,8 @@ const styles = StyleSheet.create({
   container: {
     paddingHorizontal: 16,
     paddingTop: 16,
-    paddingBottom: 32,
+    // paddingBottom: 32,
+    backgroundColor: COLORS.background,
   },
 
   separator: {
@@ -262,6 +305,15 @@ const styles = StyleSheet.create({
   pagingArrow: {
     // marginVertical: 10,
     padding: 10,
+  },
+  loadmoreButton: {
+    backgroundColor: COLORS.cardcolor,
+    textAlign: "center",
+    padding: 3,
+    marginVertical: 20,
+    marginHorizontal: 40,
+    borderRadius: 10,
+    fontWeight: "bold",
   },
 });
 

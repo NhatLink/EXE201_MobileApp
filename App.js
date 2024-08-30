@@ -150,6 +150,8 @@ import {
   Chat,
   Collection,
   DetailCollection,
+  CheckNonExistEmail,
+  ResetPassword,
 } from "./screens";
 import Orders from "./screens/Orders";
 import { PaymentProvider } from "./hook/PaymentContext";
@@ -237,9 +239,9 @@ function RouterContent() {
       try {
         const refreshToken = await SecureStore.getItemAsync("refreshToken");
         const accessToken = await SecureStore.getItemAsync("accessToken");
-
-        console.log("old accessToken", accessToken);
-        console.log("refreshToken to fetch", refreshToken);
+        console.log("fetch token in app");
+        // console.log("old accessToken", accessToken);
+        // console.log("refreshToken to fetch", refreshToken);
 
         if (!refreshToken) {
           console.log("Refresh token không tồn tại");
@@ -248,7 +250,7 @@ function RouterContent() {
         // Fetch a new access token using the refresh token
         const res = await UserServices.fetchToken({ refreshToken });
         const newAccessToken = res.data.accessToken;
-        console.log("new accessToken", newAccessToken);
+        // console.log("new accessToken", newAccessToken);
 
         // Save the new access token
         await SecureStore.setItemAsync("accessToken", newAccessToken);
@@ -287,9 +289,10 @@ function RouterContent() {
       try {
         const refreshToken = await SecureStore.getItemAsync("refreshToken");
         const accessToken = await SecureStore.getItemAsync("accessToken");
+        console.log("fetch token loop");
 
-        console.log("old accessToken", accessToken);
-        console.log("refreshToken to fetch", refreshToken);
+        // console.log("old accessToken", accessToken);
+        // console.log("refreshToken to fetch", refreshToken);
 
         // Kiểm tra xem refreshToken có tồn tại không
         if (!refreshToken) {
@@ -304,7 +307,7 @@ function RouterContent() {
         // Fetch a new access token using the refresh token
         const res = await UserServices.fetchToken({ refreshToken });
         const newAccessToken = res.data.accessToken;
-        console.log("new accessToken", newAccessToken);
+        // console.log("new accessToken", newAccessToken);
 
         // Save the new access token
         await SecureStore.setItemAsync("accessToken", newAccessToken);
@@ -524,6 +527,16 @@ export default function App() {
               <Stack.Screen
                 name="DetailCollection"
                 component={DetailCollection}
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name="CheckNonExistEmail"
+                component={CheckNonExistEmail}
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name="ResetPassword"
+                component={ResetPassword}
                 options={{ headerShown: false }}
               />
             </Stack.Navigator>

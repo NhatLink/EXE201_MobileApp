@@ -108,8 +108,15 @@ const LoginPage = () => {
   };
 
   const handleRegister = () => {
+    Keyboard.dismiss();
     dispatch(resetCheckOtp());
     navigation.navigate("CheckEmail");
+  };
+
+  const handleForgotPass = () => {
+    Keyboard.dismiss();
+    dispatch(resetCheckOtp());
+    navigation.navigate("CheckNonExistEmail");
   };
 
   return (
@@ -161,6 +168,13 @@ const LoginPage = () => {
             onChangeText={(text) => handleChanges(text, "password")}
             password={true}
           />
+          <Text
+            style={styles.registered}
+            // onPress={() => navigation.navigate("Signup")}
+            onPress={handleForgotPass}
+          >
+            Quên mật khẩu
+          </Text>
         </View>
         <View>
           <Button title={"Đăng nhập"} onPress={validate} />

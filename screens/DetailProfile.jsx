@@ -32,27 +32,7 @@ import Loader from "../components/auth/Loader";
 import { UserServices } from "../services/userServices";
 import ChangePasswordModal from "../components/DetailProfile/ChangePasswordModal";
 const DetailProfile = ({ navigation }) => {
-  // const user = useSelector((state) => state.USER.user);
   const { user, accountId } = useSelector((state) => state.USER);
-  const [idUser, setIdUser] = useState(accountId);
-  console.log("accountId", accountId);
-  console.log("user", user);
-
-  // const navigation = useNavigation();
-  // const [userData, setUserData] = useState({
-  //   roleId: userInfo?.roleId,
-  //   username: userInfo?.username,
-  //   password: userInfo?.password,
-  //   fullName: userInfo?.fullName,
-  //   dayOfBirth: userInfo?.dayOfBirth,
-  //   gender: userInfo?.gender,
-  //   email: userInfo?.email,
-  //   phone: userInfo?.phone,
-  //   address: userInfo?.address,
-  //   img: userInfo?.img,
-  //   bankAccount: userInfo?.bankAccount,
-  //   bankName: userInfo?.bankName,
-  // });
   const [userData, setUserData] = useState(user);
   const [modalAvatar, setModalAvatar] = useState(false);
   const [modalFullname, setModalFullname] = useState(false);
@@ -64,28 +44,7 @@ const DetailProfile = ({ navigation }) => {
   const [loader, setLoader] = useState(false);
   const [modalChangepassVisible, setModalChangepassVisible] = useState(false);
   const dispatch = useDispatch();
-  // console.log("userData", userData);
-  // console.log("accountId", accountId);
-  // useEffect(() => {
-  //   async function fetchData() {
-  //     setLoader(true);
-  //     const accountId = await SecureStore.getItemAsync("accountId");
-  //     const userInfoJson = await SecureStore.getItemAsync("userInfo");
-  //     let userInfo = null;
-  //     if (userInfoJson) {
-  //       try {
-  //         userInfo = JSON.parse(userInfoJson);
-  //       } catch (error) {
-  //         console.error("Error parsing userInfo", error);
-  //       }
-  //     }
-  //     setUserData(userInfo);
-  //     setIdUser(accountId);
-  //     setLoader(false);
-  //   }
 
-  //   fetchData();
-  // }, []);
   useEffect(() => {
     UserServices.getUserById(accountId)
       .then((res) => {
@@ -101,6 +60,7 @@ const DetailProfile = ({ navigation }) => {
         );
       });
   }, [accountId]);
+
   const pickImageFromGallery = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== "granted") {
@@ -192,12 +152,24 @@ const DetailProfile = ({ navigation }) => {
     const currentDate = selectedDate || userData?.dayOfBirth;
     const formattedDate = currentDate.toISOString().slice(0, 19);
     setShowDatePicker(false);
-    setUserData((prevState) => ({ ...prevState, dayOfBirth: formattedDate }));
+    console.log("formattedDate", currentDate.toISOString().split("T")[0]);
+    console.log("userData?.dayOfBirth", userData?.dayOfBirth?.split("T")[0]);
+    console.log(user);
+    console.log(userData);
+    if (
+      userData?.dayOfBirth?.split("T")[0] ===
+      currentDate.toISOString().split("T")[0]
+    ) {
+      setUserData((prevState) => ({
+        ...prevState,
+        dayOfBirth: userData?.dayOfBirth,
+      }));
+    } else {
+      setUserData((prevState) => ({ ...prevState, dayOfBirth: formattedDate }));
+    }
   };
   const isDifferent = JSON.stringify(user) !== JSON.stringify(userData);
 
-  // console.log("userData:", JSON.stringify(userData));
-  // console.log("user:", JSON.stringify(user));
   console.log("isDifferent", isDifferent);
   const handlePressBack = () => {
     if (isDifferent) {
@@ -243,10 +215,7 @@ const DetailProfile = ({ navigation }) => {
           formData.append(key, userData[key]);
         }
       }
-      // console.log("userformdataUpdate:", formData);
-      // Dispatching the loginUser action with formData
       await dispatch(updateUserById(accountId, formData));
-      // Handling post-login logic can be done within the loginUser action or here
     } catch (error) {
       console.error("updateUserById error:", error);
       Alert.alert("Lỗi", "Có lỗi gì đó xảy ra, thử lại sau");
@@ -548,7 +517,7 @@ const DetailProfile = ({ navigation }) => {
                   color="black"
                 />
               </TouchableOpacity>
-              <Text style={styles.modalTextTitle}>Chỉnh sửa Email</Text>
+              <Text style={styles.modalTextTitle}>Chỉnh sửa số điện thoại</Text>
             </View>
 
             <View style={styles.searchContainer}>
@@ -590,7 +559,7 @@ const DetailProfile = ({ navigation }) => {
         {showDatePicker && (
           <DateTimePicker
             // value={userData.dayOfBirth}
-            value={new Date(userData?.dayOfBirth ?? "trống")}
+            value={new Date(userData?.dayOfBirth ?? new Date())}
             mode="date"
             display="default"
             onChange={onChangeDate}
@@ -786,14 +755,14 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     flexDirection: "row",
-    backgroundColor: COLORS.secondary,
+    backgroundColor: COLORS.cardcolor,
     borderRadius: SIZES.medium,
     marginTop: SIZES.small,
     height: 50,
   },
   searchWrapper: {
     flex: 1,
-    backgroundColor: COLORS.secondary,
+    backgroundColor: COLORS.cardcolor,
     marginRight: SIZES.xSmall,
     justifyContent: "center",
     alignItems: "center",

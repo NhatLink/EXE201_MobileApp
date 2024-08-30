@@ -159,9 +159,9 @@ const Signup = () => {
   const register = async () => {
     setLoader(true);
     try {
-      await dispatch(registerUser(inputs));
-      navigation.navigate("Profile");
-      console.log("inputs regist", inputs);
+      await dispatch(registerUser(inputs, navigation));
+      // navigation.navigate("Profile");
+      // console.log("inputs regist", inputs);
     } catch (error) {
       console.log(error);
     } finally {

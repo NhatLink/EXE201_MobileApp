@@ -14,6 +14,8 @@ export const FETCH_USER_FAIL = "FETCH_USER_FAIL";
 export const LOGOUT_SUCCESS = "LOGOUT_SUCCESS";
 export const REGISTER_SUCCESS = "REGISTER_SUCCESS";
 export const REGISTER_FAIL = "REGISTER_FAIL";
+export const FORGOT_PASS_SUCCESS = "FORGOT_PASS_SUCCESS";
+export const FORGOT_PASS_FAIL = "FORGOT_PASS_FAIL";
 export const GET_USER_BY_ID = "GET_USER_BY_ID";
 export const UPDATE_USER_BY_ID = "UPDATE_USER_BY_ID";
 export const FETCH_TOKEN_SUCCESS = "FETCH_TOKEN_SUCCESS";
@@ -91,15 +93,34 @@ export const logoutUser = (credentials) => async (dispatch) => {
   }
 };
 
-export const registerUser = (data) => async (dispatch) => {
+export const registerUser = (data, navigation) => async (dispatch) => {
   // const navigation = useNavigation();
   try {
     const response = await UserServices.registerUser(data);
     dispatch({ type: REGISTER_SUCCESS, payload: response.data });
     ToastAndroid.show("Đăng kí thành công", ToastAndroid.SHORT);
-    // navigation.navigate("Login");
+    navigation.navigate("Profile");
   } catch (error) {
     dispatch({ type: REGISTER_FAIL, payload: error.response.data });
+  }
+};
+
+export const forgotPassword = (data, navigation) => async (dispatch) => {
+  // const navigation = useNavigation();
+  try {
+    const response = await UserServices.forgotPassword(data);
+    dispatch({ type: FORGOT_PASS_SUCCESS, payload: response.data });
+    ToastAndroid.show(
+      "Thay đổi mật khẩu thành công! Vui lòng đăng nhập lại",
+      ToastAndroid.SHORT
+    );
+    navigation.navigate("Profile");
+  } catch (error) {
+    dispatch({ type: FORGOT_PASS_FAIL, payload: error.response.data });
+    ToastAndroid.show(
+      "Thay đổi mật khẩu thất bại! Vui lòng thử lại sau",
+      ToastAndroid.SHORT
+    );
   }
 };
 

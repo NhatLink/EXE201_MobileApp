@@ -61,13 +61,14 @@ export const GetFeedBackByAppointmentId = (id) => async (dispatch) => {
 };
 
 export const GetAppointmentByHistoryCustomerId =
-  (page, size, customerId) => async (dispatch) => {
+  (page, size, customerId, status) => async (dispatch) => {
     dispatch({ type: HISTORY_APPOINTMENT_REQUEST });
     try {
       const response = await AppointmentService.HistoryAppointmentByCustomerId(
         page,
         size,
-        customerId
+        customerId,
+        status
       );
       dispatch({ type: HISTORY_APPOINTMENT_SUCCESS, payload: response.data });
     } catch (error) {
@@ -79,7 +80,8 @@ export const CancelAppointmentByCustomer =
   (id, data, currentPage, itemsPerPage, accountId, navigation) =>
   async (dispatch) => {
     dispatch({ type: CANCEL_APPOINTMENT_REQUEST });
-    console.log("data CancelAppointment", data);
+    // console.log("data CancelAppointment", data);
+    // console.log("id CancelAppointment", id);
     try {
       const response = await AppointmentService.CancelAppointmentByCustomer(
         id,
@@ -92,7 +94,8 @@ export const CancelAppointmentByCustomer =
       // navigation.navigate("Appointment schedule");
     } catch (error) {
       dispatch({ type: CANCEL_APPOINTMENT_FAILURE, payload: error.message });
-      console.error("Failed to CancelAppointmentByCustomer:", error);
+      const errorMessage = error.response?.data?.message || error.message;
+      ToastAndroid.show(errorMessage, ToastAndroid.SHORT);
     }
   };
 export const resetAppointment = () => ({

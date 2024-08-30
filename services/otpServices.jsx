@@ -10,4 +10,7 @@ export const otpServices = {
   checkExistEmail(data) {
     return API.post("/api/v1/otps/CheckExistEmail", data);
   },
+  CheckNonExistEmail(data) {
+    return API.post("/api/v1/otps/CheckNonExistEmail", data);
+  },
 };

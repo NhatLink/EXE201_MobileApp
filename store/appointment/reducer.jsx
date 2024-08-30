@@ -96,7 +96,7 @@ const appointmentReducer = (state = initialState, action) => {
       return {
         ...state,
         loading: false,
-        historyAppointment: action.payload.items,
+        historyAppointment: action.payload,
       };
     case HISTORY_APPOINTMENT_FAILURE:
       return {

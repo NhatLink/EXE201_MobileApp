@@ -20,6 +20,8 @@ import QRScanner from "./QRScanner";
 import Chat from "./Chat";
 import Collection from "./Collection";
 import DetailCollection from "./DetailCollection";
+import CheckNonExistEmail from "./CheckNoExistEmail";
+import ResetPassword from "./ResetPassword";
 export {
   Home,
   Cart,
@@ -43,4 +45,6 @@ export {
   Chat,
   Collection,
   DetailCollection,
+  CheckNonExistEmail,
+  ResetPassword,
 };

@@ -59,7 +59,7 @@ const DetailAppointmennt = ({ navigation }) => {
   const [contentFeedback, setContentFeedback] = useState("");
   const [ratingFeedback, setRatingFeedback] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(50);
+  const [itemsPerPage, setItemsPerPage] = useState(20);
   const { appointmentDetail, feedbackAppointment, loading } = useSelector(
     (state) => state.APPOINTMENT
   );

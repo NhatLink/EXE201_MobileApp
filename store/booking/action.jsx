@@ -111,16 +111,6 @@ export const CreateAppointment =
       navigation.navigate("Appointment schedule");
       dispatch(GetAppointmentByAccountId(currentPage, itemsPerPage, accountId));
 
-      // Thông báo ngay lập tức khi đặt lịch thành công
-      scheduleNotification({
-        title: "Lịch hẹn thành công",
-        body: "Lịch hẹn của bạn đã được đặt thành công.",
-        triggerInSeconds: 1, // Thông báo ngay lập tức
-        importance: Notifications.AndroidImportance.DEFAULT, // Mức độ quan trọng cao
-        vibrationPattern: [0, 250, 250, 250], // Mẫu rung
-        lightColor: COLORS.secondary, // Màu đèn sáng
-      });
-
       // Đặt lịch thông báo trước 1 giờ
       const startTime = new Date(data.appointmentDetails[0].startTime);
       const notificationTime = new Date(startTime.getTime() - 60 * 60 * 1000); // Trừ 1 giờ

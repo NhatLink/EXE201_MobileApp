@@ -45,6 +45,8 @@ const OrderTile = ({ item }) => {
         return "Đã hủy";
       case "FAILED":
         return "Thất bại";
+      case "BOOKING":
+        return "Đang chờ";
       default:
         return "Không xác định";
     }

@@ -81,13 +81,13 @@ const Schedule = () => {
   const dispatch = useDispatch();
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(20);
+  const [items, setItems] = useState({});
   // const todayDate = new Date().toISOString().split("T")[0];
   // const [selectedDate, setSelectedDate] = useState(todayDate);
   const { appointment, loading } = useSelector((state) => state.APPOINTMENT);
   const { user, accessToken, refreshToken, isAuthenticated, accountId } =
     useSelector((state) => state.USER);
   const [refreshing, setRefreshing] = useState(false);
-  console.log("1", appointment);
 
   const fetchData = async () => {
     if (accountId) {
@@ -106,8 +106,6 @@ const Schedule = () => {
     fetchData().then(() => setRefreshing(false));
   }, []);
 
-  const [items, setItems] = useState({});
-  console.log("2", items);
   useEffect(() => {
     const newItems = {};
     if (appointment && appointment.length > 0) {
@@ -119,13 +117,16 @@ const Schedule = () => {
         newItems[dateSchedule].push(appointment);
       });
       setItems(newItems);
+    } else {
+      setItems({});
     }
   }, [appointment]);
 
   const renderItem = (item) => {
     return <ListSchedule item={item} />;
   };
-
+  console.log("1", appointment);
+  console.log("2", items);
   const renderEmptyDate = () => {
     return (
       <ScrollView

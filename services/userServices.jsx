@@ -32,6 +32,9 @@ export const UserServices = {
   checkInByUser(data) {
     return API.put(`/api/v1/customers/CheckInByCustomer`, data);
   },
+  forgotPassword(data) {
+    return API.post(`/api/v1/accounts/ForgotPassword`, data);
+  },
 };
 // updateUserById(id, data) {
 //   return API.put(`/api/v1/accounts/UpdateAccount/${id}`, data);
