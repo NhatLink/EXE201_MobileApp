@@ -45,7 +45,6 @@ const VoucherModal = ({ isVisible, onClose }) => {
         <View style={styles.fullScreenModal}>
           <Text style={styles.modalTextTitle}>Thêm voucher</Text>
           <TouchableOpacity style={styles.buttonClose} onPress={onClose}>
-            {/* <Text style={styles.textStyle}>Close</Text> */}
             <Ionicons
               style={styles.textStyle}
               name="return-up-back"
@@ -53,72 +52,92 @@ const VoucherModal = ({ isVisible, onClose }) => {
               color="black"
             />
           </TouchableOpacity>
+
           {voucherBySalonId && voucherBySalonId.length > 0 ? (
-            voucherBySalonId
-              // .filter(
-              //   (item) => totalPrice.originalPrice >= item.minimumOrderAmount
-              // )
-              .map((item) => (
-                <View
-                  key={item?.id}
-                  style={styles.serviceItem}
-                  onPress={() => {
-                    // Handle navigation or other actions
-                  }}
-                >
-                  <View style={styles.serviceInfo}>
-                    <TouchableOpacity style={styles.imageContainer}>
-                      <Image
-                        source={{
-                          uri: "https://cdn-icons-png.flaticon.com/128/8074/8074470.png",
-                        }}
-                        resizeMode="cover"
-                        style={styles.productImg}
-                      />
-                    </TouchableOpacity>
-                  </View>
-                  <View style={styles.pricingInfo}>
-                    <Text style={styles.serviceName} numberOfLines={1}>
-                      {item?.code} {`(Giảm ${item?.discountPercentage * 100}%)`}
-                    </Text>
-                    <Text style={styles.serviceDescription} numberOfLines={1}>
-                      {item?.description}
-                    </Text>
-                    <Text style={styles.serviceDescription} numberOfLines={2}>
-                      {`Với lịch hẹn có giá trị ít nhất ${item?.minimumOrderAmount?.toLocaleString()} VND`}
-                    </Text>
-                    {/* <Text
-                    style={styles.servicePrice}
-                    numberOfLines={1}
-                  >{`Giảm giá ${item?.discountPercentage * 100}%`}</Text> */}
-                    <Text
-                      style={styles.serviceDescription}
-                      numberOfLines={1}
-                    >{`Ngày hết hạn: ${item?.expiryDate.split("T")[0]} `}</Text>
-                    {item?.isSystemCreated ? (
-                      <Text style={styles.serviceDescription} numberOfLines={3}>
-                        Được tặng bởi HairHub
+            // Lọc các voucher có isActive là true
+            voucherBySalonId.filter((item) => item.isActive).length > 0 ? (
+              voucherBySalonId
+                .filter((item) => item.isActive)
+                .map((item) => (
+                  <View
+                    key={item?.id}
+                    style={styles.serviceItem}
+                    onPress={() => {
+                      // Handle navigation or other actions
+                    }}
+                  >
+                    <View style={styles.serviceInfo}>
+                      <TouchableOpacity style={styles.imageContainer}>
+                        <Image
+                          source={{
+                            uri: "https://cdn-icons-png.flaticon.com/128/8074/8074470.png",
+                          }}
+                          resizeMode="cover"
+                          style={styles.productImg}
+                        />
+                      </TouchableOpacity>
+                    </View>
+                    <View style={styles.pricingInfo}>
+                      <Text style={styles.serviceName} numberOfLines={1}>
+                        {item?.code}{" "}
+                        {`(Giảm ${item?.discountPercentage * 100}%)`}
                       </Text>
+                      <Text style={styles.serviceDescription} numberOfLines={1}>
+                        {item?.description}
+                      </Text>
+                      <Text style={styles.serviceDescription} numberOfLines={2}>
+                        {`Với lịch hẹn có giá trị ít nhất ${item?.minimumOrderAmount?.toLocaleString()} VND`}
+                      </Text>
+                      <Text
+                        style={styles.serviceDescription}
+                        numberOfLines={1}
+                      >{`Ngày hết hạn: ${
+                        item?.expiryDate.split("T")[0]
+                      } `}</Text>
+                      {item?.isSystemCreated ? (
+                        <Text
+                          style={styles.serviceDescription}
+                          numberOfLines={3}
+                        >
+                          Được tặng bởi HairHub
+                        </Text>
+                      ) : (
+                        <Text
+                          style={styles.serviceDescription}
+                          numberOfLines={3}
+                        >
+                          Được tặng bởi Salon
+                        </Text>
+                      )}
+                    </View>
+                    {totalPrice?.originalPrice >= item.minimumOrderAmount ? (
+                      <TouchableOpacity
+                        style={styles.bookButton}
+                        onPress={() => handleBook(item)}
+                      >
+                        <Text style={styles.button}>Chọn</Text>
+                      </TouchableOpacity>
                     ) : (
-                      <Text style={styles.serviceDescription} numberOfLines={3}>
-                        Được tặng bởi Salon
-                      </Text>
+                      <View style={styles.bookButton}>
+                        <Text style={styles.buttonNot}>Chọn</Text>
+                      </View>
                     )}
                   </View>
-                  {totalPrice?.originalPrice >= item.minimumOrderAmount ? (
-                    <TouchableOpacity
-                      style={styles.bookButton}
-                      onPress={() => handleBook(item)}
-                    >
-                      <Text style={styles.button}>Chọn</Text>
-                    </TouchableOpacity>
-                  ) : (
-                    <View style={styles.bookButton}>
-                      <Text style={styles.buttonNot}>Chọn</Text>
-                    </View>
-                  )}
-                </View>
-              ))
+                ))
+            ) : (
+              <View
+                style={{
+                  borderTopWidth: 0.5,
+                  borderTopColor: COLORS.gray2,
+                  paddingVertical: 10,
+                  marginVertical: 15,
+                  borderBottomWidth: 0.5,
+                  borderBottomColor: COLORS.gray2,
+                }}
+              >
+                <Text style={styles.text}>Không còn voucher nào !!!</Text>
+              </View>
+            )
           ) : (
             <View
               style={{

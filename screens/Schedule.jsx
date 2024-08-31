@@ -125,8 +125,8 @@ const Schedule = () => {
   const renderItem = (item) => {
     return <ListSchedule item={item} />;
   };
-  console.log("1", appointment);
-  console.log("2", items);
+  // console.log("1", appointment);
+  // console.log("2", items);
   const renderEmptyDate = () => {
     return (
       <ScrollView
@@ -229,8 +229,8 @@ const Schedule = () => {
           // hideKnob={true}
           renderItem={renderItem}
           renderEmptyData={renderEmptyDate}
-          pastScrollRange={1}
-          futureScrollRange={1}
+          pastScrollRange={2}
+          futureScrollRange={2}
           // onDayPress={(day) => setSelectedDate(day.dateString)}
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
@@ -248,7 +248,7 @@ const Schedule = () => {
             textSectionTitleColor: COLORS.secondary,
             // monthTextColor: COLORS.secondary,
           }}
-          rowHasChanged={(r1, r2) => r1.name !== r2.name}
+          // rowHasChanged={(r1, r2) => r1.name !== r2.name}
         />
       )}
     </SafeAreaView>

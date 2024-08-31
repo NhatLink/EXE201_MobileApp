@@ -92,6 +92,12 @@ const Signup = () => {
     } else if (password.length > 30) {
       handleError("Mật khẩu không vượt quá 30 kí tự", "password");
       valid = false;
+    } else if (!/^[A-Z]/.test(password)) {
+      handleError("Kí tự đầu tiên phải là chữ cái viết hoa", "password");
+      valid = false;
+    } else if (!/\d/.test(password)) {
+      handleError("Mật khẩu phải chứa ít nhất một chữ số", "password");
+      valid = false;
     }
     if (!confirmPassword) {
       handleError("Chưa nhập mật khẩu xác nhận", "confirmPassword");

@@ -20,53 +20,46 @@ const Headings = () => {
   const datajson = [
     {
       id: "1",
-      image:
-        "https://thegioitongdo.net/wp-content/uploads/2018/01/cat-toc-cho-be.jpg",
+      image: require("../assets/images/cat-toc-cho-be.jpg"),
       company: "Cắt tóc trẻ em",
     },
     {
       id: "2",
-      image:
-        "https://tocnamdep.com/wp-content/uploads/2020/06/1557200230-1526030688-4-ti-m-c-t-toc-nam-p-qu-n-10-ang-m-t-l-n-n-va-tr-i-nghi-m.jpg",
+      image: require("../assets/images/Cắt tóc nam.jpg"),
       company: "Cắt tóc nam",
     },
     {
       id: "3",
-      image:
-        "https://hocvientoc.edu.vn/wp-content/uploads/2019/05/lich-cat-toc-nu-thang-5.jpg",
+      image: require("../assets/images/Cắt tóc nữ.jpg"),
       company: "Cắt tóc nữ",
     },
     {
       id: "4",
 
-      image:
-        "https://cdn.sanity.io/images/zqgvoczt/vietnam-migration/6d9d446d8510d7c052e77cbc731bf1759343ce7d-1200x800.jpg",
+      image: require("../assets/images/Nhuộm tóc.jpg"),
       company: "Nhuộm tóc",
     },
     {
       id: "5",
 
-      image:
-        "https://cdn.tgdd.vn/Files/2022/10/23/1480947/cac-tieu-chi-chon-mua-may-uon-duoi-toc-ban-nen-biet-10.jpg",
+      image: require("../assets/images/Uốn duỗi tóc.jpg"),
       company: "Uốn duỗi tóc",
     },
     {
       id: "6",
-      image:
-        "https://cdn.nhathuoclongchau.com.vn/unsafe/800x0/filters:quality(95)/https://cms-prod.s3-sgn09.fptcloud.com/noi_toc_la_gi_noi_toc_bao_nhieu_tien_2_27ea59edf6.jpg",
+      image: require("../assets/images/Nối tóc.webp"),
       company: "Nối tóc",
     },
     {
       id: "7",
-      image:
-        "https://milaganics.com/wp-content/uploads/sites/10/2020/12/cham-soc-toc-chuan-spa.jpg",
+      image: require("../assets/images/Chăm sóc tóc.jpg"),
       company: "Chăm sóc tóc",
     },
   ];
   return (
     <View style={styles.container}>
       <View style={styles.filtersContainer}>
-        <Text style={styles.headerTitle}>Dịch vụ nổi bật</Text>
+        <Text style={styles.headerTitle}>Tìm kiếm dịch vụ nổi bật</Text>
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
@@ -78,7 +71,7 @@ const Headings = () => {
               style={styles.item}
               onPress={() => navigation.navigate("Search")}
             >
-              <Image source={{ uri: item.image }} style={styles.image} />
+              <Image source={item.image} style={styles.image} />
               <Text style={styles.text}>{item.company}</Text>
             </TouchableOpacity>
           ))}
@@ -86,13 +79,13 @@ const Headings = () => {
       </View>
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Khám phá</Text>
-        <TouchableOpacity onPress={() => navigation.navigate("New-Rivals")}>
+        {/* <TouchableOpacity onPress={() => navigation.navigate("New-Rivals")}>
           <Ionicons
             name="chevron-forward-circle-outline"
             size={24}
             color={COLORS.primary}
           />
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
       <View style={styles.cardsContainer}>
         {/* {isLoading ? (

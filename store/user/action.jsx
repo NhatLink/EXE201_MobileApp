@@ -141,7 +141,9 @@ export const updateUserById = (id, data) => async (dispatch) => {
     // SecureStore.setItemAsync("userInfo", JSON.stringify(response.data));
     ToastAndroid.show(response.data, ToastAndroid.SHORT);
   } catch (error) {
-    console.error("Update user by id error:", error);
+    console.log("Update user by id error:", error);
+    const errorMessage = error.response?.data?.message || error.message;
+    ToastAndroid.show(errorMessage, ToastAndroid.SHORT);
   }
 };
 
@@ -152,7 +154,9 @@ export const updatePasswordUserById = (id, data) => async (dispatch) => {
     // SecureStore.setItemAsync("userInfo", JSON.stringify(response.data));
     ToastAndroid.show(response.data, ToastAndroid.SHORT);
   } catch (error) {
-    console.error("update Password User By Id error:", error);
+    console.log("update Password User By Id error:", error);
+    const errorMessage = error.response?.data?.message || error.message;
+    ToastAndroid.show(errorMessage, ToastAndroid.SHORT);
   }
 };
 

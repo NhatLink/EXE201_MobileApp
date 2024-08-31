@@ -105,8 +105,11 @@ export const fetchSalonInformationById = (id) => async (dispatch) => {
       type: ACT_SALON_INFORMATION_BY_ID_FAILURE,
       payload: errorMessage,
     });
-    ToastAndroid.show("Có lỗi khi dưa", ToastAndroid.SHORT);
-    console.log("error CreateAppointment", errorMessage);
+    ToastAndroid.show(
+      "Có lỗi khi lấy thông tin salon/barber",
+      ToastAndroid.SHORT
+    );
+    console.log("error fetchSalonInformationById", errorMessage);
   }
 };
 

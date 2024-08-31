@@ -4,10 +4,10 @@
     "slug": "hairhubmobile",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/LogoHair.jpg",
+    "icon": "./assets/HairHubLogo3.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/HairSplash.jpg",
+      "image": "./assets/HairHubSplash.png",
       "resizeMode": "contain",
       "backgroundColor": "#f4f2eb"
     },
@@ -20,7 +20,7 @@
     "android": {
       "usesCleartextTraffic": true,
       "adaptiveIcon": {
-        "foregroundImage": "./assets/LogoHair.jpg",
+        "foregroundImage": "./assets/HairHubLogo3.png",
         "backgroundColor": "#f4f2eb"
       },
       "config": {

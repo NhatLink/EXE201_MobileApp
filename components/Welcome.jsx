@@ -19,7 +19,9 @@ const Welcome = () => {
       <View>
         <View style={styles.container}>
           <Text style={styles.welcomeTxt}>HairHub</Text>
-          <Text style={styles.welcomeMessage}>Your style, your time</Text>
+          <Text style={styles.welcomeMessage}>
+            Đặt Lịch mọi Lúc - Phục Vụ Mọi Nơi
+          </Text>
         </View>
       </View>
 
@@ -66,7 +68,7 @@ const styles = StyleSheet.create({
     marginTop: SIZES.xSmall,
   },
   welcomeMessage: {
-    fontFamily: "bold",
+    fontWeight: "bold",
     fontSize: SIZES.xxLarge - 15,
     color: COLORS.primary,
   },

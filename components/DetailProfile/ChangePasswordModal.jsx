@@ -11,6 +11,7 @@ import {
   ActivityIndicator,
   Alert,
   ToastAndroid,
+  Keyboard,
 } from "react-native";
 import ButtonCustom from "../auth/Button";
 import { COLORS, SIZES } from "../../constants";
@@ -39,6 +40,7 @@ const ChangePasswordModal = ({ isVisible, onClose, data }) => {
   const [isPasswordVisible2, setIsPasswordVisible2] = useState(false);
 
   const updatePassword = async () => {
+    Keyboard.dismiss();
     // Kiểm tra nếu oldpassword trống
     if (!oldpassword) {
       setOldpasswordError("Mật khẩu cũ không được để trống");
@@ -46,16 +48,23 @@ const ChangePasswordModal = ({ isVisible, onClose, data }) => {
     }
 
     // Regular expression kiểm tra mật khẩu (8 ký tự, chữ cái đầu viết hoa, ít nhất 1 chữ số)
-    const passwordRegex = /^(?=.*\d)(?=.*[A-Z])[A-Za-z\d]{8,}$/;
+    const passwordRegex = /^(?=.*\d)(?=.*[A-Z])[A-Za-z\d]{8,30}$/;
 
-    // Kiểm tra newPassword
+    // Kiểm tra mật khẩu mới
     if (!newPassword) {
       setNewPasswordError("Mật khẩu mới không được để trống");
       return;
-    } else if (!passwordRegex.test(newPassword)) {
-      setNewPasswordError(
-        "Mật khẩu mới phải có ít nhất 8 ký tự, chữ cái đầu viết hoa và ít nhất 1 chữ số"
-      );
+    } else if (newPassword.length < 8) {
+      setNewPasswordError("Mật khẩu mới phải có ít nhất 8 ký tự");
+      return;
+    } else if (newPassword.length > 30) {
+      setNewPasswordError("Mật khẩu mới không được quá 30 ký tự");
+      return;
+    } else if (!/[A-Z]/.test(newPassword)) {
+      setNewPasswordError("Mật khẩu mới phải có ít nhất một chữ cái viết hoa");
+      return;
+    } else if (!/\d/.test(newPassword)) {
+      setNewPasswordError("Mật khẩu mới phải có ít nhất một chữ số");
       return;
     } else if (newPassword === oldpassword) {
       setNewPasswordError(
@@ -64,19 +73,29 @@ const ChangePasswordModal = ({ isVisible, onClose, data }) => {
       return;
     }
 
-    // Kiểm tra newPassword2
+    // Kiểm tra mật khẩu nhập lại
     if (!newPassword2) {
       setNewPassword2Error("Mật khẩu nhập lại không được để trống");
       return;
-    } else if (!passwordRegex.test(newPassword2)) {
-      setNewPassword2Error(
-        "Mật khẩu nhập lại phải có ít nhất 8 ký tự, chữ cái đầu viết hoa và ít nhất 1 chữ số"
-      );
-      return;
+      // } else if (newPassword2.length < 8) {
+      //   setNewPassword2Error("Mật khẩu nhập lại phải có ít nhất 8 ký tự");
+      //   return;
+      // } else if (newPassword2.length > 30) {
+      //   setNewPassword2Error("Mật khẩu nhập lại không được quá 30 ký tự");
+      //   return;
+      // } else if (!/[A-Z]/.test(newPassword2)) {
+      //   setNewPassword2Error(
+      //     "Mật khẩu nhập lại phải có ít nhất một chữ cái viết hoa"
+      //   );
+      //   return;
+      // } else if (!/\d/.test(newPassword2)) {
+      //   setNewPassword2Error("Mật khẩu nhập lại phải có ít nhất một chữ số");
+      //   return;
     } else if (newPassword !== newPassword2) {
       setNewPassword2Error("Mật khẩu nhập lại không khớp với mật khẩu mới");
       return;
     }
+
     setLoader(true);
     try {
       // let formData = new FormData();
@@ -134,7 +153,7 @@ const ChangePasswordModal = ({ isVisible, onClose, data }) => {
             <TouchableOpacity>
               <MaterialCommunityIcons
                 style={styles.searchIcon}
-                name="folder"
+                name="account-key"
                 size={24}
                 color="black"
               />
@@ -185,7 +204,7 @@ const ChangePasswordModal = ({ isVisible, onClose, data }) => {
             <TouchableOpacity>
               <MaterialCommunityIcons
                 style={styles.searchIcon}
-                name="folder"
+                name="account-lock"
                 size={24}
                 color="black"
               />
@@ -236,7 +255,7 @@ const ChangePasswordModal = ({ isVisible, onClose, data }) => {
             <TouchableOpacity>
               <MaterialCommunityIcons
                 style={styles.searchIcon}
-                name="folder"
+                name="account-lock"
                 size={24}
                 color="black"
               />
@@ -422,12 +441,12 @@ const styles = StyleSheet.create({
     alignItems: "flex-start",
     flexDirection: "row",
     backgroundColor: COLORS.cardcolor,
-    borderRadius: SIZES.small,
+    borderRadius: SIZES.xSmall,
     marginVertical: 10,
     paddingVertical: 5,
     marginHorizontal: 20,
     borderWidth: 1,
-    borderColor: COLORS.black,
+    borderColor: COLORS.gray2,
   },
   searchWrapper: {
     flex: 1,

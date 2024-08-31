@@ -215,6 +215,8 @@ const DetailProfile = ({ navigation }) => {
           formData.append(key, userData[key]);
         }
       }
+      console.log(formData);
+
       await dispatch(updateUserById(accountId, formData));
     } catch (error) {
       console.error("updateUserById error:", error);
