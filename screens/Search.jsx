@@ -14,6 +14,7 @@ import {
   Modal,
   ScrollView,
   Animated,
+  RefreshControl,
 } from "react-native";
 import axios from "axios";
 import { baseUrl } from "../utils/IP";
@@ -25,11 +26,17 @@ import { useDispatch, useSelector } from "react-redux";
 import { searchSalonInformation } from "../store/salon/action";
 import Loader from "../components/auth/Loader";
 import * as SecureStore from "expo-secure-store";
+import SearchMapModal from "../components/Search/SearchMapModal";
 const Search = () => {
   const dispatch = useDispatch();
   const [searchKeyService, setSearchKeyService] = useState("");
   const [searchKeyStore, setSearchKeyStore] = useState("");
   const [searchKeyWhere, setSearchKeyWhere] = useState("");
+  const [markerPosition, setMarkerPosition] = useState({
+    latitude: null,
+    longitude: null,
+  });
+  const [refreshing, setRefreshing] = useState(false);
   const [searchResults, setSearchResults] = useState([]);
   const [modal1Visible, setModal1Visible] = useState(false);
   const [modal2Visible, setModal2Visible] = useState(false);
@@ -38,6 +45,8 @@ const Search = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const { searchSalon } = useSelector((state) => state.SALON);
+  console.log("markerPosition", markerPosition);
+
   const Decrease = () => {
     if (currentPage > 1) {
       setCurrentPage(currentPage - 1);
@@ -57,7 +66,9 @@ const Search = () => {
           searchKeyWhere,
           searchKeyStore,
           currentPage,
-          itemsPerPage
+          itemsPerPage,
+          markerPosition.latitude,
+          markerPosition.longitude
         )
       );
       setLoader(false);
@@ -69,7 +80,24 @@ const Search = () => {
     searchKeyStore,
     currentPage,
     itemsPerPage,
+    markerPosition,
   ]);
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await dispatch(
+      searchSalonInformation(
+        searchKeyService,
+        searchKeyWhere,
+        searchKeyStore,
+        currentPage,
+        itemsPerPage,
+        markerPosition.latitude,
+        markerPosition.longitude
+      )
+    );
+    setRefreshing(false);
+  };
 
   const openModalWhere = () => {
     setModal1Visible(true);
@@ -101,7 +129,9 @@ const Search = () => {
   const handleSearchKeyWhereChange = (newSearchKey) => {
     setSearchKeyWhere(newSearchKey);
   };
-
+  const handleSearchLocationChange = (newSearchKey) => {
+    setMarkerPosition(newSearchKey);
+  };
   return (
     <SafeAreaView style={styles.container}>
       <Loader visible={loader} />
@@ -222,6 +252,9 @@ const Search = () => {
             data={searchSalon.items}
             keyExtractor={(item) => item?.id}
             renderItem={({ item }) => <SearchTile item={item} />}
+            refreshControl={
+              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+            }
             ListFooterComponent={
               <View style={styles.paging}>
                 {currentPage > 1 && (
@@ -281,10 +314,11 @@ const Search = () => {
         onSearchKeyChange={handleSearchKeyStoreChange}
         searchKeyStore={searchKeyStore}
       />
-      <SearchWhereModal
+      <SearchMapModal
         isVisible={modal1Visible}
         onClose={closeModalWhere}
         onSearchKeyChange={handleSearchKeyWhereChange}
+        onSearchLocation={handleSearchLocationChange}
         searchKeySevice={searchKeyWhere}
       />
       <SearchSeviceModal

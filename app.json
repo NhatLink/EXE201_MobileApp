@@ -4,7 +4,7 @@
     "slug": "hairhubmobile",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/HairHubLogo3.png",
+    "icon": "./assets/HairHubLogo2.png",
     "userInterfaceStyle": "light",
     "splash": {
       "image": "./assets/HairHubSplash.png",
@@ -20,7 +20,7 @@
     "android": {
       "usesCleartextTraffic": true,
       "adaptiveIcon": {
-        "foregroundImage": "./assets/HairHubLogo3.png",
+        "foregroundImage": "./assets/HairHubLogo2.png",
         "backgroundColor": "#f4f2eb"
       },
       "config": {

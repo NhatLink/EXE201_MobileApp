@@ -149,23 +149,20 @@ const DetailProfile = ({ navigation }) => {
     }
   };
   const onChangeDate = (event, selectedDate) => {
-    const currentDate = selectedDate || userData?.dayOfBirth;
+    const currentDate = selectedDate || userData?.DayOfBirth;
     const formattedDate = currentDate.toISOString().slice(0, 19);
     setShowDatePicker(false);
-    console.log("formattedDate", currentDate.toISOString().split("T")[0]);
-    console.log("userData?.dayOfBirth", userData?.dayOfBirth?.split("T")[0]);
-    console.log(user);
-    console.log(userData);
+
     if (
-      userData?.dayOfBirth?.split("T")[0] ===
+      userData?.DayOfBirth?.split("T")[0] ===
       currentDate.toISOString().split("T")[0]
     ) {
       setUserData((prevState) => ({
         ...prevState,
-        dayOfBirth: userData?.dayOfBirth,
+        DayOfBirth: userData?.DayOfBirth,
       }));
     } else {
-      setUserData((prevState) => ({ ...prevState, dayOfBirth: formattedDate }));
+      setUserData((prevState) => ({ ...prevState, DayOfBirth: formattedDate }));
     }
   };
   const isDifferent = JSON.stringify(user) !== JSON.stringify(userData);
@@ -195,13 +192,57 @@ const DetailProfile = ({ navigation }) => {
     }
   };
 
+  // const updateUser = async () => {
+  //   setLoader(true);
+  //   try {
+  //     let formData = new FormData();
+
+  //     // Loop through each key in data object
+  //     for (let key in userData) {
+  //       if (key === "img") {
+  //         const uriParts = userData[key]?.split(".");
+  //         const fileType = uriParts[uriParts.length - 1];
+
+  //         formData.append(key, {
+  //           uri: userData[key],
+  //           name: `image.${fileType}`,
+  //           type: `image/${fileType}`,
+  //         });
+  //       } else {
+  //         formData.append(key, userData[key]);
+  //       }
+  //     }
+
+  //     await dispatch(updateUserById(accountId, formData));
+  //   } catch (error) {
+  //     console.error("updateUserById error:", error);
+  //     Alert.alert("Lỗi", "Có lỗi gì đó xảy ra, thử lại sau");
+  //   } finally {
+  //     setLoader(false);
+  //     navigation.navigate("Profile");
+  //   }
+  // };
   const updateUser = async () => {
     setLoader(true);
     try {
       let formData = new FormData();
 
-      // Loop through each key in data object
+      // Loop through each key in userData object
       for (let key in userData) {
+        // Loại bỏ key 'password' và các key có giá trị là null
+        if (key === "password") {
+          continue;
+        }
+        if (key === "id") {
+          continue;
+        }
+        if (key === "roleId") {
+          continue;
+        }
+        if (key === "email") {
+          continue;
+        }
+
         if (key === "img") {
           const uriParts = userData[key]?.split(".");
           const fileType = uriParts[uriParts.length - 1];
@@ -215,8 +256,10 @@ const DetailProfile = ({ navigation }) => {
           formData.append(key, userData[key]);
         }
       }
-      console.log(formData);
-
+      console.log("formData", formData);
+      console.log("userData", userData);
+      console.log("id", accountId);
+      // Gửi formData tới server thông qua dispatch
       await dispatch(updateUserById(accountId, formData));
     } catch (error) {
       console.error("updateUserById error:", error);
@@ -327,8 +370,8 @@ const DetailProfile = ({ navigation }) => {
               <Text style={styles.menuItemText}>Ngày sinh</Text>
             </View>
             <Text style={styles.menuItemText}>
-              {userData?.dayOfBirth?.split("T")[0] ?? "trống"}
-              {/* {userData?.dayOfBirth} */}
+              {userData?.DayOfBirth?.split("T")[0] ?? "trống"}
+              {/* {userData?.DayOfBirth} */}
             </Text>
           </View>
         </TouchableOpacity>
@@ -560,8 +603,8 @@ const DetailProfile = ({ navigation }) => {
         </Modal>
         {showDatePicker && (
           <DateTimePicker
-            // value={userData.dayOfBirth}
-            value={new Date(userData?.dayOfBirth ?? new Date())}
+            // value={userData.DayOfBirth}
+            value={new Date(userData?.DayOfBirth ?? new Date())}
             mode="date"
             display="default"
             onChange={onChangeDate}

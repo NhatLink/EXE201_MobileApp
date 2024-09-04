@@ -101,9 +101,20 @@ const SearchTile = ({ item }) => {
           <Text style={styles.supplier} numberOfLines={2}>
             {item?.address}
           </Text>
-          {/* <Text style={styles.price} numberOfLines={1}>
-            SALE UP TO {item?.price}%
-          </Text> */}
+          {item?.distance && (
+            <Text style={styles.serviceName} numberOfLines={2}>
+              Khoảng cách: {item?.distance.toFixed(1)} Km
+            </Text>
+          )}
+          {item?.operatingStatus === "Đã qua thời gian làm việc" ? (
+            <Text style={styles.price} numberOfLines={1}>
+              {item?.operatingStatus}
+            </Text>
+          ) : (
+            <Text style={styles.price2} numberOfLines={1}>
+              {item?.operatingStatus}
+            </Text>
+          )}
         </View>
       </TouchableOpacity>
       {item?.services &&
@@ -271,14 +282,24 @@ const styles = StyleSheet.create({
     color: COLORS.gray,
   },
   price: {
-    fontSize: SIZES.medium,
-    fontFamily: "bold",
-    color: COLORS.black,
-    backgroundColor: COLORS.tertiary,
+    fontSize: SIZES.small,
+    fontWeight: "bold",
+    // color: COLORS.black,
+    color: COLORS.red,
     borderRadius: 5,
     overflow: "hidden",
-    paddingLeft: 5,
-    maxWidth: 150,
+    // paddingLeft: 5,
+    maxWidth: 220,
+  },
+  price2: {
+    fontSize: SIZES.small,
+    fontWeight: "bold",
+    // color: COLORS.black,
+    color: COLORS.green,
+    borderRadius: 5,
+    overflow: "hidden",
+    // paddingLeft: 5,
+    maxWidth: 220,
   },
   addButton: {
     position: "absolute",

@@ -14,7 +14,16 @@ export const SalonInfomationService = {
     return API.get(`/api/v1/saloninformations/GetSalonSuggestion`);
   },
 
-  searchSalon(serviceName, salonAddress, salonName, page, size) {
+  searchSalon(
+    serviceName,
+    salonAddress,
+    salonName,
+    page,
+    size,
+    latitude,
+    longtitude,
+    distance
+  ) {
     return API.get(`/api/v1/saloninformations/GetSalonByServiceNameAddress`, {
       params: {
         serviceName,
@@ -22,6 +31,9 @@ export const SalonInfomationService = {
         salonName,
         page,
         size,
+        latitude,
+        longtitude,
+        distance,
       },
     });
   },

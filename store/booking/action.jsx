@@ -24,7 +24,7 @@ export const RESET_AVAILABLE = "RESET_AVAILABLE";
 // Gửi OTP email action
 export const GetAvailableTime = (data) => async (dispatch) => {
   dispatch({ type: GET_AVAILABLE_TIME_REQUEST });
-  console.log("GetAvailableTime data:", data);
+  // console.log("GetAvailableTime data:", data);
   try {
     const response = await BookingService.GetAvailableTime(data);
     dispatch({ type: GET_AVAILABLE_TIME_SUCCESS, payload: response.data });
@@ -39,7 +39,7 @@ export const GetAvailableTime = (data) => async (dispatch) => {
 
 export const BookAppointment = (data) => async (dispatch) => {
   dispatch({ type: BOOK_APPOINMENT_REQUEST });
-  console.log("BookAppointment data:", data);
+  // console.log("BookAppointment data:", data);
   try {
     const response = await BookingService.BookAppointment(data);
     dispatch({ type: BOOK_APPOINMENT_SUCCESS, payload: response.data });
@@ -58,7 +58,7 @@ export const resetAvailable = () => ({
 
 export const CalculatePrice = (data) => async (dispatch) => {
   dispatch({ type: CACULATE_PRICE_REQUEST });
-  console.log("CalculatePrice data:", data);
+  // console.log("CalculatePrice data:", data);
   try {
     const response = await BookingService.CalculatePrice(data);
     dispatch({ type: CACULATE_PRICE_SUCCESS, payload: response.data });

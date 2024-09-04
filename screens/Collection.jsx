@@ -30,7 +30,6 @@ const Collection = ({ navigation }) => {
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const { user } = useSelector((state) => state.USER);
   const { collection, loading } = useSelector((state) => state.COLLECTION);
-  console.log("user", user);
 
   const CollectionData = [
     {

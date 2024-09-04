@@ -18,8 +18,8 @@ const ProductSpecialViewCard = ({ item }) => {
           <View style={styles.ratingContainer}>
             {/* <StarRating rating={item?.avgRating} /> */}
             <Text style={styles.averageRatingText}>
-              {item?.totalRating > 0
-                ? (item?.rate).toFixed(1) + "/5.0"
+              {item?.totalReviewer > 0
+                ? item?.rate + "/5.0"
                 : "Không có đánh giá"}
             </Text>
             <Text style={styles.averageRatingText}>

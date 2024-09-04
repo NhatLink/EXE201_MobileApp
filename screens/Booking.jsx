@@ -42,6 +42,12 @@ import { GetVoucherBySalonId } from "../store/voucher/action";
 import VoucherModal from "../components/booking/VoucherModal";
 import * as SecureStore from "expo-secure-store";
 import { useNotificationScheduler } from "../hook/useNotificationScheduler";
+import {
+  startConnection,
+  onEvent,
+  sendEvent,
+  stopConnection,
+} from "../hook/signalRService";
 
 const Booking = ({ navigation }) => {
   const dispatch = useDispatch();
@@ -73,7 +79,7 @@ const Booking = ({ navigation }) => {
 
   const warningBooking = () => {
     ToastAndroid.show(
-      "Salon/Barber chưa thể nhận đặt lịch vào thời gian này, vui lòng chọn thời gian khác !",
+      "Salon/Barber chưa thể nhận đặt lịch vào thời gian này!",
       ToastAndroid.SHORT
     );
   };
@@ -200,6 +206,21 @@ const Booking = ({ navigation }) => {
     dispatch(GetVoucherBySalonId(storeId, currentPage, itemsPerPage));
   }, []);
 
+  // useEffect(() => {
+  //   // Bắt đầu kết nối
+  //   startConnection();
+
+  //   // Lắng nghe một sự kiện từ server
+  //   onEvent("ReceiveMessage", (message) => {
+  //     console.log("Received message: ", message);
+  //   });
+
+  //   // Clean up khi component bị unmount
+  //   return () => {
+  //     stopConnection();
+  //   };
+  // }, []);
+
   useEffect(() => {
     dispatch(setDateBooking(selectedDate));
     if (availableTime.length > 0 && hourBooking < availableTime[0].timeSlot) {
@@ -322,7 +343,7 @@ const Booking = ({ navigation }) => {
             minDate={formatDate(minDate)}
             maxDate={formatDate(maxDate)}
           />
-          {availableTime && availableTime.length > 0 ? (
+          {/* {availableTime && availableTime.length > 0 ? (
             <ScrollView
               ref={scrollViewRef}
               horizontal
@@ -384,6 +405,86 @@ const Booking = ({ navigation }) => {
                 {selectedDate}
               </Text>
             </View>
+          )} */}
+
+          {availableTime && availableTime.length > 0 ? (
+            <ScrollView
+              ref={scrollViewRef}
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              style={{
+                borderTopWidth: 0.5,
+                borderTopColor: COLORS.gray2,
+                paddingVertical: 10,
+                marginVertical: 15,
+                borderBottomWidth: 0.5,
+                borderBottomColor: COLORS.gray2,
+              }}
+            >
+              {availableTime?.map((item, index) => {
+                // Chỉ hiển thị timeSlot nếu có employeeAvailables.length > 0
+                if (item.employeeAvailables.length > 0) {
+                  // Chuyển đổi timeSlot thành giờ và phút
+                  const hours = Math.floor(item.timeSlot);
+                  const minutes = (item.timeSlot - hours) * 60;
+                  const timeString = `${hours}:${
+                    minutes === 0 ? "00" : minutes
+                  }`;
+
+                  return (
+                    <TouchableOpacity
+                      key={index}
+                      style={[
+                        styles.item,
+                        item.timeSlot === hourBooking
+                          ? styles.selectedItem
+                          : null,
+                      ]}
+                      onPress={() => {
+                        dispatch(setHourBooking(item.timeSlot));
+                      }}
+                    >
+                      <Text style={styles.text}>{timeString}</Text>
+                    </TouchableOpacity>
+                  );
+                } else {
+                  return null;
+                }
+              })}
+            </ScrollView>
+          ) : error ? (
+            <View
+              style={{
+                borderTopWidth: 0.5,
+                borderTopColor: COLORS.gray2,
+                paddingVertical: 10,
+                marginVertical: 15,
+                borderBottomWidth: 0.5,
+                borderBottomColor: COLORS.gray2,
+              }}
+            >
+              <Text style={styles.text}>
+                {error}
+                {" vào ngày "}
+                {selectedDate}
+              </Text>
+            </View>
+          ) : (
+            <View
+              style={{
+                borderTopWidth: 0.5,
+                borderTopColor: COLORS.gray2,
+                paddingVertical: 10,
+                marginVertical: 15,
+                borderBottomWidth: 0.5,
+                borderBottomColor: COLORS.gray2,
+              }}
+            >
+              <Text style={styles.text}>
+                {"Đã quá thời gian đặt lịch vào ngày "}
+                {selectedDate}
+              </Text>
+            </View>
           )}
 
           {/* <FlatList
@@ -419,21 +520,18 @@ const Booking = ({ navigation }) => {
           <View style={styles.pricingInfo}>
             {totalPrice?.originalPrice != totalPrice?.totalPrice ? (
               <>
-                <Text
-                  style={styles.servicePrice}
-                  numberOfLines={1}
-                >{`${totalPrice?.totalPrice?.toLocaleString()} VND`}</Text>
-                <Text
-                  style={styles.servicePrice2}
-                  numberOfLines={1}
-                >{`${totalPrice?.originalPrice.toLocaleString()} VND`}</Text>
+                <Text style={styles.servicePrice} numberOfLines={1}>{`${
+                  totalPrice?.totalPrice?.toLocaleString() ?? 0
+                } VND`}</Text>
+                <Text style={styles.servicePrice2} numberOfLines={1}>{`${
+                  totalPrice?.originalPrice.toLocaleString() ?? 0
+                } VND`}</Text>
               </>
             ) : (
               <>
-                <Text
-                  style={styles.servicePrice}
-                  numberOfLines={1}
-                >{`${totalPrice?.totalPrice?.toLocaleString()} VND`}</Text>
+                <Text style={styles.servicePrice} numberOfLines={1}>{`${
+                  totalPrice?.totalPrice?.toLocaleString() ?? 0
+                } VND`}</Text>
               </>
             )}
           </View>
@@ -499,11 +597,21 @@ const Booking = ({ navigation }) => {
               </TouchableOpacity>
             </View>
           ))}
-        <Button
-          title="Đặt Lịch"
-          // onPress={confirmBooking}
-          onPress={canPressButton ? confirmBooking : warningBooking}
-        />
+        {!canPressButton ? (
+          <TouchableOpacity
+            onPress={warningBooking}
+            activeOpacity={0.7}
+            style={styles.btnStyle}
+          >
+            <Text style={styles.textStyle}>Đặt Lịch</Text>
+          </TouchableOpacity>
+        ) : (
+          <Button
+            title="Đặt Lịch"
+            onPress={confirmBooking}
+            // onPress={canPressButton ? confirmBooking : warningBooking}
+          />
+        )}
       </View>
     </>
   );
@@ -664,5 +772,20 @@ const styles = StyleSheet.create({
     width: "100%",
     height: 65,
     borderRadius: SIZES.small,
+  },
+  btnStyle: {
+    height: 50,
+    width: "100%",
+    backgroundColor: COLORS.gray2,
+    marginVertical: 20,
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 12,
+  },
+
+  textStyle: {
+    color: COLORS.gray,
+    fontWeight: "bold",
+    fontSize: 18,
   },
 });

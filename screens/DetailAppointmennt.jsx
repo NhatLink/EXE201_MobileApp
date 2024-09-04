@@ -213,7 +213,7 @@ const DetailAppointmennt = ({ navigation }) => {
       setRoute(validPoints);
     } catch (error) {
       console.error("Error getting directions:", error);
-      Alert.alert("Error", "Unable to retrieve directions. Please try again.");
+      Alert.alert("Lỗi", "Không thể chỉ đường dựa theo vị trí, thử lại sau.");
     }
   };
 
@@ -377,9 +377,40 @@ const DetailAppointmennt = ({ navigation }) => {
             appointmentDetail?.status !== "BOOKING" ? null : (
               <TouchableOpacity
                 style={styles.bookButton}
-                onPress={() => setModalVisible1(true)}
+                onPress={() => {
+                  // Lấy thời gian hiện tại
+                  const currentTime = new Date();
+
+                  // Lấy thời gian bắt đầu của cuộc hẹn
+                  const startTime = new Date(
+                    appointmentDetail?.appointmentDetails[0]?.startTime
+                  );
+
+                  // So sánh thời gian hiện tại với thời gian bắt đầu của cuộc hẹn
+                  if (currentTime <= startTime) {
+                    setModalVisible1(true);
+                  }
+                }}
+                disabled={
+                  new Date() >
+                  new Date(appointmentDetail?.appointmentDetails[0]?.startTime)
+                } // Vô hiệu hóa nếu đã quá giờ
               >
-                <Text style={styles.button}>Hủy lịch hẹn</Text>
+                <Text
+                  style={[
+                    new Date() >
+                    new Date(
+                      appointmentDetail?.appointmentDetails[0]?.startTime
+                    )
+                      ? styles.disabledButtonText
+                      : styles.button,
+                  ]}
+                >
+                  {new Date() >
+                  new Date(appointmentDetail?.appointmentDetails[0]?.startTime)
+                    ? "Quá giờ hủy lịch hẹn"
+                    : "Hủy lịch hẹn"}
+                </Text>
               </TouchableOpacity>
             )}
           </View>
@@ -983,6 +1014,14 @@ const styles = StyleSheet.create({
   },
   button: {
     backgroundColor: COLORS.tertiary,
+    textAlign: "center",
+    padding: 10,
+    borderRadius: 10,
+    marginLeft: 5,
+    fontWeight: "bold",
+  },
+  disabledButtonText: {
+    backgroundColor: COLORS.gray2,
     textAlign: "center",
     padding: 10,
     borderRadius: 10,

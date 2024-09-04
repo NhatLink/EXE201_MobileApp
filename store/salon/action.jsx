@@ -54,7 +54,9 @@ export function searchSalonInformation(
   salonAddress,
   salonName,
   page,
-  size
+  size,
+  latitude,
+  longtitude
 ) {
   return async (dispatch) => {
     try {
@@ -63,7 +65,10 @@ export function searchSalonInformation(
         salonAddress,
         salonName,
         page,
-        size
+        size,
+        latitude,
+        longtitude,
+        10
       );
       dispatch({
         type: SEARCH_SALON_INFORMATION,
