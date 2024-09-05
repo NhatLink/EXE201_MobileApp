@@ -130,10 +130,11 @@ export const CreateAppointment =
     } catch (error) {
       const errorMessage = error.response?.data?.message || error.message;
       dispatch({ type: CREATE_APPOINTMENT_FAILURE, payload: errorMessage });
-      ToastAndroid.show(
-        "Tạo lịch hẹn thất bại, vui lòng thử lại sau !",
-        ToastAndroid.SHORT
-      );
+      // ToastAndroid.show(
+      //   "Tạo lịch hẹn thất bại, vui lòng thử lại sau !",
+      //   ToastAndroid.SHORT
+      // );
+      ToastAndroid.show(errorMessage, ToastAndroid.SHORT);
       console.log("error CreateAppointment", errorMessage);
     }
   };

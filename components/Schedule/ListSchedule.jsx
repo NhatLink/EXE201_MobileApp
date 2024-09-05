@@ -320,7 +320,8 @@ const styles = StyleSheet.create({
     fontSize: SIZES.large - 2,
   },
   descriptionWrapper2: {
-    marginTop: SIZES.small,
+    paddingTop: SIZES.small,
+    marginVertical: SIZES.small,
     // marginHorizontal: SIZES.large,
     flexDirection: "row",
     justifyContent: "space-between",
@@ -349,7 +350,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     width: "100%",
-    paddingHorizontal: 10,
+    paddingTop: 10,
   },
   line: {
     flex: 8,

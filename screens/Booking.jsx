@@ -157,7 +157,7 @@ const Booking = ({ navigation }) => {
       );
     }
   };
-  console.log("createAppointment", createAppointment);
+  // console.log("createAppointment", createAppointment);
   const handleGoBack = () => {
     dispatch(resetBooking());
     dispatch(resetAvailable());
@@ -221,14 +221,33 @@ const Booking = ({ navigation }) => {
   //   };
   // }, []);
 
+  // useEffect(() => {
+  //   dispatch(setDateBooking(selectedDate));
+  //   if (availableTime.length > 0 && hourBooking < availableTime[0].timeSlot) {
+  //     const firstTimeSlot = availableTime[0].timeSlot;
+  //     dispatch(setHourBooking(firstTimeSlot));
+  //   }
+  //   // dispatch(GetVoucherBySalonId(storeId, currentPage, itemsPerPage));
+  // }, [selectedDate, availableTime]);
+
   useEffect(() => {
     dispatch(setDateBooking(selectedDate));
-    if (availableTime.length > 0 && hourBooking < availableTime[0].timeSlot) {
+
+    if (availableTime.length > 0) {
       const firstTimeSlot = availableTime[0].timeSlot;
-      dispatch(setHourBooking(firstTimeSlot));
+
+      // Kiểm tra xem hourBooking có tồn tại trong availableTime hay không
+      const hourExists = availableTime.some(
+        (item) => item.timeSlot === hourBooking
+      );
+
+      if (!hourExists || hourBooking < firstTimeSlot) {
+        dispatch(setHourBooking(firstTimeSlot));
+      }
     }
+
     // dispatch(GetVoucherBySalonId(storeId, currentPage, itemsPerPage));
-  }, [selectedDate, availableTime]);
+  }, [selectedDate, availableTime, hourBooking]);
 
   useEffect(() => {
     if (dateBooking && services.length > 0) {
@@ -246,7 +265,12 @@ const Booking = ({ navigation }) => {
   }, [dateBooking, storeId, services]);
 
   useEffect(() => {
-    if (hourBooking && services.length > 0) {
+    const hourExists = availableTime.some(
+      (item) => item.timeSlot === hourBooking
+    );
+    console.log("hourExists", hourExists);
+
+    if (hourExists && hourBooking && services.length > 0) {
       let bookingDetails = services.map((service) => ({
         serviceHairId: service.id,
         salonEmployeeId: service.staff?.id !== "0" ? service.staff?.id : null,
