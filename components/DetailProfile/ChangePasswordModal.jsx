@@ -105,8 +105,8 @@ const ChangePasswordModal = ({ isVisible, onClose, data }) => {
         confirmNewPassword: newPassword2,
       };
       if (accountId) {
-        console.log(accountId);
-        console.log(dataSubmit);
+        // console.log(accountId);
+        // console.log(dataSubmit);
         await dispatch(updatePasswordUserById(accountId, dataSubmit));
       } else {
         ToastAndroid.show(

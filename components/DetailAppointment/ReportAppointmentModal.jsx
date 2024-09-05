@@ -38,7 +38,7 @@ const ReportAppointmentModal = ({ isVisible, onClose, data }) => {
     };
     setDataSent(dataSubmit);
     setModalVisible(true);
-    console.log("data 1", dataSubmit);
+    // console.log("data 1", dataSubmit);
   };
   return (
     <Modal

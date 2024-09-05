@@ -64,7 +64,7 @@ const OrdersList = () => {
     }
   };
   const filterOrder = (status) => {
-    console.log(status);
+    // console.log(status);
 
     if (historyAppointment && historyAppointment.items) {
       setSelectedStatus(status);

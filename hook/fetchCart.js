@@ -23,7 +23,7 @@ const fetchCart = () => {
         `${baseUrl}/order/getListOrder/${JSON.parse(id)}`
       );
 
-      console.log("response", response.data);
+      // console.log("response", response.data);
       const newData = JSON.stringify(response.data);
 
       const parsedCartData = JSON.parse(newData);

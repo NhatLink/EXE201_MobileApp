@@ -94,7 +94,7 @@ const ResetPassword = () => {
     try {
       await dispatch(forgotPassword(inputs, navigation));
       //   navigation.navigate("Profile");
-      console.log("inputs resetpass", inputs);
+      // console.log("inputs resetpass", inputs);
     } catch (error) {
       console.log(error);
     } finally {

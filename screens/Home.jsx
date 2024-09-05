@@ -76,7 +76,7 @@ const Home = () => {
           latitude: coords.latitude,
           longitude: coords.longitude,
         });
-        console.log(address);
+        // console.log(address);
         if (address.length > 0) {
           setLocation(address[0].subregion + ", " + address[0].region);
         }

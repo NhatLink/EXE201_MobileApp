@@ -48,6 +48,9 @@ import {
   sendEvent,
   stopConnection,
 } from "../hook/signalRService";
+import * as signalR from "@microsoft/signalr";
+import { BookingService } from "../services/bookingService";
+import { Alert } from "react-native";
 
 const Booking = ({ navigation }) => {
   const dispatch = useDispatch();
@@ -84,17 +87,7 @@ const Booking = ({ navigation }) => {
     );
   };
 
-  const confirmBooking = async () => {
-    // const userInfoJson = await SecureStore.getItemAsync("userInfo");
-    // const accountId = await SecureStore.getItemAsync("accountId");
-    // let userInfo = null;
-    // if (userInfoJson) {
-    //   try {
-    //     userInfo = JSON.parse(userInfoJson);
-    //   } catch (error) {
-    //     console.error("Error parsing userInfo", error);
-    //   }
-    // }
+  const confirmBooking = () => {
     if (
       user &&
       user?.id &&
@@ -104,6 +97,46 @@ const Booking = ({ navigation }) => {
       services &&
       accountId
     ) {
+      Alert.alert(
+        "Xác nhận trước khi đặt",
+        `Hãy đảm bào ngày giờ và dịch vụ chính xác trước khi đặt`,
+        [
+          {
+            text: "Hủy",
+            style: "cancel",
+          },
+          {
+            text: "Tiếp tục đặt lịch",
+            onPress: () => {
+              booking();
+            },
+          },
+        ]
+      );
+    } else {
+      ToastAndroid.show(
+        "Lỗi đặt lịch, vui lòng thử lại sau!",
+        ToastAndroid.SHORT
+      );
+    }
+  };
+
+  const booking = async () => {
+    if (
+      user &&
+      user?.id &&
+      bookAppoinment &&
+      bookAppoinment.bookingDetailResponses &&
+      totalPrice &&
+      services &&
+      accountId
+    ) {
+      await startConnection();
+      const getRandomEmployeeId = (employees) => {
+        if (employees.length === 0) return null;
+        const randomIndex = Math.floor(Math.random() * employees.length);
+        return employees[randomIndex].id;
+      };
       const createAppointmentObject = () => {
         const appointmentDetails = bookAppoinment.bookingDetailResponses.map(
           (detail) => {
@@ -112,10 +145,15 @@ const Booking = ({ navigation }) => {
             );
             return {
               // salonEmployeeId: detail.employees[0].id,
+              // salonEmployeeId:
+              //   service.staff?.id !== "0"
+              //     ? service.staff?.id
+              //     : detail.employees[0].id,
               salonEmployeeId:
-                service.staff?.id !== "0"
+                service.staff?.id !== "0" && service.staff?.id
                   ? service.staff?.id
-                  : detail.employees[0].id,
+                  : getRandomEmployeeId(detail.employees),
+
               serviceHairId: service.id,
               description: service.description,
               endTime: detail.serviceHair.endTime,
@@ -134,12 +172,22 @@ const Booking = ({ navigation }) => {
           voucherIds: voucher ? [voucher.id] : [],
         };
       };
-
-      const appointmentObject = createAppointmentObject();
-      console.log(JSON.stringify(appointmentObject));
-      console.log(
-        JSON.stringify(appointmentObject.appointmentDetails[0].startTime)
+      const serviceHairIds = bookAppoinment.bookingDetailResponses.map(
+        (detail) => detail.serviceHair.id
       );
+      const appointmentObject = createAppointmentObject();
+      // console.log(JSON.stringify(appointmentObject));
+      // console.log(
+      //   JSON.stringify(appointmentObject.appointmentDetails[0].startTime)
+      // );
+      let mappingData = {
+        message: "send serviceId",
+        dateAppointment: appointmentObject?.startDate,
+        salonId: storeId,
+        serviceId: serviceHairIds,
+      };
+      console.log("mappingData", mappingData);
+
       dispatch(
         CreateAppointment(
           appointmentObject,
@@ -150,12 +198,14 @@ const Booking = ({ navigation }) => {
           scheduleNotification
         )
       );
+      await BookingService.broadcastMessage(mappingData);
     } else {
       ToastAndroid.show(
         "Có lỗi xảy ra, vui lòng thử lại sau !",
         ToastAndroid.SHORT
       );
     }
+    await stopConnection();
   };
   // console.log("createAppointment", createAppointment);
   const handleGoBack = () => {
@@ -201,6 +251,73 @@ const Booking = ({ navigation }) => {
     date.setDate(date.getDate() + 5);
     return date;
   });
+
+  useEffect(() => {
+    let connection;
+    const setupSignalR = async () => {
+      try {
+        // Create the SignalR connection
+        connection = new signalR.HubConnectionBuilder()
+          .withUrl("https://hairhub.gahonghac.net/book-appointment-hub")
+          .withAutomaticReconnect()
+          .build();
+
+        // Start the connection
+        await connection.start();
+
+        // Set up the event listener directly inside useEffect
+        connection.on(
+          "ReceiveMessage",
+          async (message, dateAppointment, datenow, salonId, serviceId) => {
+            // Make sure selectedDate is properly defined
+            if (!selectedDate) {
+              console.error("selectedDate is not defined");
+              return;
+            }
+
+            // Function to format the date
+            // const formatDate = (date) => {
+            //   const year = date.getFullYear();
+            //   const month = String(date.getMonth() + 1).padStart(2, "0");
+            //   const day = String(date.getDate()).padStart(2, "0");
+            //   return ${year}-${month}-${day};
+            // };
+
+            // Format the date
+            const formattedDate = formatDate(selectedDate);
+
+            // Make sure the condition is valid before calling the API
+            if (dateAppointment === formattedDate && salonId === storeId) {
+              try {
+                let data = {
+                  day: new Date(dateBooking).toISOString(),
+                  salonId: storeId,
+                  serviceHairId: services[0]?.id,
+                  salonEmployeeId:
+                    services[0]?.staff?.id !== "0"
+                      ? services[0]?.staff?.id
+                      : null,
+                  isAnyOne: services[0]?.staff?.id === "0",
+                };
+                await GetAvailableTime(data);
+              } catch (error) {
+                console.error("Error in fetchAvailable:", error);
+              }
+            }
+          }
+        );
+      } catch (error) {
+        console.error("Error setting up SignalR:", error);
+      }
+    };
+
+    setupSignalR();
+
+    // Clean up the connection when the component unmounts
+    return () => {
+      connection.stop().then(() => console.log("SignalR Disconnected."));
+    };
+  }, [selectedDate]);
 
   useEffect(() => {
     dispatch(GetVoucherBySalonId(storeId, currentPage, itemsPerPage));
@@ -621,7 +738,7 @@ const Booking = ({ navigation }) => {
               </TouchableOpacity>
             </View>
           ))}
-        {!canPressButton ? (
+        {!canPressButton || bookAppoinment.length === 0 ? (
           <TouchableOpacity
             onPress={warningBooking}
             activeOpacity={0.7}

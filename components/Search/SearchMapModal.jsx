@@ -29,7 +29,7 @@ const SearchMapModal = ({
   const mapRef = React.useRef(null);
   const ref = useRef();
   const [searchKey, setSearchKey] = useState("");
-  console.log(searchKey);
+  // console.log(searchKey);
 
   const [region, setRegion] = useState(null); // Vị trí hiện tại
   const [markerPosition, setMarkerPosition] = React.useState({

@@ -30,7 +30,7 @@ const DetailOrder = ({ navigation }) => {
   const route = useRoute();
   // const navigation = useNavigation();
   const { order } = route.params;
-  console.log("order:", order);
+  // console.log("order:", order);
   const [data, setData] = useState({});
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -67,11 +67,11 @@ const DetailOrder = ({ navigation }) => {
       );
       setData(response.data);
       setLoading(false);
-      console.log("order", response.data);
+      // console.log("order", response.data);
       setError("");
     } catch (error) {
       setError("Failed to fetch data");
-      console.log("response data", error);
+      // console.log("response data", error);
     } finally {
       setLoading(false);
     }
@@ -97,7 +97,7 @@ const DetailOrder = ({ navigation }) => {
         content: contentFeedback,
         rating: ratingFeedback,
       };
-      console.log("feedback data:", data);
+      // console.log("feedback data:", data);
       const response = await instance.post(endpoint, data);
       if (response.status === 201) {
         refetch;

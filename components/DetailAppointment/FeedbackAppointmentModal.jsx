@@ -87,7 +87,7 @@ const FeedbackAppointmentModal = ({ isVisible, onClose, data }) => {
         Comment: reason,
         ImgFeedbacks: selectedImages,
       };
-      console.log("CreateFeedback:", dataSubmit);
+      // console.log("CreateFeedback:", dataSubmit);
 
       for (let key in dataSubmit) {
         if (key === "ImgFeedbacks") {
@@ -106,7 +106,7 @@ const FeedbackAppointmentModal = ({ isVisible, onClose, data }) => {
         }
       }
 
-      console.log("CreateFeedback formData:", formData);
+      // console.log("CreateFeedback formData:", formData);
       await dispatch(CreateFeedback(formData, data.AppointmentId));
     } catch (error) {
       console.error("CreateFeedback error:", error);

@@ -6,8 +6,8 @@ const addToCart = async (productId, storeId, price, quantity) => {
   try {
     const id = await AsyncStorage.getItem("id");
     const accessToken = await AsyncStorage.getItem("accessToken");
-    console.log("accessToken", accessToken);
-    console.log("userId", id);
+    // console.log("accessToken", accessToken);
+    // console.log("userId", id);
     if (!id || !accessToken) {
       throw new Error("Authentication required.");
     }
@@ -25,7 +25,7 @@ const addToCart = async (productId, storeId, price, quantity) => {
       price: price,
     };
 
-    console.log("dataCart", data);
+    // console.log("dataCart", data);
     const response = await instance.post(endpoint, data);
     return response.data;
   } catch (error) {

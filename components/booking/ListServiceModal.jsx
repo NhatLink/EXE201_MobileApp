@@ -21,7 +21,7 @@ const ListServiceModal = ({ isVisible, onClose }) => {
   const { services } = useSelector((state) => state.booking);
   const handleBook = (item) => {
     dispatch(addService(item));
-    console.log("item", item);
+    // console.log("item", item);
     onClose();
   };
   const [uniqueServices, setUniqueServices] = useState([]);

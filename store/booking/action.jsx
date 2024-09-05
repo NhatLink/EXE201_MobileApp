@@ -102,8 +102,8 @@ export const CreateAppointment =
   ) =>
   async (dispatch) => {
     dispatch({ type: CREATE_APPOINTMENT_REQUEST });
-    console.log("CreateAppointment data:", data);
-    console.log("CreateAppointment accountId:", accountId);
+    // console.log("CreateAppointment data:", data);
+    // console.log("CreateAppointment accountId:", accountId);
     try {
       const response = await BookingService.CreateAppointment(data);
       ToastAndroid.show(response.data, ToastAndroid.SHORT);

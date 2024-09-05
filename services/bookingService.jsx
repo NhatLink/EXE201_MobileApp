@@ -13,4 +13,7 @@ export const BookingService = {
   CreateAppointment(data) {
     return API.post(`/api/v1/appointments/CreateAppointment`, data);
   },
+  broadcastMessage(data) {
+    return API.post(`/api/v1/signalRs/BroadcastMessage/broadcast`, data);
+  },
 };

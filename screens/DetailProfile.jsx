@@ -167,7 +167,7 @@ const DetailProfile = ({ navigation }) => {
   };
   const isDifferent = JSON.stringify(user) !== JSON.stringify(userData);
 
-  console.log("isDifferent", isDifferent);
+  // console.log("isDifferent", isDifferent);
   const handlePressBack = () => {
     if (isDifferent) {
       Alert.alert(
@@ -256,9 +256,9 @@ const DetailProfile = ({ navigation }) => {
           formData.append(key, userData[key]);
         }
       }
-      console.log("formData", formData);
-      console.log("userData", userData);
-      console.log("id", accountId);
+      // console.log("formData", formData);
+      // console.log("userData", userData);
+      // console.log("id", accountId);
       // Gửi formData tới server thông qua dispatch
       await dispatch(updateUserById(accountId, formData));
     } catch (error) {
