@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Modal,
   View,
@@ -10,6 +10,7 @@ import {
   useWindowDimensions,
   Alert,
   ToastAndroid,
+  Image,
 } from "react-native";
 import { COLORS, SIZES } from "../../constants";
 import { Ionicons, Feather } from "@expo/vector-icons";
@@ -26,7 +27,9 @@ const SearchMapModal = ({
   searchKeyWhere,
 }) => {
   const mapRef = React.useRef(null);
+  const ref = useRef();
   const [searchKey, setSearchKey] = useState("");
+  console.log(searchKey);
 
   const [region, setRegion] = useState(null); // Vị trí hiện tại
   const [markerPosition, setMarkerPosition] = React.useState({
@@ -72,9 +75,27 @@ const SearchMapModal = ({
     if (details) {
       const placeId = details.place_id;
       const location = await fetchPlaceDetails(placeId);
-      if (location) {
+      // if (location) {
+      //   const { latitude, longitude } = location;
+      //   console.log("Latitude:", latitude, "Longitude:", longitude);
+      //   await setRegion({
+      //     latitude: latitude,
+      //     longitude: longitude,
+      //     latitudeDelta: 0.0922,
+      //     longitudeDelta: 0.0421,
+      //   });
+      // }
+      if (mapRef.current && location) {
         const { latitude, longitude } = location;
-        setMarkerPosition({ latitude, longitude });
+        mapRef.current.animateToRegion(
+          {
+            latitude: parseFloat(latitude),
+            longitude: parseFloat(longitude),
+            latitudeDelta: 0.0922,
+            longitudeDelta: 0.0421,
+          },
+          1000
+        ); // 1000 milliseconds to animate
       }
     }
   };
@@ -87,6 +108,25 @@ const SearchMapModal = ({
       //   }
       if (markerPosition) {
         onSearchLocation(markerPosition);
+      }
+
+      onClose();
+    } catch (error) {
+      console.error("Failed to perform search:", error);
+    }
+  };
+
+  const closeModalMap = () => {
+    Keyboard.dismiss();
+    try {
+      //   if (onSearchKeyChange) {
+      //     onSearchKeyChange(searchKey);
+      //   }
+      if (markerPosition) {
+        onSearchLocation({
+          latitude: null,
+          longitude: null,
+        });
       }
 
       onClose();
@@ -130,8 +170,8 @@ const SearchMapModal = ({
 
   const handleMapPress = (e) => {
     const { latitude, longitude } = e.nativeEvent.coordinate;
-    console.log(latitude);
-    console.log(longitude);
+    // console.log(latitude);
+    // console.log(longitude);
 
     // Kiểm tra tọa độ có nằm trong phạm vi Việt Nam không
     if (
@@ -208,6 +248,7 @@ const SearchMapModal = ({
         <View style={styles.mapContainer}>
           {region && (
             <MapView
+              ref={mapRef}
               style={styles.map}
               provider={MapView.PROVIDER_GOOGLE}
               //   initialRegion={{
@@ -223,6 +264,8 @@ const SearchMapModal = ({
               //     longitudeDelta: 0.0421,
               //   }}
               initialRegion={region}
+              // region={region}
+              // onRegionChangeComplete={setRegion}
               onPress={handleMapPress}
             >
               {markerPosition && (
@@ -236,47 +279,74 @@ const SearchMapModal = ({
             </MapView>
           )}
           <Text style={styles.modalTextTitle}>Tìm kiếm theo vị trí</Text>
-          {/* <View style={styles.searchContainer}>
-            <Ionicons
+          <View style={styles.searchContainer}>
+            {/* <Ionicons
               style={styles.searchIcon}
               name="location"
               size={24}
               color="black"
-            />
+            /> */}
             <GooglePlacesAutocomplete
+              ref={ref}
               placeholder="Nhập vị trí?"
-              textInputProps={{
-                value: searchKey,
-                onChangeText: (text) => {
-                  setSearchKey(text);
-                },
-              }}
+              // textInputProps={{
+              //   value: searchKey,
+              //   onChangeText: (text) => {
+              //     setSearchKey(text);
+              //   },
+              // }}
+              debounce={15}
               onPress={handleSearch}
               query={{
                 key: GOOGLE_API_KEY,
                 language: "vi", // Ngôn ngữ tìm kiếm
                 components: "country:vn", // Giới hạn tìm kiếm chỉ trong Việt Nam
               }}
+              // currentLocation={true}
+              // currentLocationLabel="Current location"
+              enablePoweredByContainer={false}
               styles={{
                 textInputContainer: {
-                  width: "100%",
+                  // width: "90%",
                   flexDirection: "row",
                   alignItems: "center",
                   marginHorizontal: 10,
+                  justifyContent: "center",
+                  backgroundColor: COLORS.cardcolor,
+                  borderRadius: 10,
+                  borderWidth: 1,
+                  borderColor: COLORS.secondary,
                 },
                 textInput: {
                   height: 38,
                   color: "#5d5d5d",
-                  backgroundColor: COLORS.secondary,
                   fontSize: 16,
                   flex: 1,
+                  borderRadius: 10,
+                  backgroundColor: COLORS.cardcolor,
                 },
                 listView: {
                   marginHorizontal: 10,
                 },
               }}
+              renderLeftButton={() => (
+                <Image
+                  style={{ marginLeft: 5, height: 25, width: 25 }}
+                  source={require("../../assets/images/location.png")}
+                />
+              )}
             />
+
             <TouchableOpacity
+              onPress={() => {
+                ref.current?.clear(); // Clear the text input using the ref
+              }}
+              style={styles.clearButton}
+            >
+              <Ionicons name="close-circle" size={24} color="gray" />
+            </TouchableOpacity>
+
+            {/* <TouchableOpacity
               style={styles.searchBtn}
               onPress={handleManualSearch}
             >
@@ -285,8 +355,8 @@ const SearchMapModal = ({
                 size={SIZES.xLarge}
                 color={COLORS.offwhite}
               />
-            </TouchableOpacity>
-          </View> */}
+            </TouchableOpacity> */}
+          </View>
           <TouchableOpacity style={styles.locationBtn} onPress={getLocation}>
             <Ionicons style={styles.text} name="locate" size={24} color="red" />
             <Text style={styles.text}>Lấy vị trí hiện tại</Text>
@@ -295,15 +365,26 @@ const SearchMapModal = ({
             style={styles.locationBtn2}
             onPress={handleManualSearch}
           >
-            <Ionicons style={styles.text} name="locate" size={24} color="red" />
+            <Ionicons
+              style={styles.text}
+              name="location-outline"
+              size={24}
+              color="red"
+            />
             <Text style={styles.text}>Lấy vị trí bạn chọn</Text>
           </TouchableOpacity>
-          {/* <TouchableOpacity
-            onPress={onClose}
+          <TouchableOpacity
+            onPress={closeModalMap}
             style={styles.buttonCloseMapContainer}
           >
-            <Text style={styles.buttonCloseMap}>Đóng</Text>
-          </TouchableOpacity> */}
+            <Ionicons
+              style={styles.text}
+              name="close-circle-outline"
+              size={24}
+              color="red"
+            />
+            <Text style={styles.buttonCloseMap}>Hủy tìm kiếm vị trí</Text>
+          </TouchableOpacity>
           {/* <View style={styles.buttonContainer}>
               <TouchableOpacity
                 style={styles.buttonMap}
@@ -338,25 +419,27 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   buttonCloseMapContainer: {
-    marginTop: SIZES.small,
     flexDirection: "row",
-    justifyContent: "flex-end",
-    alignItems: "flex-end",
+    backgroundColor: COLORS.primary,
+    borderRadius: SIZES.medium,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 10,
+    marginTop: 10,
     position: "absolute",
-    borderRadius: SIZES.large,
-    width: SIZES.width,
+    bottom: 110,
+    right: 5,
     zIndex: 999,
+    marginHorizontal: SIZES.xSmall,
   },
   buttonCloseMap: {
     // position: "absolute",
     // top: 0,
     // right: 10,
+    marginLeft: 3,
     backgroundColor: COLORS.primary,
     textAlign: "center",
-    padding: 10,
     borderRadius: 10,
-    marginHorizontal: 20,
-    marginVertical: 10,
     fontWeight: "bold",
     color: COLORS.lightWhite,
   },
@@ -372,20 +455,28 @@ const styles = StyleSheet.create({
   },
   searchContainer: {
     justifyContent: "center",
-    alignItems: "flex-start",
+    alignItems: "center",
     flexDirection: "row",
-    backgroundColor: COLORS.secondary,
-    borderRadius: SIZES.medium,
-    marginHorizontal: SIZES.xSmall,
-    padding: 5,
+    // backgroundColor: COLORS.secondary,
+    // borderRadius: SIZES.medium,
+    // marginHorizontal: SIZES.xSmall,
+    // padding: 5,
     // height: 50,
     position: "absolute",
     top: 35,
     zIndex: 999,
   },
+  clearButton: {
+    position: "absolute",
+    right: 15,
+    top: 10,
+  },
   searchIcon: {
     color: "gray",
     paddingVertical: 7,
+    position: "absolute",
+    top: 0,
+    left: 0,
   },
   searchBtn: {
     // width: 50,
