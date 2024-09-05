@@ -12,6 +12,8 @@ import PaymentPage from "./PaymentPage";
 import DetailOrder from "./DetailOrder";
 import Schedule from "./Schedule";
 import History from "./History";
+import Policy from "./Policy";
+import AboutOur from "./AboutOur";
 import Booking from "./Booking";
 import DetailProfile from "./DetailProfile";
 import CheckEmail from "./CheckEmail";
@@ -37,6 +39,8 @@ export {
   DetailOrder,
   Schedule,
   History,
+  Policy,
+  AboutOur,
   Booking,
   DetailProfile,
   CheckEmail,

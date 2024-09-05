@@ -142,6 +142,8 @@ import {
   PaymentPage,
   DetailOrder,
   History,
+  Policy,
+  AboutOur,
   Booking,
   DetailProfile,
   CheckEmail,
@@ -476,6 +478,16 @@ export default function App() {
               <Stack.Screen
                 name="History"
                 component={History}
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name="Policy"
+                component={Policy}
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name="AboutOur"
+                component={AboutOur}
                 options={{ headerShown: false }}
               />
 

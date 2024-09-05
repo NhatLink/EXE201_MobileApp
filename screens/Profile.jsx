@@ -306,6 +306,30 @@ const Profile = ({ navigation }) => {
               </View>
             </TouchableOpacity>
 
+            <TouchableOpacity onPress={() => navigation.navigate("Policy")}>
+              <View style={styles.menuItem}>
+                <MaterialCommunityIcons
+                  name="file-document-outline"
+                  size={24}
+                  color={COLORS.primary}
+                />
+                <Text style={styles.menuItemText}>
+                  Chính sách & Điều khoản sử dụng
+                </Text>
+              </View>
+            </TouchableOpacity>
+
+            <TouchableOpacity onPress={() => navigation.navigate("AboutOur")}>
+              <View style={styles.menuItem}>
+                <MaterialCommunityIcons
+                  name="account-group-outline"
+                  size={24}
+                  color={COLORS.primary}
+                />
+                <Text style={styles.menuItemText}>Về chúng tôi</Text>
+              </View>
+            </TouchableOpacity>
+
             <TouchableOpacity onPress={logout}>
               <View style={styles.menuItem}>
                 <AntDesign name="logout" size={24} color={COLORS.primary} />
