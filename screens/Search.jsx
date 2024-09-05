@@ -45,7 +45,7 @@ const Search = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const { searchSalon } = useSelector((state) => state.SALON);
-  console.log("markerPosition", markerPosition);
+  // console.log("markerPosition", markerPosition);
 
   const Decrease = () => {
     if (currentPage > 1) {
@@ -168,7 +168,7 @@ const Search = () => {
           )}
         </View>
         <View style={styles.search2}>
-          <View style={styles.searchContainer2}>
+          {/* <View style={styles.searchContainer2}>
             <TouchableOpacity>
               <Ionicons
                 style={styles.searchIcon}
@@ -198,7 +198,7 @@ const Search = () => {
                 />
               </TouchableOpacity>
             )}
-          </View>
+          </View> */}
           <View style={styles.searchContainer3}>
             <TouchableOpacity>
               <Ionicons
@@ -242,6 +242,16 @@ const Search = () => {
             source={require("../assets/images/Pose23.png")}
             style={styles.searchImage}
           />
+          <View style={styles.searchContainer2}>
+            <TouchableOpacity onPress={() => openModalWhere()}>
+              <Ionicons
+                style={styles.searchMapIcon}
+                name="location"
+                size={24}
+                color="black"
+              />
+            </TouchableOpacity>
+          </View>
         </View>
       ) : (
         <>
@@ -306,6 +316,16 @@ const Search = () => {
               </TouchableOpacity>
             )}
           </View> */}
+          <View style={styles.searchContainer2}>
+            <TouchableOpacity onPress={() => openModalWhere()}>
+              <Ionicons
+                style={styles.searchMapIcon}
+                name="location"
+                size={24}
+                color="black"
+              />
+            </TouchableOpacity>
+          </View>
         </>
       )}
       <SearchStoreModal
@@ -352,13 +372,14 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     flexDirection: "row",
-    backgroundColor: COLORS.cardcolor,
+    backgroundColor: COLORS.secondary,
     borderRadius: SIZES.medium,
-    marginTop: SIZES.small,
-    marginBottom: SIZES.medium,
-    marginRight: SIZES.xSmall,
     height: 50,
-    width: "49%",
+    position: "absolute",
+    bottom: 10,
+    left: 10,
+    zIndex: 99,
+    paddingHorizontal: 15,
   },
   searchContainer3: {
     justifyContent: "center",
@@ -369,7 +390,7 @@ const styles = StyleSheet.create({
     marginTop: SIZES.small,
     marginBottom: SIZES.medium,
     height: 50,
-    width: "49%",
+    width: "100%",
   },
   search2: {
     flexDirection: "row",
@@ -416,12 +437,15 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     color: "gray",
   },
+  searchMapIcon: {
+    color: COLORS.black,
+  },
   deleteIcon: {
     // position: "absolute",
     // top: 12,
     // right: 10,
     marginRight: 5,
-    color: "gray",
+    color: COLORS.black,
   },
   fullScreenModal: {
     flex: 1,
