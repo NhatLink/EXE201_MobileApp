@@ -7,6 +7,7 @@ import {
   ScrollView,
   Alert,
   AppState,
+  Image,
 } from "react-native";
 import { COLORS, SIZES } from "../constants";
 import { Ionicons, Fontisto } from "@expo/vector-icons";
@@ -135,8 +136,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   appBarWrapper: {
-    marginHorizontal: 22,
+    paddingHorizontal: 22,
     marginTop: 12,
+    // backgroundColor: COLORS.secondary,
   },
   location: {
     color: COLORS.gray,

@@ -484,8 +484,10 @@ const DetailAppointmennt = ({ navigation }) => {
 
             {/* <Button title="Get Directions" onPress={getDirections} /> */}
             <TouchableOpacity style={styles.button1} onPress={getDirections}>
-              <Ionicons name="locate" size={30} color={COLORS.lightWhite} />
-              <Text style={styles.textStyle}>Chỉ đường</Text>
+              <Ionicons name="navigate" size={30} color={COLORS.lightWhite} />
+              <Text style={styles.textStyle}>
+                Chỉ đường theo vị trí hiện tại
+              </Text>
             </TouchableOpacity>
           </View>
         </View>

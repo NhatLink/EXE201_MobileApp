@@ -52,10 +52,14 @@ export const SalonInfomationService = {
       }
     );
   },
-  GetServiceHairBySalonInformationId(id) {
-    return API.get(
-      `/api/v1/servicehairs/GetServiceHairBySalonInformationId/${id}`
-    );
+  GetServiceHairBySalonInformationId(id, page, size, search) {
+    return API.get(`/api/v1/servicehairs/GetServiceHairBySalonIdPaging/${id}`, {
+      params: {
+        page,
+        size,
+        search,
+      },
+    });
   },
   GetFeedBackBySalonId(id, page, size, rating) {
     return API.get(`/api/v1/feedbacks/GetFeedBackBySalonId/${id}`, {

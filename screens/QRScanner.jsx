@@ -6,6 +6,8 @@ import {
   Modal,
   ActivityIndicator,
   TouchableOpacity,
+  Alert,
+  Linking,
 } from "react-native";
 import { CameraView, Camera } from "expo-camera/next";
 import { Ionicons } from "@expo/vector-icons";
@@ -60,6 +62,12 @@ export default function QRScanner({ navigation }) {
     fetchData();
   }, [dataScan, dispatch]);
 
+  // const openAppSettings = () => {
+  //   Linking.openSettings().catch(() => {
+  //     Alert.alert("Lỗi", "Không thể mở cài đặt ứng dụng.");
+  //   });
+  // };
+
   const handleBarCodeScanned = ({ type, data }) => {
     setScanned(true);
     // alert(`Bar code with type ${type} and data ${data} has been scanned!`);
@@ -67,16 +75,34 @@ export default function QRScanner({ navigation }) {
   };
 
   if (hasPermission === null) {
-    return <Text>Requesting for camera permission</Text>;
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color={COLORS.primary} />
+        <Text>Đang chờ sự cho phép sử dụng camera, xin chờ</Text>
+      </View>
+    );
   }
   if (hasPermission === false) {
-    return <Text>No access to camera</Text>;
+    return (
+      <View style={styles.loadingContainer}>
+        <Ionicons name="sad-outline" size={150} color={COLORS.primary} />
+        <Text>Quyền sử dụng camera bị từ chối!</Text>
+        <Text>Hãy vào phần cài đặt của app để kích hoạt</Text>
+        {/* <TouchableOpacity
+          activeOpacity={0.7}
+          style={styles.btnStyle}
+          onPress={openAppSettings}
+        >
+          <Ionicons name="camera" size={30} color={COLORS.background} />
+          <Text style={styles.textStyle}>Cho phép sử dụng Camera</Text>
+        </TouchableOpacity> */}
+      </View>
+    );
   }
 
   if (loader) {
     return (
       <View style={styles.loadingContainer}>
-        Đang xư
         <ActivityIndicator size="large" color={COLORS.primary} />
         <Text>Đang lấy dữ liệu, xin chờ</Text>
       </View>
@@ -202,5 +228,22 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     fontWeight: "bold",
     color: COLORS.lightWhite,
+  },
+  btnStyle: {
+    height: 50,
+    // width: "80%",
+    flexDirection: "row",
+    padding: 5,
+    backgroundColor: COLORS.primary,
+    marginVertical: 20,
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 12,
+  },
+
+  textStyle: {
+    color: COLORS.white,
+    fontWeight: "bold",
+    fontSize: 18,
   },
 });

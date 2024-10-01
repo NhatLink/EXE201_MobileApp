@@ -96,6 +96,10 @@ const SearchMapModal = ({
           },
           1000
         ); // 1000 milliseconds to animate
+        setMarkerPosition({
+          latitude: parseFloat(latitude),
+          longitude: parseFloat(longitude),
+        });
       }
     }
   };
@@ -138,7 +142,10 @@ const SearchMapModal = ({
   const requestLocationPermission = async () => {
     let { status } = await Location.requestForegroundPermissionsAsync();
     if (status !== "granted") {
-      Alert.alert("Yêu cầu vị trí bị từ chối !");
+      Alert.alert(
+        "Yêu cầu vị trí bị từ chối !",
+        "Vào phần cài đặt của app để kích hoạt lại"
+      );
       return false;
     }
     return true;
@@ -246,38 +253,38 @@ const SearchMapModal = ({
     >
       <View style={styles.fullScreenModal}>
         <View style={styles.mapContainer}>
-          {region && (
-            <MapView
-              ref={mapRef}
-              style={styles.map}
-              provider={MapView.PROVIDER_GOOGLE}
-              //   initialRegion={{
-              //     latitude: markerPosition.latitude,
-              //     longitude: markerPosition.longitude,
-              //     latitudeDelta: 0.0922,
-              //     longitudeDelta: 0.0421,
-              //   }}
-              //   region={{
-              //     latitude: markerPosition.latitude,
-              //     longitude: markerPosition.longitude,
-              //     latitudeDelta: 0.0922,
-              //     longitudeDelta: 0.0421,
-              //   }}
-              initialRegion={region}
-              // region={region}
-              // onRegionChangeComplete={setRegion}
-              onPress={handleMapPress}
-            >
-              {markerPosition && (
-                <Marker
-                  coordinate={markerPosition} // Đặt vị trí ghim
-                  title="Vị trí đánh dấu"
-                  draggable // Cho phép kéo ghim
-                  onDragEnd={(e) => setMarkerPosition(e.nativeEvent.coordinate)} // Cập nhật vị trí ghim khi kéo
-                />
-              )}
-            </MapView>
-          )}
+          {/* {region && ( */}
+          <MapView
+            ref={mapRef}
+            style={styles.map}
+            provider={MapView.PROVIDER_GOOGLE}
+            //   initialRegion={{
+            //     latitude: markerPosition.latitude,
+            //     longitude: markerPosition.longitude,
+            //     latitudeDelta: 0.0922,
+            //     longitudeDelta: 0.0421,
+            //   }}
+            //   region={{
+            //     latitude: markerPosition.latitude,
+            //     longitude: markerPosition.longitude,
+            //     latitudeDelta: 0.0922,
+            //     longitudeDelta: 0.0421,
+            //   }}
+            initialRegion={region}
+            // region={region}
+            // onRegionChangeComplete={setRegion}
+            onPress={handleMapPress}
+          >
+            {markerPosition && (
+              <Marker
+                coordinate={markerPosition} // Đặt vị trí ghim
+                title="Vị trí đánh dấu"
+                draggable // Cho phép kéo ghim
+                onDragEnd={(e) => setMarkerPosition(e.nativeEvent.coordinate)} // Cập nhật vị trí ghim khi kéo
+              />
+            )}
+          </MapView>
+          {/* )} */}
           <Text style={styles.modalTextTitle}>Tìm kiếm theo vị trí</Text>
           <View style={styles.searchContainer}>
             {/* <Ionicons

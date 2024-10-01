@@ -35,7 +35,7 @@ const Employee = (storeId) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedService, setSelectedService] = useState(null);
   const [searchKey, setSearchKey] = useState("");
-  const [filterKey, setFilterKey] = useState(salonService);
+  const [filterKey, setFilterKey] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(3);
   const dispatch = useDispatch();

@@ -6,6 +6,7 @@ import {
   TextInput,
   StyleSheet,
   TouchableOpacity,
+  Image,
 } from "react-native";
 import { COLORS, SIZES } from "../constants";
 import { Ionicons, Feather } from "@expo/vector-icons";
@@ -18,7 +19,12 @@ const Welcome = () => {
     <View>
       <View>
         <View style={styles.container}>
-          <Text style={styles.welcomeTxt}>HairHub</Text>
+          <Image
+            style={{ height: 80, width: 300, marginTop: 10 }}
+            source={require("../assets/HairHubHome1.png")}
+            resizeMode="contain" // hoặc "cover" hoặc "stretch" tùy theo yêu cầu của bạn
+          />
+          {/* <Text style={styles.welcomeTxt}>HairHub</Text> */}
           <Text style={styles.welcomeMessage}>
             Đặt Lịch mọi Lúc - Phục Vụ Mọi Nơi
           </Text>
@@ -60,6 +66,8 @@ export default Welcome;
 const styles = StyleSheet.create({
   container: {
     width: "100%",
+    justifyContent: "center",
+    alignItems: "center",
   },
   welcomeTxt: {
     fontFamily: "bold",
@@ -69,8 +77,9 @@ const styles = StyleSheet.create({
   },
   welcomeMessage: {
     fontWeight: "bold",
-    fontSize: SIZES.xxLarge - 15,
-    color: COLORS.primary,
+    fontSize: 20,
+    color: COLORS.secondary,
+    marginBottom: SIZES.xSmall,
   },
 
   searchContainer: {

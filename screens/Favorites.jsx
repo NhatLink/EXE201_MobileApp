@@ -80,7 +80,7 @@ const Favorites = ({ navigation }) => {
               <TouchableOpacity
                 style={styles.favcontainer}
                 onPress={() =>
-                  navigation.navigate("Details", { collection: item?.id })
+                  navigation.navigate("Details", { product: item?.id })
                 }
               >
                 <TouchableOpacity style={styles.imageContainer}>

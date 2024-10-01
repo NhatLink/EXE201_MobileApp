@@ -8,8 +8,9 @@ import {
   Modal,
   ScrollView,
   Button,
+  ActivityIndicator,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { COLORS, SIZES } from "../../constants";
 import { Ionicons } from "@expo/vector-icons";
@@ -25,10 +26,33 @@ const Review = (storeId) => {
   const dispatch = useDispatch();
   const { feedback, salonDetail } = useSelector((state) => state.SALON);
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(3);
+  const [itemsPerPage, setItemsPerPage] = useState(2);
   const [selectedRating, setSelectedRating] = useState(null);
+  const [loader, setLoader] = useState(false);
+
+  useEffect(() => {
+    async function fetchData() {
+      if (storeId && storeId.storeId) {
+        try {
+          setLoader(true); // Bật loading
+          await dispatch(
+            fetchFeedbackBySalonInformationId(
+              storeId.storeId,
+              currentPage,
+              itemsPerPage
+            )
+          );
+        } finally {
+          setLoader(false); // Tắt loading
+        }
+      }
+    }
+    fetchData();
+  }, [storeId.storeId, currentPage, itemsPerPage]);
 
   const filterFeedbacksByRating = async (rating) => {
+    setCurrentPage(1);
+    setItemsPerPage(2);
     setSelectedRating(rating);
     if (rating === null) {
       // setFilteredFeedbacks(dataFeedback);
@@ -181,7 +205,7 @@ const Review = (storeId) => {
           //   />
         )}
       </View>
-      <View style={styles.paging}>
+      {/* <View style={styles.paging}>
         {currentPage > 1 && (
           <TouchableOpacity style={styles.pagingArrow} onPress={Decrease}>
             <Ionicons
@@ -201,7 +225,20 @@ const Review = (storeId) => {
             />
           </TouchableOpacity>
         )}
-      </View>
+      </View> */}
+      {feedback?.total > feedback?.size && (
+        <TouchableOpacity onPress={() => setItemsPerPage(itemsPerPage + 4)}>
+          {!loader ? (
+            <Text style={styles.loadmoreButton}>Hiện thị thêm đánh giá </Text>
+          ) : (
+            <ActivityIndicator
+              style={{ marginVertical: 20 }}
+              size="large"
+              color={COLORS.secondary}
+            />
+          )}
+        </TouchableOpacity>
+      )}
     </SafeAreaView>
   );
 };
@@ -366,5 +403,14 @@ const styles = StyleSheet.create({
   pagingArrow: {
     // marginVertical: 10,
     padding: 10,
+  },
+  loadmoreButton: {
+    backgroundColor: COLORS.secondary,
+    textAlign: "center",
+    padding: 3,
+    marginVertical: 20,
+    marginHorizontal: 40,
+    borderRadius: 10,
+    fontWeight: "bold",
   },
 });

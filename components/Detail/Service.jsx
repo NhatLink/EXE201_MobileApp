@@ -10,8 +10,9 @@ import {
   Button,
   TextInput,
   Keyboard,
+  ActivityIndicator,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { COLORS, SIZES, images } from "../../constants";
 import { useNavigation } from "@react-navigation/native";
@@ -28,14 +29,52 @@ import {
 import * as SecureStore from "expo-secure-store";
 import { ToastAndroid } from "react-native";
 import { resetAvailable } from "../../store/booking/action";
+import { fetchServiceHairBySalonInformationId } from "../../store/salon/action";
 const Service = (storeId) => {
   const navigation = useNavigation();
-  const { salonService, salonEmployee } = useSelector((state) => state.SALON);
+  const { salonService } = useSelector((state) => state.SALON);
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedService, setSelectedService] = useState(null);
   const [searchKey, setSearchKey] = useState("");
-  const [filteredServices, setFilteredServices] = useState(salonService);
+  const [filterKey, setFilterKey] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(3);
+  const [loader, setLoader] = useState(false);
   const dispatch = useDispatch();
+
+  // useEffect(() => {
+  //   if (storeId && storeId.storeId) {
+  //     dispatch(
+  //       fetchServiceHairBySalonInformationId(
+  //         storeId.storeId,
+  //         currentPage,
+  //         itemsPerPage,
+  //         filterKey
+  //       )
+  //     );
+  //   }
+  // }, [storeId.storeId, currentPage, itemsPerPage, filterKey]);
+
+  useEffect(() => {
+    async function fetchData() {
+      if (storeId && storeId.storeId) {
+        try {
+          setLoader(true); // Bật loading
+          await dispatch(
+            fetchServiceHairBySalonInformationId(
+              storeId.storeId,
+              currentPage,
+              itemsPerPage,
+              filterKey
+            )
+          );
+        } finally {
+          setLoader(false); // Tắt loading
+        }
+      }
+    }
+    fetchData();
+  }, [storeId.storeId, currentPage, itemsPerPage, filterKey]);
 
   const handleBook = async (storeId, item) => {
     try {
@@ -82,17 +121,15 @@ const Service = (storeId) => {
     setModalVisible(false);
     setSelectedService(null);
   };
-  // const handleSearch = () => {
-  //   Keyboard.dismiss();
-  //   const filtered = salonService.filter((service) =>
-  //     service.serviceName.toLowerCase().includes(searchKey.toLowerCase())
-  //   );
-  //   setFilteredServices(filtered);
-  // };
+  const handleSearch = () => {
+    Keyboard.dismiss();
+    setFilterKey(searchKey);
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView>
-        {/* <View style={styles.searchContainer}>
+        <View style={styles.searchContainer}>
           <TouchableOpacity>
             <Feather
               style={styles.searchIcon}
@@ -106,7 +143,7 @@ const Service = (storeId) => {
               style={styles.searchInput}
               value={searchKey}
               onChangeText={setSearchKey}
-              placeholder="Bạn đang tìm gì?"
+              placeholder="Bạn đang tìm dịch vụ gì?"
             />
           </View>
 
@@ -117,62 +154,81 @@ const Service = (storeId) => {
               color={COLORS.offwhite}
             />
           </TouchableOpacity>
-        </View> */}
-        {salonService.map((item) => (
-          <View
-            key={item.id}
-            style={styles.serviceItem}
-            onPress={() => {
-              // Handle navigation or other actions
-            }}
-          >
-            <View style={styles.imgService}>
-              <Image source={{ uri: item?.img }} style={styles.image} />
-            </View>
-            <TouchableOpacity
-              style={styles.serviceInfo}
-              // onPress={() => openModal(item)}
+        </View>
+        {Array.isArray(salonService?.items) &&
+        salonService.items.length === 0 ? (
+          <Text style={styles.modalTextTitle}>Không tìm thấy dịch vụ nào</Text>
+        ) : (
+          Array.isArray(salonService?.items) &&
+          salonService.items.map((item) => (
+            <View
+              key={item.id}
+              style={styles.serviceItem}
+              onPress={() => {
+                // Handle navigation or other actions
+              }}
             >
-              <Text style={styles.serviceName} numberOfLines={1}>
-                {item?.serviceName}
-              </Text>
-              <Text style={styles.serviceDescription} numberOfLines={1}>
-                {item?.description}
-              </Text>
-            </TouchableOpacity>
-            <View style={styles.pricingInfo}>
-              {item?.reducePrice ? (
-                <>
-                  <Text
-                    style={styles.servicePrice}
-                    numberOfLines={1}
-                  >{`${item?.reducePrice?.toLocaleString()} VND`}</Text>
-                  <Text
-                    style={styles.servicePrice2}
-                    numberOfLines={1}
-                  >{`${item?.price?.toLocaleString()} VND`}</Text>
-                </>
-              ) : (
-                <>
-                  <Text
-                    style={styles.servicePrice}
-                    numberOfLines={1}
-                  >{`${item?.price?.toLocaleString()} VND`}</Text>
-                </>
-              )}
+              <View style={styles.imgService}>
+                <Image source={{ uri: item?.img }} style={styles.image} />
+              </View>
+              <TouchableOpacity
+                style={styles.serviceInfo}
+                // onPress={() => openModal(item)}
+              >
+                <Text style={styles.serviceName} numberOfLines={1}>
+                  {item?.serviceName}
+                </Text>
+                <Text style={styles.serviceDescription} numberOfLines={1}>
+                  {item?.description}
+                </Text>
+              </TouchableOpacity>
+              <View style={styles.pricingInfo}>
+                {item?.reducePrice ? (
+                  <>
+                    <Text
+                      style={styles.servicePrice}
+                      numberOfLines={1}
+                    >{`${item?.reducePrice?.toLocaleString()} VND`}</Text>
+                    <Text
+                      style={styles.servicePrice2}
+                      numberOfLines={1}
+                    >{`${item?.price?.toLocaleString()} VND`}</Text>
+                  </>
+                ) : (
+                  <>
+                    <Text
+                      style={styles.servicePrice}
+                      numberOfLines={1}
+                    >{`${item?.price?.toLocaleString()} VND`}</Text>
+                  </>
+                )}
 
-              <Text style={styles.serviceDescription} numberOfLines={1}>{`${
-                item?.time * 60
-              } phút`}</Text>
+                <Text style={styles.serviceDescription} numberOfLines={1}>{`${
+                  item?.time * 60
+                } phút`}</Text>
+              </View>
+              <TouchableOpacity
+                style={styles.bookButton}
+                onPress={() => handleBook(storeId, item)}
+              >
+                <Text style={styles.button}>Đặt </Text>
+              </TouchableOpacity>
             </View>
-            <TouchableOpacity
-              style={styles.bookButton}
-              onPress={() => handleBook(storeId, item)}
-            >
-              <Text style={styles.button}>Đặt </Text>
-            </TouchableOpacity>
-          </View>
-        ))}
+          ))
+        )}
+        {salonService?.total > salonService?.size && (
+          <TouchableOpacity onPress={() => setItemsPerPage(itemsPerPage + 4)}>
+            {!loader ? (
+              <Text style={styles.loadmoreButton}>Hiện thị thêm dịch vụ </Text>
+            ) : (
+              <ActivityIndicator
+                style={{ marginVertical: 20 }}
+                size="large"
+                color={COLORS.secondary}
+              />
+            )}
+          </TouchableOpacity>
+        )}
       </ScrollView>
       <Modal
         animationType="slide"
@@ -325,14 +381,14 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     flexDirection: "row",
-    backgroundColor: COLORS.secondary,
+    backgroundColor: COLORS.cardcolor,
     borderRadius: SIZES.medium,
     marginHorizontal: SIZES.small,
     height: 30,
   },
   searchWrapper: {
     flex: 1,
-    backgroundColor: COLORS.secondary,
+    backgroundColor: COLORS.cardcolor,
     marginRight: SIZES.xSmall,
     justifyContent: "center",
     alignItems: "center",
@@ -363,5 +419,14 @@ const styles = StyleSheet.create({
     aspectRatio: 1,
     resizeMode: "cover",
     borderRadius: SIZES.small,
+  },
+  loadmoreButton: {
+    backgroundColor: COLORS.secondary,
+    textAlign: "center",
+    padding: 3,
+    marginVertical: 20,
+    marginHorizontal: 40,
+    borderRadius: 10,
+    fontWeight: "bold",
   },
 });

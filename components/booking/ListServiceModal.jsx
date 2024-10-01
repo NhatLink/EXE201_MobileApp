@@ -28,7 +28,7 @@ const ListServiceModal = ({ isVisible, onClose }) => {
 
   useEffect(() => {
     const checkedIds = new Set(services.map((service) => service.id));
-    const filteredServices = salonService.filter(
+    const filteredServices = salonService.items.filter(
       (service) => !checkedIds.has(service.id)
     );
     setUniqueServices(filteredServices);

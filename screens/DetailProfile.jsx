@@ -10,6 +10,7 @@ import {
   TextInput,
   Modal,
   ToastAndroid,
+  BackHandler,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
@@ -64,7 +65,9 @@ const DetailProfile = ({ navigation }) => {
   const pickImageFromGallery = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== "granted") {
-      alert("Sorry, we need camera roll permissions to make this work!");
+      alert(
+        "Xin lỗi, chúng tôi cần quyền truy cập vào camera để thực hiện chức năng này!"
+      );
       return;
     }
 
@@ -87,7 +90,9 @@ const DetailProfile = ({ navigation }) => {
   const pickImageFromCamera = async () => {
     const { status } = await ImagePicker.requestCameraPermissionsAsync();
     if (status !== "granted") {
-      alert("Sorry, we need camera permissions to make this work!");
+      alert(
+        "Xin lỗi, chúng tôi cần quyền truy cập vào camera để thực hiện chức năng này!"
+      );
       return;
     }
 
@@ -149,27 +154,35 @@ const DetailProfile = ({ navigation }) => {
     }
   };
   const onChangeDate = (event, selectedDate) => {
-    const currentDate = selectedDate || userData?.DayOfBirth;
-    const formattedDate = currentDate.toISOString().slice(0, 19);
-    setShowDatePicker(false);
+    if (event.type === "set") {
+      const currentDate =
+        selectedDate || new Date(userData?.DayOfBirth ?? new Date());
 
-    if (
-      userData?.DayOfBirth?.split("T")[0] ===
-      currentDate.toISOString().split("T")[0]
-    ) {
-      setUserData((prevState) => ({
-        ...prevState,
-        DayOfBirth: userData?.DayOfBirth,
-      }));
+      // Định dạng ngày
+      const formattedDate = currentDate.toISOString().slice(0, 19);
+      setShowDatePicker(false);
+
+      // Kiểm tra xem ngày có thay đổi không
+      if (
+        userData?.DayOfBirth?.split("T")[0] !==
+        currentDate.toISOString().split("T")[0]
+      ) {
+        setUserData((prevState) => ({
+          ...prevState,
+          DayOfBirth: formattedDate,
+        }));
+      }
     } else {
-      setUserData((prevState) => ({ ...prevState, DayOfBirth: formattedDate }));
+      // Người dùng nhấn "Cancel"
+      setShowDatePicker(false);
     }
   };
+
   const isDifferent = JSON.stringify(user) !== JSON.stringify(userData);
 
   // console.log("isDifferent", isDifferent);
   const handlePressBack = () => {
-    if (isDifferent) {
+    if (JSON.stringify(user) !== JSON.stringify(userData)) {
       Alert.alert(
         "Những thông tin bạn thay đổi sẽ không được lưu",
         "Bạn muốn quay về chứ?",
@@ -191,6 +204,21 @@ const DetailProfile = ({ navigation }) => {
       navigation.goBack();
     }
   };
+
+  useEffect(() => {
+    const onBackPress = () => {
+      handlePressBack();
+      return true; // Prevent default behavior (exit the app)
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      onBackPress
+    );
+
+    // Clean up the event listener when the component unmounts
+    return () => backHandler.remove();
+  }, [user, userData]);
 
   // const updateUser = async () => {
   //   setLoader(true);
@@ -223,8 +251,15 @@ const DetailProfile = ({ navigation }) => {
   //   }
   // };
   const updateUser = async () => {
-    setLoader(true);
+    if (JSON.stringify(user) === JSON.stringify(userData)) {
+      ToastAndroid.show(
+        "Dữ liệu người dùng chưa thay đổi !!!",
+        ToastAndroid.SHORT
+      );
+      return;
+    }
     try {
+      setLoader(true);
       let formData = new FormData();
 
       // Loop through each key in userData object
@@ -273,7 +308,28 @@ const DetailProfile = ({ navigation }) => {
   return (
     <SafeAreaView style={styles.container}>
       <Loader visible={loader} />
-      <Text style={styles.title}>Chỉnh sửa thông tin người dùng</Text>
+      <View style={styles.upperRow}>
+        <TouchableOpacity onPress={handlePressBack}>
+          <Ionicons
+            style={styles.textStyle}
+            name="return-up-back"
+            size={24}
+            color="black"
+          />
+        </TouchableOpacity>
+        <Text style={styles.title}>Chỉnh sửa thông tin người dùng</Text>
+        {/* {JSON.stringify(user) !== JSON.stringify(userData) && ( */}
+        <TouchableOpacity onPress={updateUser}>
+          <Ionicons
+            style={styles.textStyle}
+            name="checkmark-outline"
+            size={24}
+            color="red"
+          />
+        </TouchableOpacity>
+        {/* )} */}
+      </View>
+
       <TouchableOpacity
         style={styles.maiImag2}
         onPress={() => {
@@ -420,7 +476,9 @@ const DetailProfile = ({ navigation }) => {
             </View>
             <View style={styles.menuItem2}>
               <Text style={styles.menuItemText}>
-                {userData?.password ? maskPassword(userData.password) : "trống"}
+                {userData?.password
+                  ? maskPassword(userData.password)
+                  : "********"}
               </Text>
               <TouchableOpacity
                 style={{ marginLeft: 5, paddingHorizontal: 5 }}
@@ -612,24 +670,7 @@ const DetailProfile = ({ navigation }) => {
           />
         )}
       </View>
-      <TouchableOpacity style={styles.buttonClose} onPress={handlePressBack}>
-        <Ionicons
-          style={styles.textStyle}
-          name="return-up-back"
-          size={24}
-          color="black"
-        />
-      </TouchableOpacity>
-      {isDifferent && (
-        <TouchableOpacity style={styles.buttonConfirm} onPress={updateUser}>
-          <Ionicons
-            style={styles.textStyle}
-            name="checkmark-outline"
-            size={24}
-            color="red"
-          />
-        </TouchableOpacity>
-      )}
+
       <ChangePasswordModal
         isVisible={modalChangepassVisible}
         onClose={() => {
@@ -647,6 +688,13 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: COLORS.background,
+  },
+  upperRow: {
+    marginVertical: 10,
+    marginHorizontal: 10,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
   title: {
     textAlign: "center",

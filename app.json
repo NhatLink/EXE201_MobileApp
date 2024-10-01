@@ -18,6 +18,8 @@
       "supportsTablet": true
     },
     "android": {
+      "package":"com.hairhub.hairhubVN",
+      "versionCode":1,
       "usesCleartextTraffic": true,
       "adaptiveIcon": {
         "foregroundImage": "./assets/HairHubLogo2.png",
@@ -27,8 +29,7 @@
         "googleMaps": {
           "apiKey": "AIzaSyAs7hqe3ZUJTjrM7KbdVqkdxB__0eCcKgE"
         }
-      },
-      "package": "com.nhatlink.hairhub"
+      }
     },
     "web": {
       "favicon": "./assets/favicon.png"

@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View, TouchableOpacity, Image } from "react-native";
-import React from "react";
+import React, { useState } from "react";
 import { SIZES, COLORS, SHADOWS } from "../../constants";
 import { useNavigation } from "@react-navigation/native";
 import { useDispatch } from "react-redux";
@@ -15,6 +15,13 @@ import { fetchServiceHairBySalonInformationId } from "../../store/salon/action";
 const SearchTile = ({ item }) => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
+  const [showAll, setShowAll] = useState(false);
+
+  // Số dịch vụ muốn hiển thị mặc định
+  const defaultLimit = 3;
+  const servicesToShow = showAll
+    ? item?.services
+    : item?.services?.slice(0, defaultLimit);
   const handleBook = async (storeId, item) => {
     try {
       const accessToken = await SecureStore.getItemAsync("accessToken");
@@ -117,59 +124,52 @@ const SearchTile = ({ item }) => {
           )}
         </View>
       </TouchableOpacity>
-      {item?.services &&
-        item?.services?.map((itemService) => (
-          <View
-            key={itemService?.id}
-            style={styles.serviceItem}
-            onPress={() => {
-              // Handle navigation or other actions
-            }}
-          >
-            <TouchableOpacity
-              style={styles.serviceInfo}
-              // onPress={() => openModal(item)}
-            >
-              <Text style={styles.serviceName} numberOfLines={1}>
-                {itemService?.serviceName}
+      {servicesToShow?.map((itemService) => (
+        <View key={itemService?.id} style={styles.serviceItem}>
+          <TouchableOpacity style={styles.serviceInfo}>
+            <Text style={styles.serviceName} numberOfLines={1}>
+              {itemService?.serviceName}
+            </Text>
+            <Text style={styles.serviceDescription} numberOfLines={1}>
+              {itemService?.description}
+            </Text>
+          </TouchableOpacity>
+          <View style={styles.pricingInfo}>
+            {itemService?.reducePrice ? (
+              <>
+                <Text style={styles.servicePrice} numberOfLines={1}>
+                  {`${itemService?.reducePrice?.toLocaleString()} VND`}
+                </Text>
+                <Text style={styles.servicePrice2} numberOfLines={1}>
+                  {`${itemService?.price.toLocaleString()} VND`}
+                </Text>
+              </>
+            ) : (
+              <Text style={styles.servicePrice} numberOfLines={1}>
+                {`${itemService?.price.toLocaleString()} VND`}
               </Text>
-              <Text style={styles.serviceDescription} numberOfLines={1}>
-                {itemService?.description}
-              </Text>
-            </TouchableOpacity>
-            <View style={styles.pricingInfo}>
-              {itemService?.reducePrice ? (
-                <>
-                  <Text
-                    style={styles.servicePrice}
-                    numberOfLines={1}
-                  >{`${itemService?.reducePrice?.toLocaleString()} VND`}</Text>
-                  <Text
-                    style={styles.servicePrice2}
-                    numberOfLines={1}
-                  >{`${itemService?.price.toLocaleString()} VND`}</Text>
-                </>
-              ) : (
-                <>
-                  <Text
-                    style={styles.servicePrice}
-                    numberOfLines={1}
-                  >{`${itemService?.price.toLocaleString()} VND`}</Text>
-                </>
-              )}
-
-              <Text style={styles.serviceDescription} numberOfLines={1}>{`${
-                (itemService?.time ?? 0) * 60
-              } phút`}</Text>
-            </View>
-            <TouchableOpacity
-              style={styles.bookButton}
-              onPress={() => handleBook(item?.id, itemService)}
-            >
-              <Text style={styles.button}>Đặt</Text>
-            </TouchableOpacity>
+            )}
+            <Text style={styles.serviceDescription} numberOfLines={1}>
+              {`${(itemService?.time ?? 0) * 60} phút`}
+            </Text>
           </View>
-        ))}
+          <TouchableOpacity
+            style={styles.bookButton}
+            onPress={() => handleBook(item?.id, itemService)}
+          >
+            <Text style={styles.button}>Đặt</Text>
+          </TouchableOpacity>
+        </View>
+      ))}
+
+      {/* Nút "Xem thêm" hoặc "Thu gọn" */}
+      {item?.services?.length > defaultLimit && (
+        <TouchableOpacity onPress={() => setShowAll(!showAll)}>
+          <Text style={styles.loadmoreButton}>
+            {showAll ? "Thu gọn" : "Xem thêm dịch vụ..."}
+          </Text>
+        </TouchableOpacity>
+      )}
     </View>
   );
 };
@@ -364,5 +364,15 @@ const styles = StyleSheet.create({
   servicePrice2: {
     fontSize: SIZES.xSmall,
     textDecorationLine: "line-through",
+  },
+  loadmoreButton: {
+    color: COLORS.secondary,
+    textAlign: "center",
+    padding: 3,
+    marginVertical: 20,
+    marginHorizontal: 40,
+    borderRadius: 10,
+    fontWeight: "bold",
+    paddingHorizontal: 5,
   },
 });

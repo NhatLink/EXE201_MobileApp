@@ -15,6 +15,7 @@ import {
   ScrollView,
   Animated,
   RefreshControl,
+  ActivityIndicator,
 } from "react-native";
 import axios from "axios";
 import { baseUrl } from "../utils/IP";
@@ -43,9 +44,8 @@ const Search = () => {
   const [modal3Visible, setModal3Visible] = useState(false);
   const [loader, setLoader] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [itemsPerPage, setItemsPerPage] = useState(3);
   const { searchSalon } = useSelector((state) => state.SALON);
-  // console.log("markerPosition", markerPosition);
 
   const Decrease = () => {
     if (currentPage > 1) {
@@ -59,19 +59,22 @@ const Search = () => {
   };
   useEffect(() => {
     async function fetchData() {
-      setLoader(true);
-      dispatch(
-        searchSalonInformation(
-          searchKeyService,
-          searchKeyWhere,
-          searchKeyStore,
-          currentPage,
-          itemsPerPage,
-          markerPosition.latitude,
-          markerPosition.longitude
-        )
-      );
-      setLoader(false);
+      try {
+        setLoader(true);
+        await dispatch(
+          searchSalonInformation(
+            searchKeyService,
+            searchKeyWhere,
+            searchKeyStore,
+            currentPage,
+            itemsPerPage,
+            markerPosition.latitude,
+            markerPosition.longitude
+          )
+        );
+      } finally {
+        setLoader(false);
+      }
     }
     fetchData();
   }, [
@@ -134,7 +137,7 @@ const Search = () => {
   };
   return (
     <SafeAreaView style={styles.container}>
-      <Loader visible={loader} />
+      {/* <Loader visible={loader} /> */}
       <View style={styles.wrapper}>
         <View style={styles.searchContainer}>
           <TouchableOpacity>
@@ -199,6 +202,17 @@ const Search = () => {
               </TouchableOpacity>
             )}
           </View> */}
+          <TouchableOpacity
+            style={styles.searchContainer2}
+            onPress={() => openModalWhere()}
+          >
+            <Ionicons
+              style={styles.searchMapIcon}
+              name="location"
+              size={24}
+              color="black"
+            />
+          </TouchableOpacity>
           <View style={styles.searchContainer3}>
             <TouchableOpacity>
               <Ionicons
@@ -236,13 +250,13 @@ const Search = () => {
       {searchSalon && searchSalon?.items && searchSalon?.items?.length === 0 ? (
         <View style={{ flex: 1 }}>
           <Text style={styles.searchResultText}>
-            {`Kết quả tìm kiếm (${searchSalon?.items?.length ?? 0})`}
+            {`Kết quả tìm kiếm (${searchSalon?.total ?? 0})`}
           </Text>
           <Image
             source={require("../assets/images/Pose23.png")}
             style={styles.searchImage}
           />
-          <View style={styles.searchContainer2}>
+          {/* <View style={styles.searchContainer2}>
             <TouchableOpacity onPress={() => openModalWhere()}>
               <Ionicons
                 style={styles.searchMapIcon}
@@ -251,12 +265,12 @@ const Search = () => {
                 color="black"
               />
             </TouchableOpacity>
-          </View>
+          </View> */}
         </View>
       ) : (
         <>
           <Text style={styles.searchResultText}>
-            {`Kết quả tìm kiếm (${searchSalon?.items?.length ?? 0})`}
+            {`Kết quả tìm kiếm (${searchSalon?.total ?? 0})`}
           </Text>
           <FlatList
             data={searchSalon.items}
@@ -267,7 +281,24 @@ const Search = () => {
             }
             ListFooterComponent={
               <View style={styles.paging}>
-                {currentPage > 1 && (
+                {searchSalon?.total > searchSalon?.size && (
+                  <TouchableOpacity
+                    style={styles.pagingArrow}
+                    onPress={() => setItemsPerPage(itemsPerPage + 3)}
+                  >
+                    {!loader ? (
+                      <Text style={styles.loadmoreButton}>
+                        Hiện thị thêm cửa hàng
+                      </Text>
+                    ) : (
+                      <ActivityIndicator
+                        size="large"
+                        color={COLORS.secondary}
+                      />
+                    )}
+                  </TouchableOpacity>
+                )}
+                {/* {currentPage > 1 && (
                   <TouchableOpacity
                     style={styles.pagingArrow}
                     onPress={Decrease}
@@ -291,7 +322,7 @@ const Search = () => {
                       color={COLORS.primary}
                     />
                   </TouchableOpacity>
-                )}
+                )} */}
               </View>
             }
           />
@@ -316,7 +347,7 @@ const Search = () => {
               </TouchableOpacity>
             )}
           </View> */}
-          <View style={styles.searchContainer2}>
+          {/* <View style={styles.searchContainer2}>
             <TouchableOpacity onPress={() => openModalWhere()}>
               <Ionicons
                 style={styles.searchMapIcon}
@@ -325,7 +356,7 @@ const Search = () => {
                 color="black"
               />
             </TouchableOpacity>
-          </View>
+          </View> */}
         </>
       )}
       <SearchStoreModal
@@ -369,17 +400,27 @@ const styles = StyleSheet.create({
     height: 50,
   },
   searchContainer2: {
+    // justifyContent: "center",
+    // alignItems: "center",
+    // flexDirection: "row",
+    // backgroundColor: COLORS.secondary,
+    // borderRadius: SIZES.medium,
+    // height: 50,
+    // position: "absolute",
+    // bottom: 10,
+    // left: 10,
+    // zIndex: 99,
+    // paddingHorizontal: 15,
     justifyContent: "center",
     alignItems: "center",
     flexDirection: "row",
-    backgroundColor: COLORS.secondary,
+    backgroundColor: COLORS.cardcolor,
     borderRadius: SIZES.medium,
+    marginTop: SIZES.small,
+    marginBottom: SIZES.medium,
     height: 50,
-    position: "absolute",
-    bottom: 10,
-    left: 10,
-    zIndex: 99,
-    paddingHorizontal: 15,
+    width: "20%",
+    marginRight: 10,
   },
   searchContainer3: {
     justifyContent: "center",
@@ -390,7 +431,7 @@ const styles = StyleSheet.create({
     marginTop: SIZES.small,
     marginBottom: SIZES.medium,
     height: 50,
-    width: "100%",
+    width: "77%",
   },
   search2: {
     flexDirection: "row",
@@ -419,7 +460,7 @@ const styles = StyleSheet.create({
   },
   searchInput: {
     fontFamily: "regular",
-    color: COLORS.black,
+    color: COLORS.gray,
     width: "100%",
     height: "100%",
     paddingHorizontal: SIZES.xSmall,
@@ -435,10 +476,10 @@ const styles = StyleSheet.create({
 
   searchIcon: {
     marginLeft: 10,
-    color: "gray",
+    color: COLORS.secondary,
   },
   searchMapIcon: {
-    color: COLORS.black,
+    color: COLORS.secondary,
   },
   deleteIcon: {
     // position: "absolute",
@@ -495,5 +536,15 @@ const styles = StyleSheet.create({
   pagingArrow: {
     // marginVertical: 10,
     padding: 10,
+  },
+  loadmoreButton: {
+    backgroundColor: COLORS.secondary,
+    textAlign: "center",
+    padding: 3,
+    marginVertical: 20,
+    marginHorizontal: 40,
+    borderRadius: 10,
+    fontWeight: "bold",
+    paddingHorizontal: 5,
   },
 });
