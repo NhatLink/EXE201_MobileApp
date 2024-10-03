@@ -166,6 +166,7 @@ import { AppState, ToastAndroid } from "react-native";
 import NetworkProvider from "./hook/NetworkProvider";
 import { COLORS } from "./constants";
 import { UserServices } from "./services/userServices";
+import RegisterWithGoogle from "./screens/RegisterWithGoogle";
 const Stack = createNativeStackNavigator();
 function RouterContent() {
   const dispatch = useDispatch();
@@ -299,10 +300,10 @@ function RouterContent() {
         // Kiểm tra xem refreshToken có tồn tại không
         if (!refreshToken) {
           console.log("Refresh token không tồn tại");
-          ToastAndroid.show(
-            "Refresh token không tồn tại. Vui lòng đăng nhập lại.",
-            ToastAndroid.SHORT
-          );
+          // ToastAndroid.show(
+          //   "Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại.",
+          //   ToastAndroid.SHORT
+          // );
           return; // Ngừng thực thi nếu không có refresh token
         }
 
@@ -549,6 +550,12 @@ export default function App() {
               <Stack.Screen
                 name="ResetPassword"
                 component={ResetPassword}
+                options={{ headerShown: false }}
+              />
+
+              <Stack.Screen
+                name="RegisterWithGoogle"
+                component={RegisterWithGoogle}
                 options={{ headerShown: false }}
               />
             </Stack.Navigator>

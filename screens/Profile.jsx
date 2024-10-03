@@ -165,6 +165,7 @@ const Profile = ({ navigation }) => {
       await SecureStore.deleteItemAsync("refreshToken");
       await SecureStore.deleteItemAsync("userInfo");
       await SecureStore.deleteItemAsync("accountId");
+      await SecureStore.deleteItemAsync("IdToken");
       // setAccessToken(null);
       // setRefreshToken(null);
       setUserInfo(null);

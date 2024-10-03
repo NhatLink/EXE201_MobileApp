@@ -54,6 +54,40 @@ export const loginUser = (credentials) => async (dispatch) => {
   }
 };
 
+// export const loginUserGoogle = (credentials,data,navigator) => async (dispatch) => {
+//   try {
+//     const response = await UserServices.loginUserGoogle(credentials);
+//     if (response.data.roleName === "Customer") {
+//       dispatch({ type: LOGIN_SUCCESS, payload: response.data });
+//       dispatch(fetchUser(response.data.accessToken));
+//       // Save to SecureStore
+//       SecureStore.setItemAsync("accessToken", response.data.accessToken);
+//       SecureStore.setItemAsync("refreshToken", response.data.refreshToken);
+//       SecureStore.setItemAsync("accountId", response.data.accountId);
+//       SecureStore.setItemAsync(
+//         "userInfo",
+//         JSON.stringify(response.data.customerResponse)
+//       );
+//       ToastAndroid.show("đăng nhập thành công", ToastAndroid.SHORT);
+//     } else {
+//       console.log("Tài khoản của bạn không thể đăng nhập");
+//       ToastAndroid.show(
+//         "Tài khoản của bạn không thể đăng nhập vào app dành cho khách hàng",
+//         ToastAndroid.SHORT
+//       );
+//     }
+//   } catch (error) {
+//     if (error.response.status === 404) {
+//       console.log("Refresh token expired");
+//       dispatch(registerUserGoogle(data,navigator));
+//     } else {
+//       console.log("eroor login:", error);
+//       dispatch({ type: LOGIN_FAIL, payload: error.response.data });
+//       ToastAndroid.show(error.response.data.message, ToastAndroid.SHORT);
+//     }
+//   }
+// };
+
 // Fetch user action
 export const fetchToken = (data) => async (dispatch) => {
   console.log("fetchTokendata", data);
@@ -104,6 +138,18 @@ export const registerUser = (data, navigation) => async (dispatch) => {
     dispatch({ type: REGISTER_FAIL, payload: error.response.data });
   }
 };
+
+// export const registerUserGoogle = (data, navigation) => async (dispatch) => {
+//   // const navigation = useNavigation();
+//   try {
+//     const response = await UserServices.registerUserGoogle(data);
+//     dispatch({ type: REGISTER_SUCCESS, payload: response.data });
+//     ToastAndroid.show("Đăng kí thành công", ToastAndroid.SHORT);
+//     navigation.navigate("Profile");
+//   } catch (error) {
+//     dispatch({ type: REGISTER_FAIL, payload: error.response.data });
+//   }
+// };
 
 export const forgotPassword = (data, navigation) => async (dispatch) => {
   // const navigation = useNavigation();

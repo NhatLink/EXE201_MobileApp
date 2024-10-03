@@ -13,6 +13,12 @@ export const UserServices = {
   registerUser(data) {
     return API.post("/api/v1/accounts/RegisterAccount", data);
   },
+  registerUserGoogle(data) {
+    return API.post("/api/v1/accounts/RegisterAccountLoginGoogle", data);
+  },
+  loginUserGoogle(data) {
+    return API.post("/api/v1/accounts/GoogleLogin", data);
+  },
   getUserById(id) {
     return API.get(`/api/v1/accounts/GetAccountById/${id}`);
   },
