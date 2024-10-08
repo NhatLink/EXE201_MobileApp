@@ -158,7 +158,9 @@ const OrdersList = () => {
           ))}
         </ScrollView>
       </View>
-
+      <Text style={styles.filterText}>
+        Tổng lịch hẹn {selectedStatus}: {historyAppointment?.total}
+      </Text>
       {historyAppointment && historyAppointment?.items?.length === 0 ? (
         <View
           style={{ flex: 1, justifyContent: "center", alignItems: "center" }}

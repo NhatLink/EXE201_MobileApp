@@ -89,7 +89,7 @@ const LoginPage = () => {
       // const token = authentication?.accessToken;
       const idToken = authentication?.idToken;
       // console.log("Atoken", token);
-      console.log("IdToken", idToken);
+      // console.log("IdToken", idToken);
       // SecureStore.setItemAsync("AccesstokenGoogle", token);
       SecureStore.setItemAsync("idToken", idToken);
       // setUserTokenGoogle(token);

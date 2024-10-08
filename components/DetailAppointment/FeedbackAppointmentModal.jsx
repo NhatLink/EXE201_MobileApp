@@ -26,7 +26,7 @@ import { Rating } from "react-native-ratings";
 import { Feather } from "@expo/vector-icons";
 import { CreateFeedback } from "../../store/feedback/action";
 
-const FeedbackAppointmentModal = ({ isVisible, onClose, data }) => {
+const FeedbackAppointmentModal = ({ isVisible, onClose, data, services }) => {
   const dispatch = useDispatch();
   const [selectedImages, setSelectedImages] = useState([]);
   const [loader, setLoader] = useState(false);
@@ -34,6 +34,23 @@ const FeedbackAppointmentModal = ({ isVisible, onClose, data }) => {
   const [reason, setReason] = useState("");
   const [reasonError, setReasonError] = useState("");
   const [errorStar, setErrorStart] = useState("");
+  const [feedbackDetails, setFeedbackDetails] = useState(
+    services.map((item) => ({
+      AppointmentDetailId: item?.id,
+      Rating: 5, // Giá trị mặc định
+    }))
+  );
+
+  const handleRatingChange = (rating, itemDetailId) => {
+    setFeedbackDetails((prevFeedbackDetails) =>
+      prevFeedbackDetails.map((detail) =>
+        detail.AppointmentDetailId === itemDetailId
+          ? { ...detail, Rating: rating }
+          : detail
+      )
+    );
+  };
+
   const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -62,6 +79,14 @@ const FeedbackAppointmentModal = ({ isVisible, onClose, data }) => {
   };
 
   const createFeedback = async () => {
+    const hasInvalidRating = feedbackDetails.some(
+      (detail) => detail.Rating === 0
+    );
+
+    if (hasInvalidRating) {
+      setErrorStart("Vui lòng đánh giá tất cả các dịch vụ."); // Cập nhật thông báo lỗi
+      return;
+    }
     if (!reason) {
       setReasonError("Lý do không được để trống");
       return;
@@ -74,16 +99,17 @@ const FeedbackAppointmentModal = ({ isVisible, onClose, data }) => {
       setReasonError("Lý do không được hơn 250 kí tự");
       return;
     }
-    if (ratingFeedback === 0) {
-      setErrorStart("Số sao đánh giá không bằng 0");
-      return;
-    }
+    // if (ratingFeedback === 0) {
+    //   setErrorStart("Số sao đánh giá không bằng 0");
+    //   return;
+    // }
     setLoader(true);
     try {
       let formData = new FormData();
       let dataSubmit = {
         ...data,
-        Rating: ratingFeedback,
+        FeedbackDetailRequests: feedbackDetails,
+        // Rating: ratingFeedback,
         Comment: reason,
         ImgFeedbacks: selectedImages,
       };
@@ -107,6 +133,7 @@ const FeedbackAppointmentModal = ({ isVisible, onClose, data }) => {
       }
 
       // console.log("CreateFeedback formData:", formData);
+      // console.log("CreateFeedback dataSubmit:", dataSubmit);
       await dispatch(CreateFeedback(formData, data.AppointmentId));
     } catch (error) {
       console.error("CreateFeedback error:", error);
@@ -169,12 +196,52 @@ const FeedbackAppointmentModal = ({ isVisible, onClose, data }) => {
           <View style={styles.line} />
           <Text style={styles.modalText}>Số sao đánh giá:</Text>
           <View style={styles.line} />
-          <Rating
-            ratingCount={5}
-            imageSize={30}
-            tintColor={COLORS.offwhite}
-            onFinishRating={setRatingFeedback}
-          />
+          {services?.map((itemDetail) => (
+            <View key={itemDetail?.id}>
+              <View style={styles.serviceItem}>
+                <Image
+                  source={{ uri: itemDetail?.imgServiceHair }}
+                  style={styles.productImage}
+                />
+                <View style={styles.serviceInfo}>
+                  <Text style={styles.serviceName} numberOfLines={1}>
+                    {itemDetail?.serviceName}{" "}
+                    {`(${itemDetail?.timeServiceHair * 60} Phút)`}
+                  </Text>
+                  <Text style={styles.serviceDescription} numberOfLines={1}>{`${
+                    itemDetail?.startTime?.split("T")[1]
+                  } đến ${itemDetail?.endTime?.split("T")[1]} `}</Text>
+                </View>
+                <View style={styles.pricingInfo}>
+                  <Text
+                    style={styles.servicePrice}
+                    numberOfLines={1}
+                  >{`${itemDetail?.priceServiceHair?.toLocaleString()} VND`}</Text>
+                  <View style={styles.containerInfo}>
+                    <View>
+                      <Text style={styles.titleService}>
+                        {itemDetail?.salonEmployee?.fullName}
+                      </Text>
+                    </View>
+                    <Image
+                      source={{ uri: itemDetail?.salonEmployee?.img }}
+                      resizeMode="cover"
+                      style={styles.avatar}
+                    />
+                  </View>
+                </View>
+              </View>
+              <Rating
+                ratingCount={5}
+                imageSize={30}
+                startingValue={5} // Giá trị mặc định là 5
+                tintColor={COLORS.offwhite}
+                onFinishRating={(rating) =>
+                  handleRatingChange(rating, itemDetail?.id)
+                }
+              />
+            </View>
+          ))}
           {errorStar ? (
             <Text style={{ color: "red", marginTop: 5, marginHorizontal: 20 }}>
               {errorStar}
@@ -293,11 +360,10 @@ const styles = StyleSheet.create({
   },
   modalContent: {
     flex: 1,
-    marginTop: 100,
     justifyContent: "flex-start",
     // alignItems: "flex-start",
     backgroundColor: COLORS.cardcolor,
-    marginTop: 100,
+    marginTop: 120,
     borderWidth: 2,
     borderColor: COLORS.gray2,
     borderTopStartRadius: 20,
@@ -463,6 +529,65 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignContent: "center",
     backgroundColor: "#f5f5f5",
+  },
+  serviceItem: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+    marginVertical: 5,
+    marginHorizontal: SIZES.xSmall,
+  },
+  serviceInfo: {
+    flex: 5, // 7 parts
+    flexDirection: "column",
+    alignItems: "flex-start",
+    justifyContent: "space-around",
+  },
+  pricingInfo: {
+    flex: 5, // 2 parts
+    flexDirection: "column",
+    alignItems: "flex-end", // Align text to right if needed
+  },
+  productImage: {
+    width: 60,
+    height: 60,
+    marginRight: 10,
+    borderRadius: 10,
+  },
+  serviceName: {
+    fontSize: SIZES.small,
+    fontWeight: "bold",
+  },
+  serviceDescription: {
+    fontSize: SIZES.xSmall,
+    marginTop: 5,
+  },
+  servicePrice: {
+    fontSize: SIZES.xSmall,
+    fontWeight: "bold",
+  },
+  servicePrice2: {
+    fontSize: SIZES.xSmall,
+    textDecorationLine: "line-through",
+  },
+  containerInfo: {
+    justifyContent: "center",
+    alignItems: "center",
+    flexDirection: "row",
+    marginTop: 5,
+  },
+  avatar: {
+    height: 25,
+    width: 25,
+    borderRadius: 999,
+    borderColor: COLORS.primary,
+    borderWidth: 2,
+  },
+  titleService: {
+    textAlign: "left",
+    fontWeight: "bold",
+    fontSize: SIZES.small,
+    marginHorizontal: 5,
   },
 });
 

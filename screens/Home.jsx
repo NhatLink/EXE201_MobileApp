@@ -53,11 +53,7 @@ const Home = () => {
   // }, []);
 
   const handlePress = () => {
-    if (userLoggedIn) {
-      navigation.navigate("Cart");
-    } else {
-      navigation.navigate("Login");
-    }
+    navigation.navigate("Notifications");
   };
 
   const requestLocationPermission = async () => {
@@ -101,12 +97,12 @@ const Home = () => {
           <Ionicons name="location-outline" size={28} color="black" />
           <Text style={styles.location}>{location}</Text>
 
-          {/* <View style={{ alignItems: "flex-end" }}>
+          {/* <View style={styles.cartContent}>
             <View style={styles.cartCounter}>
               <Text style={styles.cartNumber}>{cartCount ? cartCount : 0}</Text>
             </View>
             <TouchableOpacity onPress={() => handlePress()}>
-              <Fontisto name="shopping-bag" size={24} color="black" />
+              <Ionicons name="notifications" size={24} color="black" />
             </TouchableOpacity>
           </View> */}
         </View>
@@ -145,9 +141,22 @@ const styles = StyleSheet.create({
     fontFamily: "semibold",
     fontSize: SIZES.medium,
   },
+  cartContent: {
+    position: "absolute",
+    top: 5,
+    right: 0,
+    // width: 16,
+    // height: 16,
+    // borderRadius: 8,
+    // backgroundColor: "green",
+    // alignItems: "center",
+    // justifyContent: "center",
+    // zIndex: 999,
+  },
   cartCounter: {
     position: "absolute",
-    bottom: 16,
+    bottom: 15,
+    left: 10,
     width: 16,
     height: 16,
     borderRadius: 8,

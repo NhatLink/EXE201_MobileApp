@@ -3,7 +3,14 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Ionicons } from "@expo/vector-icons";
 import { COLORS, SIZES } from "../constants";
 const Tab = createBottomTabNavigator();
-import { Cart, Home, Profile, Search, Schedule } from "../screens";
+import {
+  Cart,
+  Home,
+  Profile,
+  Search,
+  Schedule,
+  Notifications,
+} from "../screens";
 import { useDispatch } from "react-redux";
 import * as SecureStore from "expo-secure-store";
 import { fetchUser2 } from "../store/user/action";
@@ -115,6 +122,31 @@ const BottomTabNavigation = () => {
             ) : null,
         }}
       />
+
+      {/* <Tab.Screen
+        name="Notifications"
+        component={Notifications}
+        options={{
+          tabBarIcon: ({ focused }) => (
+            <Ionicons
+              name={focused ? "notifications" : "notifications-outline"}
+              size={24}
+              color={focused ? COLORS.secondary : COLORS.gray2}
+            />
+          ),
+          tabBarLabel: ({ focused }) =>
+            focused ? (
+              <Text
+                style={{
+                  color: COLORS.secondary,
+                  fontSize: SIZES.xSmall,
+                }}
+              >
+                Thông báo
+              </Text>
+            ) : null,
+        }}
+      /> */}
 
       <Tab.Screen
         name="Profile"

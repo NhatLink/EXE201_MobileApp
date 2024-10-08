@@ -29,6 +29,8 @@ const Review = (storeId) => {
   const [itemsPerPage, setItemsPerPage] = useState(2);
   const [selectedRating, setSelectedRating] = useState(null);
   const [loader, setLoader] = useState(false);
+  console.log("feedback", feedback?.items);
+  console.log(storeId);
 
   useEffect(() => {
     async function fetchData() {

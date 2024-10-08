@@ -65,9 +65,20 @@ const DetailAppointmennt = ({ navigation }) => {
   );
   const { user, accountId } = useSelector((state) => state.USER);
   useEffect(() => {
-    if (appointmentId) {
-      dispatch(GetAppointmentById(appointmentId));
-    }
+    const fetchData = async () => {
+      if (appointmentId) {
+        setLoad(true); // Bắt đầu quá trình tải
+        try {
+          await dispatch(GetAppointmentById(appointmentId));
+        } catch (error) {
+          console.error("Error fetching appointment:", error);
+        } finally {
+          setLoad(false); // Kết thúc quá trình tải
+        }
+      }
+    };
+
+    fetchData(); // Gọi hàm để lấy dữ liệu
   }, [appointmentId]);
 
   const OnCancel = async (reason) => {
@@ -106,43 +117,43 @@ const DetailAppointmennt = ({ navigation }) => {
     setModalVisible1(false);
   };
 
-  const AddFeedback = async () => {
-    setLoad(true);
-    try {
-      const id = await AsyncStorage.getItem("id");
-      const accessToken = await AsyncStorage.getItem("accessToken");
-      if (!id || !accessToken) {
-        throw new Error("Authentication required.");
-      }
-      const instance = axios.create({
-        headers: { Authorization: `Bearer ${JSON.parse(accessToken)}` },
-      });
+  // const AddFeedback = async () => {
+  //   setLoad(true);
+  //   try {
+  //     const id = await AsyncStorage.getItem("id");
+  //     const accessToken = await AsyncStorage.getItem("accessToken");
+  //     if (!id || !accessToken) {
+  //       throw new Error("Authentication required.");
+  //     }
+  //     const instance = axios.create({
+  //       headers: { Authorization: `Bearer ${JSON.parse(accessToken)}` },
+  //     });
 
-      const endpoint = `${baseUrl}/feedback/addFeedback`;
-      const data = {
-        productId: item?.order?.product_id._id,
-        userId: JSON.parse(id),
-        orderId: item?.order?._id,
-        content: contentFeedback,
-        rating: ratingFeedback,
-      };
-      const response = await instance.post(endpoint, data);
-      if (response.status === 201) {
-        refetch;
-        setResponseData(response.data);
-        Alert.alert("Feedback add successfully");
-        setModalVisible(false);
-        navigation.navigate("Details", {
-          product: item?.order?.product_id?._id,
-        });
-      }
-    } catch (error) {
-      console.error("Feedback error: ", error);
-      Alert.alert("Failed", error.message);
-    } finally {
-      setLoad(false);
-    }
-  };
+  //     const endpoint = `${baseUrl}/feedback/addFeedback`;
+  //     const data = {
+  //       productId: item?.order?.product_id._id,
+  //       userId: JSON.parse(id),
+  //       orderId: item?.order?._id,
+  //       content: contentFeedback,
+  //       rating: ratingFeedback,
+  //     };
+  //     const response = await instance.post(endpoint, data);
+  //     if (response.status === 201) {
+  //       refetch;
+  //       setResponseData(response.data);
+  //       Alert.alert("Feedback add successfully");
+  //       setModalVisible(false);
+  //       navigation.navigate("Details", {
+  //         product: item?.order?.product_id?._id,
+  //       });
+  //     }
+  //   } catch (error) {
+  //     console.error("Feedback error: ", error);
+  //     Alert.alert("Failed", error.message);
+  //   } finally {
+  //     setLoad(false);
+  //   }
+  // };
   const [destination, setDestination] = useState({
     latitude: 10.875123789279687,
     longitude: 106.79814847509016,
@@ -265,7 +276,7 @@ const DetailAppointmennt = ({ navigation }) => {
     }
   };
 
-  if (loading) {
+  if (load) {
     return (
       <SafeAreaView style={styles.container}>
         <View style={styles.upperRow}>
@@ -345,6 +356,22 @@ const DetailAppointmennt = ({ navigation }) => {
         return "Trạng thái không xác định"; // Optional, for handling any unexpected statuses
     }
   };
+
+  const getStatusStyle = (status) => {
+    switch (status) {
+      case "BOOKING":
+        return { color: "blue" }; // Màu xanh cho trạng thái "Đặt trước"
+      case "SUCCESSED":
+        return { color: "green" }; // Màu xanh lá cho trạng thái "Thành công"
+      case "FAILED":
+        return { color: "red" }; // Màu đỏ cho trạng thái "Thất bại"
+      case "CANCEL_BY_CUSTOMER":
+        return { color: "orange" }; // Màu cam cho trạng thái "Hủy bởi khách hàng"
+      default:
+        return { color: "gray" }; // Màu xám cho các trạng thái không xác định
+    }
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.upperRow}>
@@ -418,7 +445,12 @@ const DetailAppointmennt = ({ navigation }) => {
           <View style={styles.line} />
           {appointmentDetail && appointmentDetail?.status && (
             <View>
-              <Text style={styles.contentHeader}>
+              <Text
+                style={[
+                  styles.contentHeader,
+                  getStatusStyle(appointmentDetail?.status),
+                ]}
+              >
                 {getStatusText(appointmentDetail?.status)}
               </Text>
               {appointmentDetail && appointmentDetail?.reasonCancel && (
@@ -514,6 +546,12 @@ const DetailAppointmennt = ({ navigation }) => {
                 </TouchableOpacity>
               )
             ) : null}
+            {/* <TouchableOpacity
+              style={styles.checkoutBtn}
+              onPress={() => setModalVisible(true)}
+            >
+              <Text style={styles.checkOutText}>Đánh giá</Text>
+            </TouchableOpacity> */}
           </View>
 
           <View style={styles.line} />
@@ -783,6 +821,7 @@ const DetailAppointmennt = ({ navigation }) => {
           CustomerId: user.id,
           AppointmentId: appointmentDetail?.id,
         }}
+        services={appointmentDetail?.appointmentDetails}
       />
     </SafeAreaView>
   );

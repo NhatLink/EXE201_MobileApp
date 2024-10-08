@@ -154,6 +154,7 @@ import {
   DetailCollection,
   CheckNonExistEmail,
   ResetPassword,
+  Notifications,
 } from "./screens";
 import Orders from "./screens/Orders";
 import { PaymentProvider } from "./hook/PaymentContext";
@@ -556,6 +557,11 @@ export default function App() {
               <Stack.Screen
                 name="RegisterWithGoogle"
                 component={RegisterWithGoogle}
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name="Notifications"
+                component={Notifications}
                 options={{ headerShown: false }}
               />
             </Stack.Navigator>
