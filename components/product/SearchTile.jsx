@@ -2,7 +2,7 @@ import { StyleSheet, Text, View, TouchableOpacity, Image } from "react-native";
 import React, { useState } from "react";
 import { SIZES, COLORS, SHADOWS } from "../../constants";
 import { useNavigation } from "@react-navigation/native";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
   addService,
   setStoreId,
@@ -16,42 +16,56 @@ const SearchTile = ({ item }) => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const [showAll, setShowAll] = useState(false);
-
+  const { isAuthenticated } = useSelector((state) => state.USER);
   // Số dịch vụ muốn hiển thị mặc định
   const defaultLimit = 3;
   const servicesToShow = showAll
     ? item?.services
     : item?.services?.slice(0, defaultLimit);
+  // const handleBook = async (storeId, item) => {
+  //   try {
+  //     const accessToken = await SecureStore.getItemAsync("accessToken");
+  //     if (accessToken) {
+  //       await dispatch(resetBooking());
+  //       await dispatch(resetAvailable());
+  //       await dispatch(setStoreId(storeId));
+  //       await dispatch(addService(item));
+  //       await dispatch(fetchServiceHairBySalonInformationId(storeId, 1, 5));
+  //       // Điều hướng hoặc logic bổ sung
+  //       navigation.navigate("Booking");
+  //     } else {
+  //       throw new Error("Access token không tồn tại");
+  //     }
+  //   } catch (error) {
+  //     console.log("Lỗi trong handleBook:", error);
+  //     ToastAndroid.show(
+  //       "Vui lòng đăng nhập để sử dụng tính năng trên",
+  //       ToastAndroid.SHORT
+  //     );
+  //   }
+  // };
+
   const handleBook = async (storeId, item) => {
-    try {
-      const accessToken = await SecureStore.getItemAsync("accessToken");
-      if (accessToken) {
-        dispatch(resetBooking());
-        dispatch(resetAvailable());
-        dispatch(setStoreId(storeId));
-        dispatch(addService(item));
-        dispatch(fetchServiceHairBySalonInformationId(storeId));
-        // Điều hướng hoặc logic bổ sung
-        navigation.navigate("Booking");
-      } else {
-        throw new Error("Access token không tồn tại");
-      }
-    } catch (error) {
-      console.log("Lỗi trong handleBook:", error);
+    console.log(storeId);
+
+    if (isAuthenticated) {
+      // Người dùng đã đăng nhập
+      await dispatch(resetBooking());
+      await dispatch(resetAvailable());
+      await dispatch(setStoreId(storeId));
+      await dispatch(addService(item));
+      await dispatch(fetchServiceHairBySalonInformationId(storeId, 1, 5));
+      // Điều hướng hoặc logic bổ sung
+      navigation.navigate("Booking");
+    } else {
+      // Người dùng chưa đăng nhập
       ToastAndroid.show(
         "Vui lòng đăng nhập để sử dụng tính năng trên",
         ToastAndroid.SHORT
       );
     }
-    // dispatch(resetBooking());
-    // dispatch(resetAvailable());
-    // dispatch(setStoreId(storeId?.storeId));
-    // dispatch(addService(item));
-    // console.log("store", storeId);
-    // console.log("item", item);
-    // // Navigation or additional logic
-    // navigation.navigate("Booking");
   };
+
   return (
     // <View>
     //   <TouchableOpacity

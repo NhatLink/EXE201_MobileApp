@@ -110,7 +110,10 @@ const VoucherModal = ({ isVisible, onClose }) => {
                         </Text>
                       )}
                     </View>
-                    {totalPrice?.originalPrice >= item.minimumOrderAmount ? (
+                    {totalPrice?.originalPrice >= item.minimumOrderAmount &&
+                    item.quantity > 0 &&
+                    new Date() >= new Date(item.startDate) &&
+                    new Date() <= new Date(item.expiryDate) ? (
                       <TouchableOpacity
                         style={styles.bookButton}
                         onPress={() => handleBook(item)}

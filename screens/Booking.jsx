@@ -186,7 +186,7 @@ const Booking = ({ navigation }) => {
         salonId: storeId,
         serviceId: serviceHairIds,
       };
-      console.log("mappingData", mappingData);
+      // console.log("mappingData", mappingData);
 
       dispatch(
         CreateAppointment(
@@ -320,7 +320,7 @@ const Booking = ({ navigation }) => {
   }, [selectedDate]);
 
   useEffect(() => {
-    dispatch(GetVoucherBySalonId(storeId, currentPage, itemsPerPage));
+    dispatch(GetVoucherBySalonId(storeId));
   }, []);
 
   // useEffect(() => {
@@ -385,7 +385,7 @@ const Booking = ({ navigation }) => {
     const hourExists = availableTime.some(
       (item) => item.timeSlot === hourBooking
     );
-    console.log("hourExists", hourExists);
+    // console.log("hourExists", hourExists);
 
     if (hourExists && hourBooking && services.length > 0) {
       let bookingDetails = services.map((service) => ({
@@ -634,14 +634,16 @@ const Booking = ({ navigation }) => {
           renderItem={({ item }) => <ListService item={item} />}
         /> */}
           <ListService />
-          {availableTime && availableTime.length > 0 && (
-            <TouchableOpacity
-              style={styles.serviceButton}
-              onPress={() => openModal()}
-            >
-              <Text style={styles.buttonVoucher}>+ Thêm dịch vụ</Text>
-            </TouchableOpacity>
-          )}
+          {availableTime &&
+            availableTime.length > 0 &&
+            bookAppoinment?.bookingDetailResponses?.length > 0 && (
+              <TouchableOpacity
+                style={styles.serviceButton}
+                onPress={() => openModal()}
+              >
+                <Text style={styles.buttonVoucher}>+ Thêm dịch vụ</Text>
+              </TouchableOpacity>
+            )}
 
           {/* </ScrollView> */}
 
@@ -685,6 +687,7 @@ const Booking = ({ navigation }) => {
         </TouchableOpacity> */}
         {availableTime &&
           availableTime.length > 0 &&
+          !bookAppoinment.length === 0 &&
           (voucher === null ? (
             <TouchableOpacity
               style={styles.voucherButton}

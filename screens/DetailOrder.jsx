@@ -97,7 +97,6 @@ const DetailOrder = ({ navigation }) => {
         content: contentFeedback,
         rating: ratingFeedback,
       };
-      // console.log("feedback data:", data);
       const response = await instance.post(endpoint, data);
       if (response.status === 201) {
         refetch;

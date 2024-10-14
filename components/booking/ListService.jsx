@@ -63,7 +63,10 @@ const ListService = () => {
     setModalVisible(true);
     setserviceId(item);
   };
-  const canPressButton = services.length > 0 && availableTime.length > 0;
+  const canPressButton =
+    services.length > 0 &&
+    availableTime.length > 0 &&
+    bookAppoinment?.bookingDetailResponses?.length > 0;
   // useEffect(() => {
 
   //   if (bookAppoinment && bookAppoinment.bookingDetailResponses && services) {
@@ -85,26 +88,59 @@ const ListService = () => {
   //   }
   // }, [bookAppoinment]);
 
+  // useEffect(() => {
+  //   async function fetchData() {
+  //     if (bookAppoinment && bookAppoinment.bookingDetailResponses && services) {
+  //       let timesArray = bookAppoinment.bookingDetailResponses.map(
+  //         (detail) => ({
+  //           id: detail.serviceHair.id,
+  //           startTime: detail.serviceHair.startTime,
+  //           endTime: detail.serviceHair.endTime,
+  //           waitingTime: detail.serviceHair.waitingTime,
+  //         })
+  //       );
+
+  //       const combinedData = services.map((service) => ({
+  //         ...service,
+  //         ...timesArray.find((time) => time.id === service.id),
+  //       }));
+
+  //       settotalService(combinedData);
+  //       // await dispatch(setService(combinedData));
+  //       // console.log("data service", combinedData);
+  //     }
+  //   }
+
+  //   fetchData();
+  // }, [bookAppoinment]);
+
   useEffect(() => {
     async function fetchData() {
-      if (bookAppoinment && bookAppoinment.bookingDetailResponses && services) {
-        let timesArray = bookAppoinment.bookingDetailResponses.map(
-          (detail) => ({
-            id: detail.serviceHair.id,
-            startTime: detail.serviceHair.startTime,
-            endTime: detail.serviceHair.endTime,
-            waitingTime: detail.serviceHair.waitingTime,
-          })
-        );
+      // Chỉ cần đảm bảo `services` tồn tại
+      if (services) {
+        // console.log("bookAppoinment", bookAppoinment);
 
+        // Tạo mảng timesArray hoặc để trống nếu không có bookingDetailResponses
+        let timesArray =
+          bookAppoinment?.bookingDetailResponses?.map((detail) => ({
+            id: detail.serviceHair?.id,
+            startTime: detail.serviceHair?.startTime ?? "00:00",
+            endTime: detail.serviceHair?.endTime ?? "00:00",
+            waitingTime: detail.serviceHair?.waitingTime ?? 0,
+          })) || [];
+
+        // Kết hợp dữ liệu từ services và timesArray
         const combinedData = services.map((service) => ({
           ...service,
-          ...timesArray.find((time) => time.id === service.id),
+          ...(timesArray.find((time) => time.id === service.id) || {
+            startTime: "00:00",
+            endTime: "00:00",
+            waitingTime: 0,
+          }),
         }));
 
+        // Cập nhật state ngay cả khi bookAppoinment là undefined
         settotalService(combinedData);
-        // await dispatch(setService(combinedData));
-        // console.log("data service", combinedData);
       }
     }
 
@@ -127,7 +163,7 @@ const ListService = () => {
             <View style={styles.containerDate}>
               <View style={styles.line1} />
               <Text style={styles.text}>
-                {` Chờ ${item?.waitingTime ?? 0 * 60} phút`}
+                {`Chờ ${item?.waitingTime ? item.waitingTime * 60 : 0} phút`}
               </Text>
               <View style={styles.line} />
             </View>
@@ -173,9 +209,14 @@ const ListService = () => {
                   {/* <Text style={styles.serviceDescription} numberOfLines={1}>{`${
                     item.time * 60
                   } phút`}</Text> */}
-                  <Text style={styles.serviceDescription} numberOfLines={2}>
+                  {/* <Text style={styles.serviceDescription} numberOfLines={2}>
                     Thời gian : {item?.startTime?.split("T")[1]} -{" "}
                     {item?.endTime?.split("T")[1]}
+                  </Text> */}
+                  <Text style={styles.serviceDescription} numberOfLines={2}>
+                    Thời gian:
+                    {item?.startTime?.split("T")[1] ?? "00:00"} -
+                    {item?.endTime?.split("T")[1] ?? "00:00"}
                   </Text>
                 </View>
               </View>

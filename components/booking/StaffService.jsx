@@ -61,7 +61,7 @@ const StaffService = ({ isVisible, onClose, Service }) => {
 
   useEffect(() => {
     if (bookAppoinment) {
-      // console.log("bookAppoinment", bookAppoinment?.bookingDetailResponses);
+      console.log("bookAppoinment", bookAppoinment?.bookingDetailResponses);
 
       const selectedService = bookAppoinment?.bookingDetailResponses?.find(
         (service) => service.serviceHair.id === Service

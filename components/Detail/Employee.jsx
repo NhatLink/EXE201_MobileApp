@@ -32,6 +32,7 @@ import { fetchSalonEmployeeBySalonInformationId } from "../../store/salon/action
 const Employee = (storeId) => {
   const navigation = useNavigation();
   const { salonService, salonEmployee } = useSelector((state) => state.SALON);
+  const { isAuthenticated } = useSelector((state) => state.USER);
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedService, setSelectedService] = useState(null);
   const [searchKey, setSearchKey] = useState("");
@@ -53,36 +54,47 @@ const Employee = (storeId) => {
     }
   }, [storeId.storeId, currentPage, itemsPerPage, filterKey]);
 
+  // const handleBook = async (storeId, item) => {
+  //   closeModal();
+  //   try {
+  //     // const accessToken = await SecureStore.getItemAsync("accessToken");
+  //     if (isAuthenticated) {
+  //       dispatch(resetBooking());
+  //       dispatch(resetAvailable());
+  //       dispatch(setStoreId(storeId?.storeId));
+  //       dispatch(addService(item));
+  //       // Điều hướng hoặc logic bổ sung
+  //       navigation.navigate("Booking");
+  //     } else {
+  //       throw new Error("Access token không tồn tại");
+  //     }
+  //   } catch (error) {
+  //     console.log("Lỗi trong handleBook:", error);
+  //     ToastAndroid.show(
+  //       "Vui lòng đăng nhập để sử dụng tính năng trên",
+  //       ToastAndroid.SHORT
+  //     );
+  //   }
+  // };
   const handleBook = async (storeId, item) => {
-    closeModal();
-    try {
-      const accessToken = await SecureStore.getItemAsync("accessToken");
-      if (accessToken) {
-        dispatch(resetBooking());
-        dispatch(resetAvailable());
-        dispatch(setStoreId(storeId?.storeId));
-        dispatch(addService(item));
-        // Điều hướng hoặc logic bổ sung
-        navigation.navigate("Booking");
-      } else {
-        throw new Error("Access token không tồn tại");
-      }
-    } catch (error) {
-      console.log("Lỗi trong handleBook:", error);
+    if (isAuthenticated) {
+      closeModal();
+      // Người dùng đã đăng nhập
+      await dispatch(resetBooking());
+      await dispatch(resetAvailable());
+      await dispatch(setStoreId(storeId?.storeId));
+      await dispatch(addService(item));
+      // Điều hướng hoặc logic bổ sung
+      navigation.navigate("Booking");
+    } else {
+      // Người dùng chưa đăng nhập
       ToastAndroid.show(
         "Vui lòng đăng nhập để sử dụng tính năng trên",
         ToastAndroid.SHORT
       );
     }
-    // dispatch(resetBooking());
-    // dispatch(resetAvailable());
-    // dispatch(setStoreId(storeId?.storeId));
-    // dispatch(addService(item));
-    // console.log("store", storeId);
-    // console.log("item", item);
-    // // Navigation or additional logic
-    // navigation.navigate("Booking");
   };
+
   const daysOfWeekMap = {
     Monday: "Thứ Hai",
     Tuesday: "Thứ Ba",
