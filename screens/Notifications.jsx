@@ -6,15 +6,36 @@ import {
   Image,
   ScrollView,
   FlatList,
+  ActivityIndicator,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { COLORS, SIZES } from "../constants";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { CartList } from "../components";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigation } from "@react-navigation/native";
+import {
+  actGetNotificationList,
+  actUpdateNotificationList,
+} from "../store/notification/action";
+import * as signalR from "@microsoft/signalr";
+import { RefreshControl } from "react-native";
 
 const Notifications = ({ navigation }) => {
+  const dispatch = useDispatch();
+  // const navigation = useNavigation();
+  const notificationList = useSelector(
+    (state) => state.NOTIFICATION.notificationList
+  );
+  // console.log("notificationList", notificationList);
+
+  const [page, setPage] = useState(1);
+  const [size, setSize] = useState(8);
+  const { accountId } = useSelector((state) => state.USER);
   const [selectedStatus, setSelectedStatus] = useState("Tất cả");
+  const [loader, setLoader] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
   const [notifications, setNotifications] = useState([
     {
       id: "1",
@@ -42,26 +63,103 @@ const Notifications = ({ navigation }) => {
     },
   ]);
 
+  // useEffect(() => {
+  //   let connection;
+  //   const setupSignalR = async () => {
+  //     try {
+  //       // Tạo kết nối SignalR
+  //       connection = new signalR.HubConnectionBuilder()
+  //         .withUrl("https://hairhub.gahonghac.net/book-appointment-hub")
+  //         .withAutomaticReconnect()
+  //         .build();
+
+  //       // Bắt đầu kết nối
+  //       await connection.start();
+  //       // Lắng nghe sự kiện "ReceiveMessage"
+  //       connection.on(
+  //         "ReceiveNotification",
+  //         async (Title, Message, list, apps, customer, CreatedDate) => {
+  //           console.log("list", list);
+  //           if (list.includes(accountId)) {
+  //             dispatch(actGetNotificationList(accountId, page, size));
+  //           } else {
+  //             console.error("Không trùng khớp idOwner với ownerId");
+  //           }
+  //         }
+  //       );
+  //     } catch (error) {
+  //       console.error("Lỗi khi thiết lập SignalR:", error);
+  //     }
+  //   };
+
+  //   setupSignalR();
+
+  //   // Dọn dẹp kết nối khi component bị hủy
+  //   return () => {
+  //     if (connection) {
+  //       connection.stop().then(() => {
+  //         console.log("Kết nối SignalR đã được dừng.");
+  //       });
+  //     }
+  //   };
+  // }, [accountId]);
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        setLoader(true);
+        if (accountId) {
+          await dispatch(actGetNotificationList(accountId, page, size));
+        }
+      } finally {
+        setLoader(false);
+      }
+    }
+    fetchData();
+  }, [accountId, page, size]);
+
   // Hàm xử lý khi nhấn vào một thông báo
-  const handlePressNotification = (id) => {
+  const handlePressNotification = async (id, appointmentId) => {
     // Thay đổi trạng thái của thông báo thành "đã đọc"
-    setNotifications((prevState) =>
-      prevState.map((item) => (item.id === id ? { ...item, read: true } : item))
+    if (id) {
+      await dispatch(actUpdateNotificationList(id, accountId, page, size));
+      navigation.navigate("DetailAppointment", {
+        appointmentId: appointmentId,
+      });
+    }
+  };
+  const renderItem = ({ item }) => {
+    const { notification, appointment } = item;
+    // Kiểm tra loại thông báo và thay đổi thông điệp nếu cần
+    const message =
+      notification.type === "newAppointment"
+        ? `Bạn đã đặt lịch ở ${notification.message.split("ở ")[1]}`
+        : notification.message;
+    const notificationStyle = notification.isRead
+      ? styles.readNotificationItem // Kiểu thông báo đã đọc
+      : styles.unreadNotificationItem; // Kiểu thông báo chưa đọc
+    return (
+      <TouchableOpacity
+        style={[styles.notificationItem, notificationStyle]}
+        onPress={() => handlePressNotification(item?.id, appointment?.id)}
+      >
+        <View style={styles.notificationText}>
+          <View style={styles.notificationHeader}>
+            <Text style={styles.notificationTitle}>{notification.title}</Text>
+            {!notification.isRead && <View style={styles.unreadDot} />}
+          </View>
+
+          <Text style={styles.notificationSubTitle}>{message}</Text>
+        </View>
+      </TouchableOpacity>
     );
   };
-  const renderItem = ({ item }) => (
-    <TouchableOpacity
-      style={styles.notificationItem}
-      onPress={() => handlePressNotification(item.id)}
-    >
-      <View style={styles.notificationText}>
-        <Text style={styles.notificationTitle}>{item.title}</Text>
-        <Text style={styles.notificationSubTitle}>{item.subTitle}</Text>
-      </View>
-    </TouchableOpacity>
-  );
-  const filterReport = async (status) => {
-    setSelectedStatus(status);
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    setSize(10);
+    await dispatch(actGetNotificationList(accountId, page, 10));
+    setRefreshing(false);
   };
   return (
     <SafeAreaView style={styles.container}>
@@ -74,7 +172,7 @@ const Notifications = ({ navigation }) => {
         </TouchableOpacity>
         <Text style={styles.title}> Thông báo </Text>
       </View>
-      <View style={styles.filtersContainer}>
+      {/* <View style={styles.filtersContainer}>
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
           {["Tất cả", "Chưa đọc"].map((status) => (
             <TouchableOpacity
@@ -96,13 +194,39 @@ const Notifications = ({ navigation }) => {
             </TouchableOpacity>
           ))}
         </ScrollView>
-      </View>
-      <FlatList
-        data={notifications}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.id}
-        contentContainerStyle={styles.notificationList}
-      />
+      </View> */}
+      {notificationList?.items?.length > 0 ? (
+        <FlatList
+          data={notificationList?.items}
+          renderItem={renderItem}
+          keyExtractor={(item) => item.id}
+          contentContainerStyle={styles.notificationList}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
+          onEndReached={() => {
+            if (!loader && notificationList?.total > notificationList?.size) {
+              setSize(size + 10); // Tăng kích thước khi đến cuối danh sách
+            }
+          }}
+          onEndReachedThreshold={0.5} // Kích hoạt khi kéo gần đến cuối (50%)
+          ListFooterComponent={
+            <View style={styles.paging}>
+              {notificationList?.total > notificationList?.size && (
+                <ActivityIndicator
+                  size="large"
+                  color={COLORS.secondary}
+                  animating={loader}
+                />
+              )}
+            </View>
+          }
+        />
+      ) : (
+        <Text style={styles.notificationEmptyTitle}>
+          Bạn chưa nhận thông báo nào !!!
+        </Text>
+      )}
     </SafeAreaView>
   );
 };
@@ -136,6 +260,8 @@ const styles = StyleSheet.create({
     padding: 16,
     borderRadius: 8,
     marginBottom: 12,
+  },
+  unreadNotificationItem: {
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
@@ -143,8 +269,21 @@ const styles = StyleSheet.create({
     elevation: 2,
     backgroundColor: COLORS.cardcolor,
   },
+  readNotificationItem: {
+    backgroundColor: COLORS.background,
+  },
   notificationText: {
     flex: 1,
+  },
+  notificationHeader: {
+    flex: 1,
+    flexDirection: "row",
+  },
+  notificationEmptyTitle: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: COLORS.secondary,
+    textAlign: "center",
   },
   notificationTitle: {
     fontSize: 16,
@@ -162,6 +301,13 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.white,
     borderColor: COLORS.gray,
     borderWidth: 1,
+  },
+  unreadDot: {
+    width: 8,
+    height: 8,
+    backgroundColor: "red",
+    borderRadius: 4, // Để tạo hình tròn
+    marginLeft: 8, // Khoảng cách giữa tiêu đề và chấm đỏ
   },
   filtersContainer: {
     flexDirection: "row",
@@ -194,5 +340,27 @@ const styles = StyleSheet.create({
     marginLeft: 5,
     textAlign: "center",
     fontWeight: "bold",
+  },
+  paging: {
+    // position: "absolute",
+    // bottom: 0,
+    // right: "50%",
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  pagingArrow: {
+    // marginVertical: 10,
+    padding: 10,
+  },
+  loadmoreButton: {
+    backgroundColor: COLORS.secondary,
+    textAlign: "center",
+    padding: 3,
+    marginVertical: 20,
+    marginHorizontal: 40,
+    borderRadius: 10,
+    fontWeight: "bold",
+    paddingHorizontal: 5,
   },
 });

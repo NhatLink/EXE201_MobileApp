@@ -158,7 +158,7 @@ import {
 } from "./screens";
 import Orders from "./screens/Orders";
 import { PaymentProvider } from "./hook/PaymentContext";
-import { Provider, useDispatch } from "react-redux";
+import { Provider, useDispatch, useSelector } from "react-redux";
 import store from "./store";
 import Toast from "react-native-toast-message";
 import { FETCH_TOKEN_FAIL, fetchToken, fetchUser2 } from "./store/user/action";
@@ -168,9 +168,15 @@ import NetworkProvider from "./hook/NetworkProvider";
 import { COLORS } from "./constants";
 import { UserServices } from "./services/userServices";
 import RegisterWithGoogle from "./screens/RegisterWithGoogle";
+import * as signalR from "@microsoft/signalr";
+import {
+  actGetNotificationList,
+  newNotification,
+} from "./store/notification/action";
 const Stack = createNativeStackNavigator();
 function RouterContent() {
   const dispatch = useDispatch();
+  const { accountId } = useSelector((state) => state.USER);
   // useEffect(() => {
   //   const handleUserFetch = async () => {
   //     console.log("fetchToken");
@@ -347,6 +353,113 @@ function RouterContent() {
 
     return () => clearInterval(intervalId);
   }, [dispatch]);
+
+  // useEffect(() => {
+  //   let connection;
+  //   const setupSignalR = async () => {
+  //     try {
+  //       // Tạo kết nối SignalR
+  //       connection = new signalR.HubConnectionBuilder()
+  //         .withUrl("https://hairhub.gahonghac.net/book-appointment-hub")
+  //         .withAutomaticReconnect()
+  //         .build();
+
+  //       // Bắt đầu kết nối
+  //       await connection.start();
+  //       // Lắng nghe sự kiện "ReceiveMessage"
+  //       connection.on(
+  //         "ReceiveNotification",
+  //         async (
+  //           Title,
+  //           Message,
+  //           AccountIds,
+  //           appointmentId,
+  //           customerName,
+  //           date
+  //         ) => {
+  //           if (AccountIds?.includes(accountId)) {
+  //             dispatch(actGetNotificationList(accountId));
+  //             dispatch(newNotification(true));
+  //           } else {
+  //             console.error("lỗi rồi");
+  //           }
+  //         }
+  //       );
+  //     } catch (error) {
+  //       console.error("Lỗi khi thiết lập SignalR:", error);
+  //     }
+  //   };
+
+  //   setupSignalR();
+
+  //   // Dọn dẹp kết nối khi component bị hủy
+  //   return () => {
+  //     if (connection) {
+  //       connection.stop().then(() => {
+  //         console.log("Kết nối SignalR đã được dừng.");
+  //       });
+  //     }
+  //   };
+  // }, [accountId]);
+  useEffect(() => {
+    let connection;
+    let isComponentMounted = true; // Cờ để theo dõi trạng thái của component
+
+    const setupSignalR = async () => {
+      try {
+        // Tạo kết nối SignalR
+        connection = new signalR.HubConnectionBuilder()
+          .withUrl("https://hairhub.gahonghac.net/book-appointment-hub")
+          .withAutomaticReconnect()
+          .build();
+
+        // Bắt đầu kết nối
+        await connection.start();
+        if (!isComponentMounted) return; // Kiểm tra xem component còn tồn tại
+
+        console.log("Kết nối SignalR thành công.");
+
+        // Lắng nghe sự kiện "ReceiveNotification"
+        connection.on(
+          "ReceiveNotification",
+          async (
+            Title,
+            Message,
+            AccountIds,
+            appointmentId,
+            customerName,
+            date
+          ) => {
+            if (AccountIds?.includes(accountId)) {
+              dispatch(actGetNotificationList(accountId));
+              dispatch(newNotification(true));
+            } else {
+              console.log("Lỗi: Không có AccountId phù hợp.");
+            }
+          }
+        );
+      } catch (error) {
+        console.error("Lỗi khi thiết lập SignalR:", error);
+      }
+    };
+
+    setupSignalR();
+
+    // Dọn dẹp kết nối khi component bị hủy
+    return () => {
+      isComponentMounted = false; // Đặt cờ khi component unmount
+      if (connection) {
+        connection
+          .stop()
+          .then(() => {
+            console.log("Kết nối SignalR đã được dừng.");
+          })
+          .catch((error) => {
+            console.error("Lỗi khi dừng kết nối SignalR:", error);
+          });
+      }
+    };
+  }, [accountId]);
 }
 
 export default function App() {

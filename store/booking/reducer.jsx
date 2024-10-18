@@ -19,7 +19,6 @@ const initialState = {
   availableTime: [],
   bookAppoinment: [],
   totalPrice: null,
-  createAppointment: null,
   error: null,
   error2: null,
 };
@@ -80,7 +79,6 @@ const bookingServiceReducer = (state = initialState, action) => {
       return {
         ...state,
         loading: false,
-        createAppointment: action.payload,
         error: null,
       };
     case CREATE_APPOINTMENT_FAILURE:
@@ -88,7 +86,6 @@ const bookingServiceReducer = (state = initialState, action) => {
         ...state,
         loading: false,
         error: action.payload,
-        createAppointment: null,
       };
     case RESET_AVAILABLE:
       return initialState;

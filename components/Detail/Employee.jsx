@@ -24,6 +24,7 @@ import {
   addService,
   setStoreId,
   resetBooking,
+  setStoreName,
 } from "../../store/bookingStore/action";
 import * as SecureStore from "expo-secure-store";
 import { ToastAndroid } from "react-native";
@@ -31,7 +32,9 @@ import { resetAvailable } from "../../store/booking/action";
 import { fetchSalonEmployeeBySalonInformationId } from "../../store/salon/action";
 const Employee = (storeId) => {
   const navigation = useNavigation();
-  const { salonService, salonEmployee } = useSelector((state) => state.SALON);
+  const { salonService, salonEmployee, salonDetail } = useSelector(
+    (state) => state.SALON
+  );
   const { isAuthenticated } = useSelector((state) => state.USER);
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedService, setSelectedService] = useState(null);
@@ -76,13 +79,14 @@ const Employee = (storeId) => {
   //     );
   //   }
   // };
-  const handleBook = async (storeId, item) => {
+  const handleBook = async (storeId, item, storeName) => {
     if (isAuthenticated) {
       closeModal();
       // Người dùng đã đăng nhập
       await dispatch(resetBooking());
       await dispatch(resetAvailable());
       await dispatch(setStoreId(storeId?.storeId));
+      await dispatch(setStoreName(storeName));
       await dispatch(addService(item));
       // Điều hướng hoặc logic bổ sung
       navigation.navigate("Booking");
@@ -333,7 +337,7 @@ const Employee = (storeId) => {
                 </View>
                 <TouchableOpacity
                   style={styles.bookButton}
-                  onPress={() => handleBook(storeId, item)}
+                  onPress={() => handleBook(storeId, item, salonDetail)}
                 >
                   <Text style={styles.button}>Đặt</Text>
                 </TouchableOpacity>

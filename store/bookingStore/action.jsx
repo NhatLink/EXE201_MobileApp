@@ -1,5 +1,6 @@
 // Assuming this file is named `bookingActions.js`
 export const SET_STORE_ID = "SET_STORE_ID";
+export const SET_STORE_NAME = "SET_STORE_NAME";
 export const SET_DATE_BOOKING = "SET_DATE_BOOKING";
 export const SET_HOUR_BOOKING = "SET_HOUR_BOOKING";
 export const SET_SERVICE_STAFF = "SET_SERVICE_STAFF";
@@ -15,6 +16,11 @@ export const UPDATE_SERVICE_STAFF = "UPDATE_SERVICE_STAFF";
 export const setStoreId = (storeId) => ({
   type: SET_STORE_ID,
   payload: storeId,
+});
+
+export const setStoreName = (storeName) => ({
+  type: SET_STORE_NAME,
+  payload: storeName,
 });
 
 export const setDateBooking = (date) => ({

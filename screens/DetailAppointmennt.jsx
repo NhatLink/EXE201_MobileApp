@@ -10,6 +10,7 @@ import {
   Alert,
   ActivityIndicator,
   Button,
+  ToastAndroid,
 } from "react-native";
 import {
   SimpleLineIcons,
@@ -28,7 +29,11 @@ import { baseUrl } from "../utils/IP";
 import formatDate from "../utils/helper";
 import { Rating } from "react-native-ratings";
 import {
+  CANCEL_APPOINTMENT_FAILURE,
+  CANCEL_APPOINTMENT_REQUEST,
+  CANCEL_APPOINTMENT_SUCCESS,
   CancelAppointmentByCustomer,
+  GetAppointmentByAccountId,
   GetAppointmentById,
 } from "../store/appointment/action";
 import { useDispatch, useSelector } from "react-redux";
@@ -40,6 +45,8 @@ import CustomMarker from "../components/CustomMarker";
 import { ReportAppointmentModal, StarRating } from "../components";
 import CancelAppointmentModal from "../components/DetailAppointment/CancelAppointmentModal";
 import FeedbackAppointmentModal from "../components/DetailAppointment/FeedbackAppointmentModal";
+import { AppointmentService } from "../services/appointmentService";
+import { actCreateNotificationList } from "../store/notification/action";
 
 const GOOGLE_API_KEY = "AIzaSyAs7hqe3ZUJTjrM7KbdVqkdxB__0eCcKgE";
 const DetailAppointmennt = ({ navigation }) => {
@@ -80,6 +87,10 @@ const DetailAppointmennt = ({ navigation }) => {
 
     fetchData(); // Gọi hàm để lấy dữ liệu
   }, [appointmentId]);
+  const formatDateString = (dateString) => {
+    const [year, month, day] = dateString.split("-"); // Tách ngày, tháng, năm
+    return `${day}-${month}-${year}`; // Định dạng lại theo DD-MM-YYYY
+  };
 
   const OnCancel = async (reason) => {
     async function fetchData() {
@@ -94,22 +105,65 @@ const DetailAppointmennt = ({ navigation }) => {
       //     console.error("Error parsing userInfo", error);
       //   }
       // }
-      const data = {
-        customerId: user?.id,
-        reasonCancel: reason,
-      };
 
       if (appointmentDetail?.id && accountId && user && user?.id) {
-        await dispatch(
-          CancelAppointmentByCustomer(
+        // await dispatch(
+        //   CancelAppointmentByCustomer(
+        //     appointmentDetail?.id,
+        //     data,
+        //     currentPage,
+        //     itemsPerPage,
+        //     accountId,
+        //     navigation
+        //   )
+        // );
+        const data = {
+          customerId: user?.id,
+          reasonCancel: reason,
+        };
+        dispatch({ type: CANCEL_APPOINTMENT_REQUEST });
+        try {
+          const response = await AppointmentService.CancelAppointmentByCustomer(
             appointmentDetail?.id,
-            data,
-            currentPage,
-            itemsPerPage,
-            accountId,
-            navigation
-          )
-        );
+            data
+          );
+          dispatch(
+            GetAppointmentByAccountId(currentPage, itemsPerPage, accountId)
+          );
+          dispatch(GetAppointmentById(appointmentDetail?.id));
+          dispatch({
+            type: CANCEL_APPOINTMENT_SUCCESS,
+            payload: response.data,
+          });
+          ToastAndroid.show(response.data, ToastAndroid.SHORT);
+          // navigation.navigate("Appointment schedule");
+          const formattedDate = formatDateString(
+            appointmentDetail?.startDate?.split("T")[0]
+          );
+          const mapDataNotifi = {
+            appointmentId: appointmentDetail?.id,
+            title: `Có đơn đặt lịch đã hủy`,
+            message: `Khách hàng ${user?.fullName} đã hủy lịch hẹn ở cửa tiệm ${
+              appointmentDetail?.salonInformation?.name
+            } tại cuộc hẹn vào lúc ${
+              appointmentDetail?.appointmentDetails[0]?.startTime?.split("T")[1]
+            } vào ngày ${formattedDate}`,
+            type: "cancelAppointment",
+          };
+          await dispatch(
+            actCreateNotificationList(
+              appointmentDetail?.salonInformation?.id,
+              mapDataNotifi
+            )
+          );
+        } catch (error) {
+          dispatch({
+            type: CANCEL_APPOINTMENT_FAILURE,
+            payload: error.message,
+          });
+          const errorMessage = error.response?.data?.message || error.message;
+          ToastAndroid.show(errorMessage, ToastAndroid.SHORT);
+        }
       }
       setLoad(false);
     }

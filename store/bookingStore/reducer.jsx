@@ -67,6 +67,7 @@
 
 import {
   SET_STORE_ID,
+  SET_STORE_NAME,
   SET_DATE_BOOKING,
   SET_HOUR_BOOKING,
   ADD_SERVICE,
@@ -82,6 +83,7 @@ import {
 
 const initialState = {
   storeId: null,
+  storeName: null,
   dateBooking: null,
   hourBooking: null,
   services: [],
@@ -95,6 +97,8 @@ function bookingReducer(state = initialState, action) {
   switch (action.type) {
     case SET_STORE_ID:
       return { ...state, storeId: action.payload };
+    case SET_STORE_NAME:
+      return { ...state, storeName: action.payload };
     case SET_DATE_BOOKING:
       return {
         ...state,

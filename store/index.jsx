@@ -9,6 +9,7 @@ import bookingServiceReducer from "./booking/reducer";
 import voucherServiceReducer from "./voucher/reducer";
 import reportServiceReducer from "./report/reducer";
 import collectionServiceReducer from "./collection/reducer";
+import notificationServiceReducer from "./notification/reducer";
 const rootReducer = combineReducers({
   USER: userReducer,
   booking: bookingReducer,
@@ -19,6 +20,7 @@ const rootReducer = combineReducers({
   VOUCHER: voucherServiceReducer,
   REPORT: reportServiceReducer,
   COLLECTION: collectionServiceReducer,
+  NOTIFICATION: notificationServiceReducer,
 });
 
 const store = createStore(rootReducer, applyMiddleware(thunk));

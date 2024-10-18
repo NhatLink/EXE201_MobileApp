@@ -7,12 +7,15 @@ import {
   addService,
   setStoreId,
   resetBooking,
+  setStoreName,
 } from "../../store/bookingStore/action";
 import * as SecureStore from "expo-secure-store";
 import { ToastAndroid } from "react-native";
 import { resetAvailable } from "../../store/booking/action";
 import { fetchServiceHairBySalonInformationId } from "../../store/salon/action";
 const SearchTile = ({ item }) => {
+  // console.log("SearchTile", item);
+
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const [showAll, setShowAll] = useState(false);
@@ -45,14 +48,13 @@ const SearchTile = ({ item }) => {
   //   }
   // };
 
-  const handleBook = async (storeId, item) => {
-    console.log(storeId);
-
+  const handleBook = async (storeId, item, storeName) => {
     if (isAuthenticated) {
       // Người dùng đã đăng nhập
       await dispatch(resetBooking());
       await dispatch(resetAvailable());
       await dispatch(setStoreId(storeId));
+      await dispatch(setStoreName(storeName));
       await dispatch(addService(item));
       await dispatch(fetchServiceHairBySalonInformationId(storeId, 1, 5));
       // Điều hướng hoặc logic bổ sung
@@ -169,7 +171,7 @@ const SearchTile = ({ item }) => {
           </View>
           <TouchableOpacity
             style={styles.bookButton}
-            onPress={() => handleBook(item?.id, itemService)}
+            onPress={() => handleBook(item?.id, itemService, item)}
           >
             <Text style={styles.button}>Đặt</Text>
           </TouchableOpacity>

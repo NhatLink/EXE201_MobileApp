@@ -36,12 +36,15 @@ import {
   resetAvailable,
   CalculatePrice,
   CreateAppointment,
+  CREATE_APPOINTMENT_SUCCESS,
+  CREATE_APPOINTMENT_FAILURE,
+  CREATE_APPOINTMENT_REQUEST,
 } from "../store/booking/action";
 import Loader from "../components/auth/Loader";
 import { GetVoucherBySalonId } from "../store/voucher/action";
 import VoucherModal from "../components/booking/VoucherModal";
 import * as SecureStore from "expo-secure-store";
-import { useNotificationScheduler } from "../hook/useNotificationScheduler";
+// import { useNotificationScheduler } from "../hook/useNotificationScheduler";
 import {
   startConnection,
   onEvent,
@@ -51,16 +54,19 @@ import {
 import * as signalR from "@microsoft/signalr";
 import { BookingService } from "../services/bookingService";
 import { Alert } from "react-native";
+import { actCreateNotificationList } from "../store/notification/action";
+import { GetAppointmentByAccountId } from "../store/appointment/action";
 
 const Booking = ({ navigation }) => {
   const dispatch = useDispatch();
-  const { scheduleNotification, expoPushToken } = useNotificationScheduler();
+  // const { scheduleNotification, expoPushToken } = useNotificationScheduler();
   const scrollViewRef = useRef(null);
   const {
     storeId,
     dateBooking,
     hourBooking,
     services,
+    storeName,
     // totalPrice,
     totalTime,
     voucher,
@@ -74,6 +80,8 @@ const Booking = ({ navigation }) => {
     createAppointment,
   } = useSelector((state) => state.BOOKING);
   const { user, accountId } = useSelector((state) => state.USER);
+  // console.log("storeName own", storeName?.ownerId);
+  // console.log("storeName name", storeName?.name);
   // console.log("availableTime", availableTime);
   // console.log("bookAppoinment", bookAppoinment?.bookingDetailResponses);
   // console.log("voucher:", voucher);
@@ -121,6 +129,20 @@ const Booking = ({ navigation }) => {
     }
   };
 
+  const convertHourToString = (hour) => {
+    const hours = Math.floor(hour);
+    const minutes = Math.round((hour - hours) * 60);
+    return `${hours} giờ ${minutes > 0 ? minutes + " phút" : ""}`.trim();
+  };
+
+  const formatDateToString = (date) => {
+    const d = new Date(date);
+    const day = String(d.getDate()).padStart(2, "0"); // Ngày
+    const month = String(d.getMonth() + 1).padStart(2, "0"); // Tháng (cần +1 vì tháng bắt đầu từ 0)
+    const year = d.getFullYear(); // Năm
+    return `${day}-${month}-${year}`; // Trả về theo định dạng ngày-tháng-năm
+  };
+
   const booking = async () => {
     if (
       user &&
@@ -132,6 +154,7 @@ const Booking = ({ navigation }) => {
       accountId
     ) {
       await startConnection();
+      await dispatch({ type: CREATE_APPOINTMENT_REQUEST });
       const getRandomEmployeeId = (employees) => {
         if (employees.length === 0) return null;
         const randomIndex = Math.floor(Math.random() * employees.length);
@@ -176,37 +199,158 @@ const Booking = ({ navigation }) => {
         (detail) => detail.serviceHair.id
       );
       const appointmentObject = createAppointmentObject();
-      // console.log(JSON.stringify(appointmentObject));
-      // console.log(
-      //   JSON.stringify(appointmentObject.appointmentDetails[0].startTime)
-      // );
       let mappingData = {
         message: "send serviceId",
         dateAppointment: appointmentObject?.startDate,
         salonId: storeId,
         serviceId: serviceHairIds,
+        ownerId: storeName?.ownerId,
       };
+      // console.log(appointmentObject);
+      // console.log(
+      //   JSON.stringify(appointmentObject.appointmentDetails[0].startTime)
+      // );
       // console.log("mappingData", mappingData);
+      // console.log("dateBooking:", dateBooking);
+      // await dispatch(
+      //   CreateAppointment(
+      //     appointmentObject,
+      //     navigation,
+      //     currentPage,
+      //     itemsPerPage,
+      //     accountId
+      //   )
+      // );
 
-      dispatch(
-        CreateAppointment(
-          appointmentObject,
-          navigation,
-          currentPage,
-          itemsPerPage,
-          accountId,
-          scheduleNotification
-        )
-      );
-      await BookingService.broadcastMessage(mappingData);
-    } else {
-      ToastAndroid.show(
-        "Có lỗi xảy ra, vui lòng thử lại sau !",
-        ToastAndroid.SHORT
-      );
+      try {
+        const response = await BookingService.CreateAppointment(
+          appointmentObject
+        );
+        console.log("res", response?.data);
+        ToastAndroid.show("Tạo lịch hẹn thành công !!!", ToastAndroid.SHORT);
+        await dispatch({
+          type: CREATE_APPOINTMENT_SUCCESS,
+          payload: response.data,
+        });
+        navigation.navigate("Appointment schedule");
+        await dispatch(
+          GetAppointmentByAccountId(currentPage, itemsPerPage, accountId)
+        );
+        await BookingService.broadcastMessage(mappingData);
+        // Sử dụng các hàm trên để định dạng time và formattedDate
+        const time = convertHourToString(hourBooking);
+        const formattedDate = formatDateToString(dateBooking);
+        const mapDataNotifi = {
+          appointmentId: response?.data?.appointmentDetails,
+          title: "Đã có đơn đặt lịch mới",
+          message: `Khách hàng ${user?.fullName} đã đặt lịch ở cửa tiệm ${storeName?.name} vào lúc ${time} ngày ${formattedDate}`,
+          type: "newAppointment",
+        };
+        console.log("mapDataNotifi", mapDataNotifi);
+        console.log("storeId", storeId);
+        await dispatch(actCreateNotificationList(storeId, mapDataNotifi));
+      } catch (error) {
+        const errorMessage = error.response?.data?.message || error.message;
+        dispatch({ type: CREATE_APPOINTMENT_FAILURE, payload: errorMessage });
+        // ToastAndroid.show(
+        //   "Tạo lịch hẹn thất bại, vui lòng thử lại sau !",
+        //   ToastAndroid.SHORT
+        // );
+        ToastAndroid.show(errorMessage, ToastAndroid.SHORT);
+        console.log("error CreateAppointment", errorMessage);
+      } finally {
+        await stopConnection();
+      }
     }
-    await stopConnection();
   };
+
+  // const booking1 = async () => {
+  //   if (
+  //     user &&
+  //     user?.id &&
+  //     bookAppoinment &&
+  //     bookAppoinment.bookingDetailResponses &&
+  //     totalPrice &&
+  //     services &&
+  //     accountId
+  //   ) {
+  //     await startConnection();
+  //     const getRandomEmployeeId = (employees) => {
+  //       if (employees.length === 0) return null;
+  //       const randomIndex = Math.floor(Math.random() * employees.length);
+  //       return employees[randomIndex].id;
+  //     };
+  //     const createAppointmentObject = () => {
+  //       const appointmentDetails = bookAppoinment.bookingDetailResponses.map(
+  //         (detail) => {
+  //           const service = services.find(
+  //             (s) => s.id === detail.serviceHair.id
+  //           );
+  //           return {
+  //             // salonEmployeeId: detail.employees[0].id,
+  //             // salonEmployeeId:
+  //             //   service.staff?.id !== "0"
+  //             //     ? service.staff?.id
+  //             //     : detail.employees[0].id,
+  //             salonEmployeeId:
+  //               service.staff?.id !== "0" && service.staff?.id
+  //                 ? service.staff?.id
+  //                 : getRandomEmployeeId(detail.employees),
+
+  //             serviceHairId: service.id,
+  //             description: service.description,
+  //             endTime: detail.serviceHair.endTime,
+  //             startTime: detail.serviceHair.startTime,
+  //           };
+  //         }
+  //       );
+
+  //       return {
+  //         customerId: user?.id,
+  //         startDate: bookAppoinment?.day,
+  //         totalPrice: totalPrice.totalPrice,
+  //         originalPrice: totalPrice.originalPrice,
+  //         discountedPrice: totalPrice.discountedPrice,
+  //         appointmentDetails: appointmentDetails,
+  //         voucherIds: voucher ? [voucher.id] : [],
+  //       };
+  //     };
+  //     const serviceHairIds = bookAppoinment.bookingDetailResponses.map(
+  //       (detail) => detail.serviceHair.id
+  //     );
+  //     const appointmentObject = createAppointmentObject();
+  //     // console.log(JSON.stringify(appointmentObject));
+  //     // console.log(
+  //     //   JSON.stringify(appointmentObject.appointmentDetails[0].startTime)
+  //     // );
+  //     let mappingData = {
+  //       message: "send serviceId",
+  //       dateAppointment: appointmentObject?.startDate,
+  //       salonId: storeId,
+  //       serviceId: serviceHairIds,
+  //     };
+  //     // console.log("mappingData", mappingData);
+
+  //     await dispatch(
+  //       CreateAppointment(
+  //         appointmentObject,
+  //         navigation,
+  //         currentPage,
+  //         itemsPerPage,
+  //         accountId
+  //         // scheduleNotification
+  //       )
+  //     );
+  //     await BookingService.broadcastMessage(mappingData);
+  //   } else {
+  //     ToastAndroid.show(
+  //       "Có lỗi xảy ra, vui lòng thử lại sau !",
+  //       ToastAndroid.SHORT
+  //     );
+  //   }
+  //   await stopConnection();
+  // };
+
   // console.log("createAppointment", createAppointment);
   const handleGoBack = () => {
     dispatch(resetBooking());

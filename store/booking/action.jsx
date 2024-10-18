@@ -97,8 +97,8 @@ export const CreateAppointment =
     navigation,
     currentPage,
     itemsPerPage,
-    accountId,
-    scheduleNotification
+    accountId
+    // scheduleNotification
   ) =>
   async (dispatch) => {
     dispatch({ type: CREATE_APPOINTMENT_REQUEST });
@@ -106,27 +106,27 @@ export const CreateAppointment =
     // console.log("CreateAppointment accountId:", accountId);
     try {
       const response = await BookingService.CreateAppointment(data);
-      ToastAndroid.show(response.data, ToastAndroid.SHORT);
+      ToastAndroid.show("Tạo lịch hẹn thành công !!!", ToastAndroid.SHORT);
       dispatch({ type: CREATE_APPOINTMENT_SUCCESS, payload: response.data });
       navigation.navigate("Appointment schedule");
       dispatch(GetAppointmentByAccountId(currentPage, itemsPerPage, accountId));
 
       // Đặt lịch thông báo trước 1 giờ
-      const startTime = new Date(data.appointmentDetails[0].startTime);
-      const notificationTime = new Date(startTime.getTime() - 60 * 60 * 1000); // Trừ 1 giờ
+      // const startTime = new Date(data.appointmentDetails[0].startTime);
+      // const notificationTime = new Date(startTime.getTime() - 60 * 60 * 1000);
 
-      scheduleNotification({
-        title: "Nhắc nhở lịch hẹn",
-        body: "Bạn có một lịch hẹn sắp tới trong 1 giờ nữa.",
-        data: { appointmentId: response.data.id },
-        triggerInSeconds: Math.max(
-          (notificationTime.getTime() - Date.now()) / 1000,
-          1
-        ),
-        importance: Notifications.AndroidImportance.MAX, // Đặt mức độ quan trọng cao
-        vibrationPattern: [0, 250, 250, 250], // Mẫu rung
-        lightColor: COLORS.secondary, // Màu đèn sáng
-      });
+      // scheduleNotification({
+      //   title: "Nhắc nhở lịch hẹn",
+      //   body: "Bạn có một lịch hẹn sắp tới trong 1 giờ nữa.",
+      //   data: { appointmentId: response.data.id },
+      //   triggerInSeconds: Math.max(
+      //     (notificationTime.getTime() - Date.now()) / 1000,
+      //     1
+      //   ),
+      //   importance: Notifications.AndroidImportance.MAX,
+      //   vibrationPattern: [0, 250, 250, 250],
+      //   lightColor: COLORS.secondary,
+      // });
     } catch (error) {
       const errorMessage = error.response?.data?.message || error.message;
       dispatch({ type: CREATE_APPOINTMENT_FAILURE, payload: errorMessage });

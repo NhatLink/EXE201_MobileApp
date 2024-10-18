@@ -19,8 +19,9 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { fetchUser2 } from "../store/user/action";
 import * as SecureStore from "expo-secure-store";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { fetchSalonInformation } from "../store/salon/action";
+import { newNotification } from "../store/notification/action";
 
 const Home = () => {
   const navigation = useNavigation();
@@ -51,9 +52,11 @@ const Home = () => {
 
   //   handleUserFetch();
   // }, []);
-
+  const newNoti = useSelector((state) => state.NOTIFICATION.newNoti);
+  const { isAuthenticated } = useSelector((state) => state.USER);
   const handlePress = () => {
     navigation.navigate("Notifications");
+    dispatch(newNotification(false));
   };
 
   const requestLocationPermission = async () => {
@@ -79,10 +82,10 @@ const Home = () => {
         }
       } catch (error) {
         console.error("Error getting location:", error);
-        Alert.alert(
-          "Lỗi",
-          "Chưa thể lấy được vị trí của người dùng, vui lòng thử lại sau!"
-        );
+        // Alert.alert(
+        //   "Lỗi",
+        //   "Chưa thể lấy được vị trí của người dùng, vui lòng thử lại sau!"
+        // );
       }
     }
   };
@@ -105,6 +108,14 @@ const Home = () => {
               <Ionicons name="notifications" size={24} color="black" />
             </TouchableOpacity>
           </View> */}
+          {isAuthenticated && (
+            <View style={styles.cartContent}>
+              {newNoti && <View style={styles.notificationDot} />}
+              <TouchableOpacity onPress={() => handlePress()}>
+                <Ionicons name="notifications" size={28} color="black" />
+              </TouchableOpacity>
+            </View>
+          )}
         </View>
       </View>
       <ScrollView>
@@ -143,16 +154,22 @@ const styles = StyleSheet.create({
   },
   cartContent: {
     position: "absolute",
-    top: 5,
+    top: 0,
     right: 0,
-    // width: 16,
-    // height: 16,
-    // borderRadius: 8,
-    // backgroundColor: "green",
-    // alignItems: "center",
-    // justifyContent: "center",
-    // zIndex: 999,
+    zIndex: 999,
   },
+
+  notificationDot: {
+    position: "absolute",
+    bottom: 15,
+    left: 10,
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    backgroundColor: "red",
+    zIndex: 999,
+  },
+
   cartCounter: {
     position: "absolute",
     bottom: 15,
@@ -169,5 +186,15 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     fontSize: 10,
     color: COLORS.white,
+  },
+  notificationDot: {
+    position: "absolute",
+    bottom: 15,
+    left: 15,
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    backgroundColor: "red",
+    zIndex: 999,
   },
 });
