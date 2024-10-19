@@ -404,46 +404,47 @@ function RouterContent() {
   useEffect(() => {
     let connection;
     let isComponentMounted = true; // Cờ để theo dõi trạng thái của component
+    if (accountId) {
+      const setupSignalR = async () => {
+        try {
+          // Tạo kết nối SignalR
+          connection = new signalR.HubConnectionBuilder()
+            .withUrl("https://hairhub.gahonghac.net/book-appointment-hub")
+            .withAutomaticReconnect()
+            .build();
 
-    const setupSignalR = async () => {
-      try {
-        // Tạo kết nối SignalR
-        connection = new signalR.HubConnectionBuilder()
-          .withUrl("https://hairhub.gahonghac.net/book-appointment-hub")
-          .withAutomaticReconnect()
-          .build();
+          // Bắt đầu kết nối
+          await connection.start();
+          if (!isComponentMounted) return; // Kiểm tra xem component còn tồn tại
 
-        // Bắt đầu kết nối
-        await connection.start();
-        if (!isComponentMounted) return; // Kiểm tra xem component còn tồn tại
+          console.log("Kết nối SignalR thành công.");
 
-        console.log("Kết nối SignalR thành công.");
-
-        // Lắng nghe sự kiện "ReceiveNotification"
-        connection.on(
-          "ReceiveNotification",
-          async (
-            Title,
-            Message,
-            AccountIds,
-            appointmentId,
-            customerName,
-            date
-          ) => {
-            if (AccountIds?.includes(accountId)) {
-              dispatch(actGetNotificationList(accountId));
-              dispatch(newNotification(true));
-            } else {
-              console.log("Lỗi: Không có AccountId phù hợp.");
+          // Lắng nghe sự kiện "ReceiveNotification"
+          connection.on(
+            "ReceiveNotification",
+            async (
+              Title,
+              Message,
+              AccountIds,
+              appointmentId,
+              customerName,
+              date
+            ) => {
+              if (AccountIds?.includes(accountId)) {
+                dispatch(actGetNotificationList(accountId));
+                dispatch(newNotification(true));
+              } else {
+                console.log("Lỗi: Không có AccountId phù hợp.");
+              }
             }
-          }
-        );
-      } catch (error) {
-        console.error("Lỗi khi thiết lập SignalR:", error);
-      }
-    };
+          );
+        } catch (error) {
+          console.error("Lỗi khi thiết lập SignalR:", error);
+        }
+      };
 
-    setupSignalR();
+      setupSignalR();
+    }
 
     // Dọn dẹp kết nối khi component bị hủy
     return () => {

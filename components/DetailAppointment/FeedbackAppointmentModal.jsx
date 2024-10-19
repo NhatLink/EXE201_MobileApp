@@ -37,7 +37,7 @@ const FeedbackAppointmentModal = ({ isVisible, onClose, data, services }) => {
   const [feedbackDetails, setFeedbackDetails] = useState(
     services.map((item) => ({
       AppointmentDetailId: item?.id,
-      Rating: 5, // Giá trị mặc định
+      Rating: 0, // Giá trị mặc định
     }))
   );
 
@@ -104,6 +104,10 @@ const FeedbackAppointmentModal = ({ isVisible, onClose, data, services }) => {
     //   return;
     // }
     setLoader(true);
+    if (!data || !data.SalonId || !data.CustomerId || !data.AppointmentId) {
+      console.error("Thiếu dữ liệu bắt buộc trong data.");
+      return;
+    }
     try {
       let formData = new FormData();
       let dataSubmit = {
@@ -117,27 +121,41 @@ const FeedbackAppointmentModal = ({ isVisible, onClose, data, services }) => {
 
       for (let key in dataSubmit) {
         if (key === "ImgFeedbacks") {
-          dataSubmit[key].forEach((imageUri, index) => {
-            const uriParts = imageUri.split(".");
-            const fileType = uriParts[uriParts.length - 1];
-
-            formData.append(key, {
-              uri: imageUri,
-              name: `image${index}.${fileType}`,
-              type: `image/${fileType}`,
+          if (dataSubmit.ImgFeedbacks.length > 0) {
+            dataSubmit.ImgFeedbacks.forEach((imageUri, index) => {
+              const uriParts = imageUri.split(".");
+              const fileType = uriParts[uriParts.length - 1];
+              formData.append("ImgFeedbacks", {
+                uri: imageUri,
+                name: `image${index}.${fileType}`,
+                type: `image/${fileType}`,
+              });
             });
+          }
+        } else if (key === "FeedbackDetailRequests") {
+          // Thay vì chuỗi JSON, gửi từng phần tử của mảng
+          dataSubmit[key].forEach((item, index) => {
+            formData.append(
+              `FeedbackDetailRequests[${index}][AppointmentDetailId]`,
+              item.AppointmentDetailId
+            );
+            formData.append(
+              `FeedbackDetailRequests[${index}][Rating]`,
+              item.Rating
+            );
           });
         } else {
+          // Các trường thông thường khác
           formData.append(key, dataSubmit[key]);
         }
       }
 
-      // console.log("CreateFeedback formData:", formData);
-      // console.log("CreateFeedback dataSubmit:", dataSubmit);
+      console.log("CreateFeedback formData:", formData);
+      console.log("CreateFeedback dataSubmit:", dataSubmit);
       await dispatch(CreateFeedback(formData, data.AppointmentId));
     } catch (error) {
       console.error("CreateFeedback error:", error);
-      Alert.alert("Error", "Oops, something went wrong. Try again");
+      Alert.alert("Error", "Có lỗi xảy ra, vui lòng thử lại sau");
     } finally {
       setLoader(false);
       onClose();
@@ -146,6 +164,12 @@ const FeedbackAppointmentModal = ({ isVisible, onClose, data, services }) => {
       setSelectedImages([]);
       setRatingFeedback(0);
       setReason("");
+      setFeedbackDetails(
+        services.map((item) => ({
+          AppointmentDetailId: item?.id,
+          Rating: 0, // Giá trị mặc định
+        }))
+      );
     }
   };
 
@@ -183,8 +207,8 @@ const FeedbackAppointmentModal = ({ isVisible, onClose, data, services }) => {
       visible={isVisible}
       onRequestClose={onClose}
     >
+      <Loader visible={loader} />
       <ScrollView style={styles.fullScreenModal}>
-        <Loader visible={loader} />
         <View style={styles.modalContent}>
           <Text style={styles.modalTitle}>Đánh giá lịch hẹn</Text>
           <View style={styles.line} />
@@ -196,52 +220,58 @@ const FeedbackAppointmentModal = ({ isVisible, onClose, data, services }) => {
           <View style={styles.line} />
           <Text style={styles.modalText}>Số sao đánh giá:</Text>
           <View style={styles.line} />
-          {services?.map((itemDetail) => (
-            <View key={itemDetail?.id}>
-              <View style={styles.serviceItem}>
-                <Image
-                  source={{ uri: itemDetail?.imgServiceHair }}
-                  style={styles.productImage}
-                />
-                <View style={styles.serviceInfo}>
-                  <Text style={styles.serviceName} numberOfLines={1}>
-                    {itemDetail?.serviceName}{" "}
-                    {`(${itemDetail?.timeServiceHair * 60} Phút)`}
-                  </Text>
-                  <Text style={styles.serviceDescription} numberOfLines={1}>{`${
-                    itemDetail?.startTime?.split("T")[1]
-                  } đến ${itemDetail?.endTime?.split("T")[1]} `}</Text>
-                </View>
-                <View style={styles.pricingInfo}>
-                  <Text
-                    style={styles.servicePrice}
-                    numberOfLines={1}
-                  >{`${itemDetail?.priceServiceHair?.toLocaleString()} VND`}</Text>
-                  <View style={styles.containerInfo}>
-                    <View>
+          {services?.map((itemDetail) => {
+            const feedbackDetail = feedbackDetails.find(
+              (detail) => detail.AppointmentDetailId === itemDetail?.id
+            );
+
+            return (
+              <View key={itemDetail?.id}>
+                <View style={styles.serviceItem}>
+                  <Image
+                    source={{ uri: itemDetail?.imgServiceHair }}
+                    style={styles.productImage}
+                  />
+                  <View style={styles.serviceInfo}>
+                    <Text style={styles.serviceName} numberOfLines={1}>
+                      {itemDetail?.serviceName}{" "}
+                      {`(${itemDetail?.timeServiceHair * 60} Phút)`}
+                    </Text>
+                    <Text style={styles.serviceDescription} numberOfLines={1}>
+                      {`${itemDetail?.startTime?.split("T")[1]} đến ${
+                        itemDetail?.endTime?.split("T")[1]
+                      } `}
+                    </Text>
+                  </View>
+                  <View style={styles.pricingInfo}>
+                    <Text style={styles.servicePrice} numberOfLines={1}>
+                      {`${itemDetail?.priceServiceHair?.toLocaleString()} VND`}
+                    </Text>
+                    <View style={styles.containerInfo}>
                       <Text style={styles.titleService}>
                         {itemDetail?.salonEmployee?.fullName}
                       </Text>
+                      <Image
+                        source={{ uri: itemDetail?.salonEmployee?.img }}
+                        resizeMode="cover"
+                        style={styles.avatar}
+                      />
                     </View>
-                    <Image
-                      source={{ uri: itemDetail?.salonEmployee?.img }}
-                      resizeMode="cover"
-                      style={styles.avatar}
-                    />
                   </View>
                 </View>
+                <Rating
+                  ratingCount={5}
+                  imageSize={30}
+                  startingValue={feedbackDetail?.Rating || 0} // Lấy giá trị từ feedbackDetails
+                  tintColor={COLORS.cardcolor}
+                  onFinishRating={(rating) =>
+                    handleRatingChange(rating, itemDetail?.id)
+                  }
+                />
               </View>
-              <Rating
-                ratingCount={5}
-                imageSize={30}
-                startingValue={5} // Giá trị mặc định là 5
-                tintColor={COLORS.offwhite}
-                onFinishRating={(rating) =>
-                  handleRatingChange(rating, itemDetail?.id)
-                }
-              />
-            </View>
-          ))}
+            );
+          })}
+
           {errorStar ? (
             <Text style={{ color: "red", marginTop: 5, marginHorizontal: 20 }}>
               {errorStar}
@@ -489,10 +519,8 @@ const styles = StyleSheet.create({
     // height: "100%",
   },
   searchInput: {
-    fontFamily: "regular",
+    fontWeight: "normal",
     color: COLORS.black,
-    width: "100%",
-    height: "100%",
     paddingHorizontal: SIZES.xSmall,
   },
   searchIcon: {

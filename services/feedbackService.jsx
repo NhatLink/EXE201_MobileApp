@@ -8,4 +8,7 @@ export const feedbackService = {
       },
     });
   },
+  DeleteFeedback(id) {
+    return API.patch(`/api/v1/feedbacks/DeleteFeedback/${id}`);
+  },
 };

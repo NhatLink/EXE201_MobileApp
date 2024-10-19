@@ -47,6 +47,9 @@ import CancelAppointmentModal from "../components/DetailAppointment/CancelAppoin
 import FeedbackAppointmentModal from "../components/DetailAppointment/FeedbackAppointmentModal";
 import { AppointmentService } from "../services/appointmentService";
 import { actCreateNotificationList } from "../store/notification/action";
+import ButtonCustom from "../components/auth/Button";
+import { feedbackService } from "../services/feedbackService";
+import { handleDeleteFeedback } from "../store/feedback/action";
 
 const GOOGLE_API_KEY = "AIzaSyAs7hqe3ZUJTjrM7KbdVqkdxB__0eCcKgE";
 const DetailAppointmennt = ({ navigation }) => {
@@ -426,6 +429,55 @@ const DetailAppointmennt = ({ navigation }) => {
     }
   };
 
+  const DeleteFeedback = async () => {
+    // Kiểm tra dữ liệu bắt buộc
+    if (
+      !appointmentDetail ||
+      !feedbackAppointment ||
+      !appointmentDetail.id ||
+      !feedbackAppointment.id
+    ) {
+      console.error("Thiếu dữ liệu bắt buộc trong data.");
+      return;
+    }
+
+    // Hiển thị Alert để xác nhận xóa
+    Alert.alert(
+      "Xác nhận xóa",
+      "Bạn có chắc chắn muốn xóa nhận xét này?",
+      [
+        {
+          text: "Hủy",
+          onPress: () => {
+            setLoad(false); // Dừng loading nếu người dùng hủy
+          },
+          style: "cancel",
+        },
+        {
+          text: "Xóa",
+          onPress: async () => {
+            try {
+              setLoad(true);
+              setModalVisible4(false);
+              await dispatch(
+                handleDeleteFeedback(
+                  feedbackAppointment.id,
+                  appointmentDetail.id
+                )
+              );
+            } catch (error) {
+              Alert.alert("Error", "Có lỗi xảy ra, vui lòng thử lại sau");
+            } finally {
+              setLoad(false);
+              setModalVisible4(false);
+            }
+          },
+        },
+      ],
+      { cancelable: false } // Không cho phép hủy bằng cách nhấn bên ngoài
+    );
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.upperRow}>
@@ -763,6 +815,9 @@ const DetailAppointmennt = ({ navigation }) => {
                   </View>
                 ))}
               </View>
+              {/* <View style={styles.submitButton}>
+                <ButtonCustom title={"Xóa nhận xét"} onPress={DeleteFeedback} />
+              </View> */}
             </View>
           </View>
         </View>
@@ -1206,12 +1261,14 @@ const styles = StyleSheet.create({
     height: "40%",
     padding: 5,
     width: "90%",
-    backgroundColor: COLORS.secondary,
+    backgroundColor: COLORS.cardcolor,
     borderRadius: 10,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.8,
     shadowRadius: 2,
+    borderWidth: 1,
+    borderColor: COLORS.black,
     // elevation: 5,
   },
   modalTextTitle: {
@@ -1350,5 +1407,12 @@ const styles = StyleSheet.create({
   buttonTextMap: {
     color: COLORS.black,
     textAlign: "center",
+  },
+  submitButton: {
+    // position: "relative",
+    // bottom: 5,
+    marginHorizontal: 20,
+    justifyContent: "center",
+    alignItems: "center",
   },
 });

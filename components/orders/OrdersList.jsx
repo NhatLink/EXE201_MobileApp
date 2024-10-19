@@ -74,7 +74,7 @@ const OrdersList = () => {
         setFilteredData("SUCCESSED");
       } else if (status === "Thất bại") {
         setFilteredData("FAILED");
-      } else if (status === "Hủy bởi khách hàng") {
+      } else if (status === "Đã hủy") {
         setFilteredData("CANCEL_BY_CUSTOMER");
       }
       // else {
@@ -101,7 +101,7 @@ const OrdersList = () => {
               <Text style={styles.filterText}>Tất cả</Text>
             </View>
           </TouchableOpacity> */}
-            {["Thành công", "Thất bại", "Hủy bởi khách hàng"].map((status) => (
+            {["Thành công", "Thất bại", "Đã hủy"].map((status) => (
               <TouchableOpacity
                 key={status}
                 style={[
@@ -141,7 +141,7 @@ const OrdersList = () => {
               <Text style={styles.filterText}>Tất cả</Text>
             </View>
           </TouchableOpacity> */}
-          {["Thành công", "Thất bại", "Hủy bởi khách hàng"].map((status) => (
+          {["Thành công", "Thất bại", "Đã hủy"].map((status) => (
             <TouchableOpacity
               key={status}
               style={[
