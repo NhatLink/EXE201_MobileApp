@@ -199,6 +199,8 @@ const Booking = ({ navigation }) => {
         (detail) => detail.serviceHair.id
       );
       const appointmentObject = createAppointmentObject();
+      console.log("appointmentObject", appointmentObject);
+
       let mappingData = {
         message: "send serviceId",
         dateAppointment: appointmentObject?.startDate,

@@ -53,6 +53,8 @@ export default function QRScanner({ navigation }) {
           dataString: dataScan,
         };
         if (dataScan && accountId && user && user?.id) {
+          console.log("data", data);
+          console.log("accountId", accountId);
           await dispatch(checkInByUser(accountId, data));
         }
         setLoader(false);

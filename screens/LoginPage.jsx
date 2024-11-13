@@ -35,8 +35,8 @@ import * as Google from "expo-auth-session/providers/google";
 import { UserServices } from "../services/userServices";
 
 const androidClientId =
-  "435735956374-biv1qavtd6b0b79a1372s99v10qfsnpj.apps.googleusercontent.com";
-const redirectUri = "com.nhatlink.hairhub:/oauth2redirect";
+  "421763180330-30url8nded4pl2mpi8c6ap94l3h4d731.apps.googleusercontent.com";
+const redirectUri = "com.hairhub.hairhubvn:/oauth2redirect";
 WebBrowser.maybeCompleteAuthSession();
 const LoginPage = () => {
   const config = {
@@ -86,10 +86,8 @@ const LoginPage = () => {
   const handleToken = () => {
     if (response && response.type === "success") {
       const { authentication } = response;
-      // const token = authentication?.accessToken;
+      const token = authentication?.accessToken;
       const idToken = authentication?.idToken;
-      // console.log("Atoken", token);
-      // console.log("IdToken", idToken);
       // SecureStore.setItemAsync("AccesstokenGoogle", token);
       SecureStore.setItemAsync("idToken", idToken);
       // setUserTokenGoogle(token);

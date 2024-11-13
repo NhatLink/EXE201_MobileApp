@@ -1,4 +1,4 @@
-package com.nhatlink.hairhub
+package com.hairhub.hairhubvn
 
 import android.os.Build
 import android.os.Bundle

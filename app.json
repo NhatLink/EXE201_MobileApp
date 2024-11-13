@@ -2,7 +2,7 @@
   "expo": {
     "name": "HairHub",
     "slug": "hairhubmobile",
-    "version": "1.0.1",
+    "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/HairHubLogo2.png",
     "userInterfaceStyle": "light",
@@ -18,7 +18,7 @@
       "supportsTablet": true
     },
     "android": {
-      "package": "com.nhatlink.hairhub",
+      "package": "com.hairhub.hairhubvn",
       "versionCode":2,
       "usesCleartextTraffic": true,
       "adaptiveIcon": {
